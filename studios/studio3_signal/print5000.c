@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <signal.h>
 #include <unistd.h>
-
+// studio3
 #define size 50000
 
 volatile int i;
