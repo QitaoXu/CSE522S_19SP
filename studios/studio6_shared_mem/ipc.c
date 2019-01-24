@@ -15,6 +15,8 @@
 #define COMMUNICATING 1
 #define WAITING_USRSIG2 2
 
+#define BUF_SIZE 50
+
 const int num_expected_args = 3;
 
 unsigned int num_comm_times;
@@ -32,6 +34,10 @@ int num_sent = 0, num_recieved = 0;
 char *notification1 = "SIGUSR1 in Parent Process is Caught\n"; 
 char *notification2_parent = "SIGUSR2 in Parent Process is Caught!\n";
 char *notification2_child = "SIGUSR2 in Child Process is Caught!\n";
+char *msg = "pipe communication";
+
+char buf_parent[BUF_SIZE];
+char buf_child[BUF_SIZE];
 
 void sigusr1_handler(int signo) {
     
@@ -82,7 +88,8 @@ void sigusr2_handler_child(int signo) {
 
 int main( int argc, char* argv[] ) {
 
-    int ret_fork, ret_sigaction;
+    int ret_fork, ret_sigaction, ret_pipe, nbytes;
+    int fd[2];
     struct sigaction sigaction_sigusr1;
     struct sigaction sigaction_sigusr2_parent;
     struct sigaction sigaction_sigusr2_child;
@@ -99,6 +106,27 @@ int main( int argc, char* argv[] ) {
     printf("Here is parent process. num_comm_times = %d, IPC_mechanism is %s\n", num_comm_times, IPC_mechanism);
     fflush(stdout);
 
+    sigaction_sigusr1.sa_handler = sigusr1_handler;
+    sigaction_sigusr1.sa_flags = SA_RESTART;
+
+    ret_sigaction = sigaction(SIGUSR1, &sigaction_sigusr1, NULL);
+
+    if (ret_sigaction < 0) {
+            printf("sigaction function failed! Reason: %s\n", strerror(errno));
+            exit(-1);
+    }
+
+    sigaction_sigusr2_parent.sa_handler = sigusr2_handler_parent;
+    sigaction_sigusr2_parent.sa_flags = SA_RESTART;
+
+    ret_sigaction = sigaction(SIGUSR2, &sigaction_sigusr2_parent, NULL);
+
+    if (ret_sigaction < 0) {
+        printf("sigaction function failed! Reason: %s\n", strerror(errno));
+        exit(-1);
+    }
+
+    /*
     if (strncmp(IPC_mechanism, "signals", strlen(IPC_mechanism)) == 0) { // signals
 
         sigaction_sigusr1.sa_handler = sigusr1_handler;
@@ -122,6 +150,23 @@ int main( int argc, char* argv[] ) {
         }
 
     }
+    */
+
+    if (strncmp(IPC_mechanism, "pipe", strlen(IPC_mechanism)) == 0) { // pipe
+        /*
+        char buf_parent[BUF_SIZE];
+        char buf_child[BUF_SIZE];
+        */
+        memset(buf_parent, 0, BUF_SIZE);
+
+        ret_pipe = pipe(fd);
+
+        if (ret_pipe == -1) {
+            printf("ERROR: pipe system call failede! Reason: %s\n", strerror(errno));
+            exit(-1);
+        }
+
+    }
 
     ret_fork = fork();
 
@@ -132,26 +177,31 @@ int main( int argc, char* argv[] ) {
 
     if (ret_fork > 0) { // parent process
 
+        if (strncmp(IPC_mechanism, "pipe", strlen(IPC_mechanism)) == 0) { // pipe
+            close(fd[0]);
+        }
+
         while (before_flag == 0) { // busy loop waiting for SIGUSR1 from child process
                                    // WAITING_SIGUSR1
         }
-
-        //printf("after _before loop, before _after loop\n");
         
         while (after_flag == 0) {   // repeatedly sending SIGUSR2 to child process
                                     // COMMUNICATING
-            kill(ret_fork, SIGUSR2);
-            num_sent++;
-            //printf("num_sent = %d\n", num_sent);
+            if (strncmp(IPC_mechanism, "signals", strlen(IPC_mechanism)) == 0) {                
+                kill(ret_fork, SIGUSR2);
+                num_sent++;
+            }
+
+            if (strncmp(IPC_mechanism, "pipe", strlen(IPC_mechanism)) == 0) {
+                write(fd[1], msg, strlen(msg));
+                num_sent++;
+            }
         }
-        
-        //kill(ret_fork, SIGUSR2);
 
         printf("Here is parent process:\n");
-        printf("Parent process sent %d signals to child process. Time before communication: %ld.%ld. Time after communication: %ld.%ld\n", 
+        printf("Times of parent process communicating with child process: %d.\nTime before communication: %ld.%ld. \nTime after communication: %ld.%ld\n", 
                 num_sent, ts_before.tv_sec, ts_before.tv_nsec,
                 ts_after.tv_sec, ts_after.tv_nsec);
-        //printf("num_sent = %d, num_recieved = %d\n", num_sent, num_recieved);
 
     }
 
@@ -159,24 +209,42 @@ int main( int argc, char* argv[] ) {
         printf("Here is child process. num_comm_times = %d, IPC_mechanism is %s\n", num_comm_times, IPC_mechanism);
         fflush(stdout);
 
-        sigaction_sigusr2_child.sa_handler = sigusr2_handler_child;
-        sigaction_sigusr2_child.sa_flags = SA_RESTART;
+        if (strncmp(IPC_mechanism, "signals", strlen(IPC_mechanism)) == 0){
+            sigaction_sigusr2_child.sa_handler = sigusr2_handler_child;
+            sigaction_sigusr2_child.sa_flags = SA_RESTART;
 
-        ret_sigaction = sigaction(SIGUSR2, &sigaction_sigusr2_child, NULL);
+            ret_sigaction = sigaction(SIGUSR2, &sigaction_sigusr2_child, NULL);
 
-        if (ret_sigaction < 0) {
-            printf("sigaction function failed! Reason: %s\n", strerror(errno));
-            exit(-1);
+            if (ret_sigaction < 0) {
+                printf("sigaction function failed! Reason: %s\n", strerror(errno));
+                exit(-1);
+            }
+        }
+
+        if (strncmp(IPC_mechanism, "pipe", strlen(IPC_mechanism)) == 0) {
+            close(fd[1]);
         }
 
         kill(getppid(), SIGUSR1);
-
         
         while(child_flag == 0) {
+
+            if (strncmp(IPC_mechanism, "signals", strlen(IPC_mechanism)) == 0) {
+                continue;
+            }
+
+            if (strncmp(IPC_mechanism, "pipe", strlen(IPC_mechanism)) == 0) {
+                nbytes = read(fd[0], buf_child, BUF_SIZE);
+                if (nbytes > 0) num_recieved++;
+
+                if (num_recieved == num_comm_times) {
+
+                    child_flag = 1;
+                    kill(getppid(), SIGUSR2);
+                }
+            }
         }
         
-        //kill(getppid(), SIGUSR2);
-        //printf("num_sent = %d, num_recieved = %d\n", num_sent, num_recieved);
         
     }
 
