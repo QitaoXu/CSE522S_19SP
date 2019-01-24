@@ -12,6 +12,7 @@
 int main(int argc, char* argv[]) {
 
     int i = 2;
+    int ret_sleep;
 
     FILE * fp;
 
@@ -26,9 +27,19 @@ int main(int argc, char* argv[]) {
 
         fprintf(fp, "%d", i);
 
-        printf("i = %d", i);
+        printf("i = %d\t", i);
+
+        if (i % 8 == 0) printf("\n");
+
+        ret_sleep = sleep(1);
+
+        if (ret_sleep < 0) {
+            printf("ERROR: usleep failed! Reason: %s\n", strerror(errno));
+            exit(-1);
+        }
         
         i = i + 2;
+
 
         fclose(fp);
         

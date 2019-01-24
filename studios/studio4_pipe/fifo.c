@@ -44,6 +44,15 @@ int main(int argc, char* argv[]) {
 
         ret_fscanf = fscanf(fp, "%d", &input_int);
 
+        if (ret_fscanf == -EOF) {
+            printf("End of fifo\n");
+        }
+
+        if (ret_fscanf < 0) {
+            printf("fscanf failed! Reason: %s", strerror(errno));
+            exit(-1);
+        }
+
         /*
         ret_fgets = fgets(buf, BUF_SIZE, fp);
 
