@@ -39,18 +39,16 @@ int main(int argc, char* argv[]) {
             exit(-1);
         }
 
-<<<<<<< HEAD
-        fp_w = fopen("/home/pi/Documents/CSE522S_19SP/studios/studio4_pipe/my_ao_fifo", "w");
-=======
-        /*
-        fp_w = fopen("/home/pi/Desktop/522S/studios/studio4_pipe/my_ao_fifo", "w");
->>>>>>> 0720db3909f6924292a73cc78eeb4df902f740b7
 
+        fp_w = fopen("/home/pi/Documents/CSE522S_19SP/studios/studio4_pipe/my_ao_fifo", "w");
+
+        
+        //fp_w = fopen("/home/pi/Desktop/522S/studios/studio4_pipe/my_ao_fifo", "w");
         if (fp_w == NULL) {
             printf("ERROR: fopen failed! Reason: %s\n", strerror(errno));
             exit(-1);
         }
-        */
+        
 
         ret_fscanf = fscanf(fp, "%d", &input_int);
 
