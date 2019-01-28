@@ -10,6 +10,8 @@
 #include <netinet/ip.h>
 #include <arpa/inet.h>
 #include <time.h> // for clock_gettime()
+#include <linux/limits.h>
+#include <sys/stat.h>
 
 #define WAITING_USRSIG1 0
 #define COMMUNICATING 1
