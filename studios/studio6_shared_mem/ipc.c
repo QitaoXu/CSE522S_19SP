@@ -35,6 +35,8 @@ char *notification1 = "SIGUSR1 in Parent Process is Caught\n";
 char *notification2_parent = "SIGUSR2 in Parent Process is Caught!\n";
 char *notification2_child = "SIGUSR2 in Child Process is Caught!\n";
 char *msg = "pipe communication";
+char *fifo_msg = "FIFO communication ";
+char *fifo_recieved;
 
 char buf_parent[BUF_SIZE];
 char buf_child[BUF_SIZE];
@@ -88,13 +90,16 @@ void sigusr2_handler_child(int signo) {
 
 int main( int argc, char* argv[] ) {
 
-    int ret_fork, ret_sigaction, ret_pipe, nbytes;
-    int fd[2];
+    int ret_fork, ret_sigaction, ret_pipe, nbytes, ret_mkfifo, ret_fprintf, ret_fscanf;
+    int fd[2]; // for pipe use
+
     struct sigaction sigaction_sigusr1;
     struct sigaction sigaction_sigusr2_parent;
     struct sigaction sigaction_sigusr2_child;
-    
 
+    FILE *fp_w; // for fifo use; Parent process write message to fifo
+    FILE *fp;   // for fifo use; Child process read message from fifo
+    
     if (argc != num_expected_args) {
         printf("Usage: ./ipc <# communication times> <IPC mechanism>\n");
         exit(-1);
@@ -152,6 +157,10 @@ int main( int argc, char* argv[] ) {
     }
     */
 
+    if (strncmp(IPC_mechanism, "signals", strlen(IPC_mechanism)) == 0) { // signals
+
+    }
+
     if (strncmp(IPC_mechanism, "pipe", strlen(IPC_mechanism)) == 0) { // pipe
         /*
         char buf_parent[BUF_SIZE];
@@ -168,6 +177,17 @@ int main( int argc, char* argv[] ) {
 
     }
 
+    if (strncmp(IPC_mechanism, "FIFO", strlen(IPC_mechanism)) == 0) { // FIFO
+        umask(0);
+
+        ret_mkfifo = mkfifo( "/home/pi/Documents/CSE522S_19SP/studios/studio6_shared_mem/my_ao_fifo", S_IFIFO | 0666);
+
+        if (ret_mkfifo < 0) {
+            printf("ERROR: mkfifo failed! Reason: %s\n", strerror(errno));
+            exit(-1);
+        }
+    }
+
     ret_fork = fork();
 
     if (ret_fork < 0) {
@@ -177,8 +197,16 @@ int main( int argc, char* argv[] ) {
 
     if (ret_fork > 0) { // parent process
 
+        if (strncmp(IPC_mechanism, "pipe", strlen(IPC_mechanism)) == 0) { // signals
+
+        }
+
         if (strncmp(IPC_mechanism, "pipe", strlen(IPC_mechanism)) == 0) { // pipe
             close(fd[0]);
+        }
+
+        if (strncmp(IPC_mechanism, "FIFO", strlen(IPC_mechanism)) == 0) { // FIFO
+
         }
 
         while (before_flag == 0) { // busy loop waiting for SIGUSR1 from child process
@@ -196,6 +224,18 @@ int main( int argc, char* argv[] ) {
                 write(fd[1], msg, strlen(msg));
                 num_sent++;
             }
+
+            if (strncmp(IPC_mechanism, "FIFO", strlen(IPC_mechanism)) == 0) { // FIFO
+
+                fp_w = fopen("/home/pi/Documents/CSE522S_19SP/studios/studio4_pipe/my_ao_fifo", "w");
+                if (fp_w == NULL) {
+                    printf("ERROR: fopen failed! Reason: %s\n", strerror(errno));
+                    exit(-1);
+                }
+
+                ret_fprintf = fprintf(fp, "%s", fifo_msg);
+                fclose(fp_w);
+            }
         }
 
         printf("Here is parent process:\n");
@@ -209,7 +249,7 @@ int main( int argc, char* argv[] ) {
         printf("Here is child process. num_comm_times = %d, IPC_mechanism is %s\n", num_comm_times, IPC_mechanism);
         fflush(stdout);
 
-        if (strncmp(IPC_mechanism, "signals", strlen(IPC_mechanism)) == 0){
+        if (strncmp(IPC_mechanism, "signals", strlen(IPC_mechanism)) == 0){ // signals
             sigaction_sigusr2_child.sa_handler = sigusr2_handler_child;
             sigaction_sigusr2_child.sa_flags = SA_RESTART;
 
@@ -221,7 +261,7 @@ int main( int argc, char* argv[] ) {
             }
         }
 
-        if (strncmp(IPC_mechanism, "pipe", strlen(IPC_mechanism)) == 0) {
+        if (strncmp(IPC_mechanism, "pipe", strlen(IPC_mechanism)) == 0) { // pipe
             close(fd[1]);
         }
 
@@ -229,11 +269,11 @@ int main( int argc, char* argv[] ) {
         
         while(child_flag == 0) {
 
-            if (strncmp(IPC_mechanism, "signals", strlen(IPC_mechanism)) == 0) {
+            if (strncmp(IPC_mechanism, "signals", strlen(IPC_mechanism)) == 0) { // signals
                 continue;
             }
 
-            if (strncmp(IPC_mechanism, "pipe", strlen(IPC_mechanism)) == 0) {
+            if (strncmp(IPC_mechanism, "pipe", strlen(IPC_mechanism)) == 0) { // pipe
                 nbytes = read(fd[0], buf_child, BUF_SIZE);
                 if (nbytes > 0) num_recieved++;
 
@@ -242,6 +282,34 @@ int main( int argc, char* argv[] ) {
                     child_flag = 1;
                     kill(getppid(), SIGUSR2);
                 }
+            }
+
+            if (strncmp(IPC_mechanism, "FIFO", strlen(IPC_mechanism)) == 0) {
+
+                fp = fopen("/home/pi/Documents/CSE522S_19SP/studios/studio6_shared_mem/my_ao_fifo", "r");
+
+                if (fp == NULL) {
+                    printf("ERROR: fopen failed! Reason: %s\n", strerror(errno));
+                    exit(-1);
+                }
+
+                ret_fscanf = fscanf(fp, "%s", fifo_recieved);
+
+                if (ret_fscanf < 0) {
+                    printf("fscanf failed! Reason: %s", strerror(errno));
+                    exit(-1);
+                }
+
+                fclose(fp);
+
+                num_recieved++;
+
+                if (num_recieved == num_comm_times) {
+
+                    child_flag = 1;
+                    kill(getppid(), SIGUSR2);
+                }
+
             }
 
             
