@@ -26,11 +26,16 @@ int main(int argc, char* argv[]) {
         printf("ERROR: mkfifo failed! Reason: %s\n", strerror(errno));
         exit(-1);
     }
+
+    /*
     ret_mkfifo2 = mkfifo("/home/pi/Documents/CSE522S_19SP/studios/studio4_pipe/my_bb_fifo", S_IFIFO | 0666);
-   if (ret_mkfifo2 < 0){
+    
+    if (ret_mkfifo2 < 0){
 	printf("ERROR",strerror(errno));
 	exit(-1);
 	}
+    */
+    
     while(1) {
         fp = fopen("/home/pi/Documents/CSE522S_19SP/studios/studio4_pipe/my_ao_fifo", "r");
 
