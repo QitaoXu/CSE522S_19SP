@@ -15,16 +15,16 @@ int main(int argc, char* argv[]) {
 
     FILE * fp;
 
-    //while ( i < upper_bound ) {
+    while ( i < upper_bound ) {
 
-        fp = fopen("/home/pi/Desktop/522S/studios/studio4_pipe/my_ao_fifo", "w");
+        fp = fopen("/home/pi/Documents/CSE522S_19SP/studios/studio4_pipe/my_ao_fifo", "w");
 
         if (fp == NULL) {
             printf("ERROR: fopen failed! Reason: %s\n", strerror(errno));
             exit(-1);
         }
 
-        fprintf(fp, "%d", i);
+        fprintf(fp, "%d ", i);
 
         printf("i = %d", i);
 
@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
 
         fclose(fp);
         
-    //}
+    }
 
     return 0;
 

@@ -11,7 +11,7 @@
 
 int main(int argc, char* argv[]) {
 
-    int ret_mkfifo, ret_fscanf;
+    int ret_mkfifo, ret_mkfifo2, ret_fscanf;
     FILE *fp;
     FILE *fp_w;
     int input_int;
@@ -20,22 +20,26 @@ int main(int argc, char* argv[]) {
 
     umask(0);
 
-    ret_mkfifo = mkfifo( "/home/pi/Desktop/522S/studios/studio4_pipe/my_ao_fifo", S_IFIFO | 0666);
+    ret_mkfifo = mkfifo( "/home/pi/Documents/CSE522S_19SP/studios/studio4_pipe/my_ao_fifo", S_IFIFO | 0666);
 
     if (ret_mkfifo < 0) {
         printf("ERROR: mkfifo failed! Reason: %s\n", strerror(errno));
         exit(-1);
     }
-
+    ret_mkfifo2 = mkfifo("/home/pi/Documents/CSE522S_19SP/studios/studio4_pipe/my_bb_fifo", S_IFIFO | 0666);
+   if (ret_mkfifo2 < 0){
+	printf("ERROR",strerror(errno));
+	exit(-1);
+	}
     while(1) {
-        fp = fopen("/home/pi/Desktop/522S/studios/studio4_pipe/my_ao_fifo", "r");
+        fp = fopen("/home/pi/Documents/CSE522S_19SP/studios/studio4_pipe/my_ao_fifo", "r");
 
         if (fp == NULL) {
             printf("ERROR: fopen failed! Reason: %s\n", strerror(errno));
             exit(-1);
         }
 
-        fp_w = fopen("/home/pi/Desktop/522S/studios/studio4_pipe/my_ao_fifo", "w");
+        fp_w = fopen("/home/pi/Documents/CSE522S_19SP/studios/studio4_pipe/my_ao_fifo", "w");
 
         if (fp_w == NULL) {
             printf("ERROR: fopen failed! Reason: %s\n", strerror(errno));
