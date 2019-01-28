@@ -243,6 +243,8 @@ int main( int argc, char* argv[] ) {
                     kill(getppid(), SIGUSR2);
                 }
             }
+
+            
         }
         
         
