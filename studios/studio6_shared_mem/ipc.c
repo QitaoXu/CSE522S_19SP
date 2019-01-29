@@ -298,7 +298,7 @@ int main( int argc, char* argv[] ) {
 
             if (strncmp(IPC_mechanism, "FIFO", strlen(IPC_mechanism)) == 0) {
 
-		//printf("In child process, trying to open FIFO\n");
+		        //printf("In child process, trying to open FIFO\n");
 
                 fp_r = fopen("/home/pi/Documents/CSE522S_19SP/studios/studio6_shared_mem/my_ao_fifo", "r");
 
@@ -307,9 +307,9 @@ int main( int argc, char* argv[] ) {
                     exit(-1);
                 }
 
-		fp_rw = fopen("/home/pi/Documents/CSE522S_19SP/studios/studio6_shared_mem/my_ao_fifo", "w");
+		        fp_rw = fopen("/home/pi/Documents/CSE522S_19SP/studios/studio6_shared_mem/my_ao_fifo", "w");
 
-		if (fp_rw == NULL) {
+		        if (fp_rw == NULL) {
                     printf("ERROR: fopen failed! Reason: %s\n", strerror(errno));
                     exit(-1);
                 }
@@ -323,21 +323,19 @@ int main( int argc, char* argv[] ) {
                 }
 
                 fclose(fp_r);
-		fclose(fp_rw);
+		        fclose(fp_rw);
 
-		if (fifo_recieved > 0) {
+		        if (fifo_recieved > 0) {
                 	num_recieved++;
-			printf("num_recieved = %d\n", num_recieved);
+			        printf("num_recieved = %d\n", num_recieved);
 
-			if (num_recieved == num_comm_times) {
-
-                        	child_flag = 1;
-                        	kill(getppid(), SIGUSR2);
-                        }
-		}
+			        if (num_recieved == num_comm_times) {
+                        child_flag = 1;
+                        kill(getppid(), SIGUSR2);
+                    }
+		        }
 
             }
-
             
         }
         
