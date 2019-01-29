@@ -377,8 +377,6 @@ int main( int argc, char* argv[] ) {
 
             if (strncmp(IPC_mechanism, "FIFO", strlen(IPC_mechanism)) == 0) { // FIFO
 
-		        //printf("In child process, trying to open FIFO\n");
-
                 fp_r = fopen("/home/pi/Documents/CSE522S_19SP/studios/studio6_shared_mem/my_ao_fifo", "r");
 
                 if (fp_r == NULL) {
