@@ -21,6 +21,10 @@
 
 #define BUF_SIZE 50
 
+#define SOCKET_PATH "/home/pi/Socket"
+#define LISTEN_BACKLOG 50
+#define PAYLOAD "Trick or treat!\n"
+
 const int num_expected_args = 3;
 
 unsigned int num_comm_times;
@@ -44,6 +48,9 @@ int fifo_recieved;
 
 char buf_parent[BUF_SIZE];
 char buf_child[BUF_SIZE];
+
+char buf[BUF_SIZE];
+int connect_flag = 0;
 
 void sigusr1_handler(int signo) {
     
@@ -96,6 +103,13 @@ int main( int argc, char* argv[] ) {
 
     int ret_fork, ret_sigaction, ret_pipe, nbytes, ret_mkfifo, ret_fprintf, ret_fscanf;
     int fd[2]; // for pipe use
+
+    int skt, ret_bind, ret_listen, accept_skt, ret_unlink, ret_read;
+    struct sockaddr_un skt_addr, peer_addr;
+    socklen_t peer_addr_size;
+
+    int skt_parent, ret_connect;
+    struct sockaddr_un skt_parent_addr;
 
     struct sigaction sigaction_sigusr1;
     struct sigaction sigaction_sigusr2_parent;
@@ -163,7 +177,7 @@ int main( int argc, char* argv[] ) {
     */
 
     if (strncmp(IPC_mechanism, "signals", strlen(IPC_mechanism)) == 0) { // signals
-
+        // nothing needed to do here
     }
 
     if (strncmp(IPC_mechanism, "pipe", strlen(IPC_mechanism)) == 0) { // pipe
@@ -193,6 +207,10 @@ int main( int argc, char* argv[] ) {
         }
     }
 
+    if (strncmp(IPC_mechanism, "lsock", strlen(IPC_mechanism)) == 0) { // local socket
+        // nothing needed to do here
+    }
+
     ret_fork = fork();
 
     if (ret_fork < 0) {
@@ -203,7 +221,7 @@ int main( int argc, char* argv[] ) {
     if (ret_fork > 0) { // parent process
 
         if (strncmp(IPC_mechanism, "pipe", strlen(IPC_mechanism)) == 0) { // signals
-
+            // nothing needed to do here
         }
 
         if (strncmp(IPC_mechanism, "pipe", strlen(IPC_mechanism)) == 0) { // pipe
@@ -211,13 +229,11 @@ int main( int argc, char* argv[] ) {
         }
 
         if (strncmp(IPC_mechanism, "FIFO", strlen(IPC_mechanism)) == 0) { // FIFO
-
-	        //printf("In parent Procee, waiting for child process with FIFO...\n");
-
+            // nothing needed to do here
         }
 
         if (strncmp(IPC_mechanism, "lsock", strlen(IPC_mechanism)) == 0) { // local socket
-
+            // nothing needed to do here
         }
 
         while (before_flag == 0) { // busy loop waiting for SIGUSR1 from child process
@@ -226,19 +242,19 @@ int main( int argc, char* argv[] ) {
         
         while (after_flag == 0) {   // repeatedly sending SIGUSR2 to child process
                                     // COMMUNICATING
-            if (strncmp(IPC_mechanism, "signals", strlen(IPC_mechanism)) == 0) {                
+            if (strncmp(IPC_mechanism, "signals", strlen(IPC_mechanism)) == 0) { // signals            
                 kill(ret_fork, SIGUSR2);
                 num_sent++;
             }
 
-            if (strncmp(IPC_mechanism, "pipe", strlen(IPC_mechanism)) == 0) {
+            if (strncmp(IPC_mechanism, "pipe", strlen(IPC_mechanism)) == 0) { // pipe
                 write(fd[1], msg, strlen(msg));
                 num_sent++;
             }
 
             if (strncmp(IPC_mechanism, "FIFO", strlen(IPC_mechanism)) == 0) { // FIFO
 		
-		//printf("In parent Process, trying to open FIFO...\n");
+		        //printf("In parent Process, trying to open FIFO...\n");
                 fp_w = fopen("/home/pi/Documents/CSE522S_19SP/studios/studio6_shared_mem/my_ao_fifo", "w");
                 if (fp_w == NULL) {
                     printf("ERROR: fopen failed! Reason: %s\n", strerror(errno));
@@ -248,11 +264,33 @@ int main( int argc, char* argv[] ) {
                 ret_fprintf = fprintf(fp_w, "%d ", 1);
                 fclose(fp_w);
 
-		if (ret_fprintf > 0) {
-		    num_sent++;
-		    printf("num_sent = %d\n", num_sent);
-		}
+                if (ret_fprintf > 0) {
+                    num_sent++;
+                    printf("num_sent = %d\n", num_sent);
+                }
 		
+            }
+
+            if (strncmp(IPC_mechanism, "lsock", strlen(IPC_mechanism)) == 0) { // local socket
+                
+                skt_parent = socket(AF_UNIX, SOCK_STREAM, 0);
+
+                if (skt_parent < 0) {
+                    printf("Error: socket() system call failed! Reason: %s\n", strerror(errno));
+                    exit(-1);
+                }
+
+                skt_parent_addr.sun_family = AF_UNIX;
+                strncpy(skt_parent_addr.sun_path, SOCKET_PATH, strlen(SOCKET_PATH));
+
+                ret_connect = connect(skt_parent, (struct sockaddr *)&skt_parent_addr, sizeof(struct sockaddr_un));
+                if (ret_connect < 0) {
+                    printf("Error: connect() system call failed! Reason: %s\n", strerror(errno));
+                    exit(-1);
+                }
+                write(skt_parent, PAYLOAD, strlen(PAYLOAD));
+                num_sent++;
+                close(skt_parent);
             }
         }
 
@@ -282,6 +320,41 @@ int main( int argc, char* argv[] ) {
         if (strncmp(IPC_mechanism, "pipe", strlen(IPC_mechanism)) == 0) { // pipe
             close(fd[1]);
         }
+
+        if (strncmp(IPC_mechanism, "FIFO", strlen(IPC_mechanism)) == 0) { // FIFO
+            // nothing needed to do here
+        }
+
+        if (strncmp(IPC_mechanism, "lsock", strlen(IPC_mechanism)) == 0) { // local socket
+            skt = socket(AF_UNIX, SOCK_STREAM, 0);
+
+            if (skt < 0) {
+                printf("Error: socket() system call failed! Reason: %s\n", strerror(errno));
+                exit(-1);
+            }
+
+            memset(&skt_addr, 0, sizeof(struct sockaddr_un));
+
+            skt_addr.sun_family = AF_UNIX;
+            strncpy(skt_addr.sun_path, SOCKET_PATH, strlen(SOCKET_PATH));
+
+            ret_bind = bind(skt, (struct sockaddr *)&skt_addr, sizeof(struct sockaddr_un));
+
+            if (ret_bind < 0) {
+                printf("Error: bind() system call failed! Reason: %s\n", strerror(errno));
+                exit(-1);
+            }
+
+            ret_listen = listen(skt, LISTEN_BACKLOG);
+
+            if (ret_listen < 0) {
+                printf("Error: listen() system call failed! Reason: %s\n", strerror(errno));
+                exit(-1);
+            }
+
+            peer_addr_size = sizeof(struct sockaddr_un);
+        }
+        
 
         kill(getppid(), SIGUSR1);
         
@@ -345,7 +418,44 @@ int main( int argc, char* argv[] ) {
             
             if (strncmp(IPC_mechanism, "lsock", strlen(IPC_mechanism)) == 0) { // local socket
 
+                accept_skt = accept(skt, (struct sockaddr *)&peer_addr, &peer_addr_size);
+
+                if (accept_skt < 0) {
+                    printf("Error: accept() system call failed! Reason: %s\n", strerror(errno));
+                    exit(-1);
+                } else {
+                    memset(buf, 0, BUF_SIZE);
+
+                    while(1) {
+                        ret_read = read(accept_skt, buf, BUF_SIZE);
+
+                        if (ret_read > 0) {
+                            //printf("In child process, recievevd message: %s\n", buf);
+                            memset(buf, 0, BUF_SIZE);
+                            num_recieved++;
+                        }
+
+                        if (ret_read == 0) {
+                            break;
+                        }
+                    }
+                }
+
+                if (num_recieved == num_comm_times) {
+                    child_flag = 1;
+                    kill(getppid(), SIGUSR2);
+                   
+                    ret_unlink = unlink(skt_addr.sun_path);
+                    if (ret_unlink < 0) {
+                        printf("Error: unlink system call failed! Reason: %s\n", strerror(errno));
+                        exit(-1);
+                    }
+
+                } 
             }
+
+            // net socket
+
         }
         
         
