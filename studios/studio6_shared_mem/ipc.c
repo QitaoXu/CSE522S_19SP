@@ -12,6 +12,8 @@
 #include <time.h> // for clock_gettime()
 #include <linux/limits.h>
 #include <sys/stat.h>
+#include <sys/socket.h> // for bind(), socket()
+#include <sys/un.h> // for unix()
 
 #define WAITING_USRSIG1 0
 #define COMMUNICATING 1
@@ -210,7 +212,11 @@ int main( int argc, char* argv[] ) {
 
         if (strncmp(IPC_mechanism, "FIFO", strlen(IPC_mechanism)) == 0) { // FIFO
 
-	    printf("In parent Procee, waiting for child process with FIFO...\n");
+	        //printf("In parent Procee, waiting for child process with FIFO...\n");
+
+        }
+
+        if (strncmp(IPC_mechanism, "lsock", strlen(IPC_mechanism)) == 0) { // local socket
 
         }
 
@@ -296,7 +302,7 @@ int main( int argc, char* argv[] ) {
                 }
             }
 
-            if (strncmp(IPC_mechanism, "FIFO", strlen(IPC_mechanism)) == 0) {
+            if (strncmp(IPC_mechanism, "FIFO", strlen(IPC_mechanism)) == 0) { // FIFO
 
 		        //printf("In child process, trying to open FIFO\n");
 
@@ -337,6 +343,9 @@ int main( int argc, char* argv[] ) {
 
             }
             
+            if (strncmp(IPC_mechanism, "lsock", strlen(IPC_mechanism)) == 0) { // local socket
+
+            }
         }
         
         
