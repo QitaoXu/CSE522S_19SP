@@ -126,6 +126,7 @@ int main( int argc, char* argv[] ) {
     FILE *fp_w; // for fifo use; Parent process write message to fifo
     FILE *fp_r;   // for fifo use; Child process read message from fifo
     FILE *fp_rw;
+    FILE *fp_wr;
     
     if (argc != num_expected_args) {
         printf("Usage: ./ipc <# communication times> <IPC mechanism>\n");
@@ -277,8 +278,15 @@ int main( int argc, char* argv[] ) {
                     exit(-1);
                 }
 
+                fp_wr = fopen("/home/pi/Documents/CSE522S_19SP/studios/studio6_shared_mem/my_ao_fifo", "r");
+                if (fp_wr == NULL) {
+                    printf("ERROR: fopen failed! Reason: %s\n", strerror(errno));
+                    exit(-1);
+                }
+
                 ret_fprintf = fprintf(fp_w, "%d ", 1);
                 fclose(fp_w);
+                fclose(fp_wr);
 
                 if (ret_fprintf > 0) {
                     num_sent++;
