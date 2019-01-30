@@ -106,7 +106,7 @@ void sigusr2_handler_child(int signo) {
 
 int main( int argc, char* argv[] ) {
 
-    int ret_kill;
+    int ret_kill, ret_fclose;
     int ret_fork, ret_sigaction, ret_pipe, nbytes, ret_mkfifo, ret_fprintf, ret_fscanf;
     int fd[2]; // for pipe use
 
@@ -287,8 +287,15 @@ int main( int argc, char* argv[] ) {
                 }
 
                 ret_fprintf = fprintf(fp_w, "%d ", 1);
-                fclose(fp_w);
-                fclose(fp_wr);
+                ret_fclose = fclose(fp_w);
+                if (ret_fclose < 0) {
+                    printf("fp_w: fclose failed! Reason: %s\n", strerror(errno));
+                }
+                
+                ret_fclose = fclose(fp_wr);
+                if (ret_fclose < 0) {
+                    printf("fp_wr: fclose failed! Reason: %s\n", strerror(errno));
+                }
 
                 if (ret_fprintf > 0) {
                     num_sent++;
