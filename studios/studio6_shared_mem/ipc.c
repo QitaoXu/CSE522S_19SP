@@ -296,6 +296,9 @@ int main( int argc, char* argv[] ) {
 		
             }
 
+            // debug
+            printf("in after loop, after_flag = %d\n", after_flag);
+
             if (strncmp(IPC_mechanism, "lsock", strlen(IPC_mechanism)) == 0) { // local socket
                 
                 skt_parent = socket(AF_UNIX, SOCK_STREAM, 0);
