@@ -76,7 +76,7 @@ void sigusr1_handler(int signo) {
 
 void sigusr2_handler_parent(int signo) {
 
-    write(0, notification2_parent, strlen(notification2_parent));
+    //write(0, notification2_parent, strlen(notification2_parent));
 
     int ret_clock_gettime;
 
@@ -271,8 +271,9 @@ int main( int argc, char* argv[] ) {
             }
 
             if (strncmp(IPC_mechanism, "FIFO", strlen(IPC_mechanism)) == 0) { // FIFO
-		
-		        printf("In parent Process, trying to open FIFO..., after_flag = %d\n", after_flag);
+
+                if (after_flag == 1) break;
+		        //printf("In parent Process, trying to open FIFO..., after_flag = %d\n", after_flag);
                 fp_w = fopen("/home/pi/Documents/CSE522S_19SP/studios/studio6_shared_mem/my_ao_fifo", "w");
                 if (fp_w == NULL) {
                     printf("ERROR: fopen failed! Reason: %s\n", strerror(errno));
@@ -297,7 +298,7 @@ int main( int argc, char* argv[] ) {
             }
 
             // debug
-            printf("in after loop, after_flag = %d\n", after_flag);
+            // printf("in after loop, after_flag = %d\n", after_flag);
 
             if (strncmp(IPC_mechanism, "lsock", strlen(IPC_mechanism)) == 0) { // local socket
                 
