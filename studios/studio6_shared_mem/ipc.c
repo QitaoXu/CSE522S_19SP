@@ -14,6 +14,8 @@
 #include <sys/stat.h>
 #include <sys/socket.h> // for bind(), socket()
 #include <sys/un.h> // for unix()
+#include <netinet/ip.h>
+#include <arpa/inet.h>
 
 #define WAITING_USRSIG1 0
 #define COMMUNICATING 1
@@ -24,6 +26,9 @@
 #define SOCKET_PATH "/home/pi/Socket"
 #define LISTEN_BACKLOG 50
 #define PAYLOAD "Trick or treat!\n"
+
+#define PORT_NUM 2000
+#define IP_ADDRESS "127.0.0.1"
 
 const int num_expected_args = 3;
 
@@ -104,12 +109,15 @@ int main( int argc, char* argv[] ) {
     int ret_fork, ret_sigaction, ret_pipe, nbytes, ret_mkfifo, ret_fprintf, ret_fscanf;
     int fd[2]; // for pipe use
 
-    int skt, ret_bind, ret_listen, accept_skt, ret_unlink, ret_read;
+    int skt, ret_bind, ret_listen, accept_skt, ret_unlink, ret_read, ret_inet_aton, on, ret_write;
     struct sockaddr_un skt_addr, peer_addr;
+    struct sockaddr_in skt_in_addr, peer_in_addr;
     socklen_t peer_addr_size;
+    socklen_t peer_in_addr_size;
 
     int skt_parent, ret_connect;
     struct sockaddr_un skt_parent_addr;
+    struct sockaddr_in skt_parent_in_addr;
 
     struct sigaction sigaction_sigusr1;
     struct sigaction sigaction_sigusr2_parent;
@@ -211,6 +219,10 @@ int main( int argc, char* argv[] ) {
         // nothing needed to do here
     }
 
+    if (strncmp(IPC_mechanism, "socket", strlen(IPC_mechanism)) == 0) { // Internet socket
+
+    }
+
     ret_fork = fork();
 
     if (ret_fork < 0) {
@@ -234,6 +246,10 @@ int main( int argc, char* argv[] ) {
 
         if (strncmp(IPC_mechanism, "lsock", strlen(IPC_mechanism)) == 0) { // local socket
             // nothing needed to do here
+        }
+
+        if (strncmp(IPC_mechanism, "socket", strlen(IPC_mechanism)) == 0) { // Internet socket
+            //("P: After fork\n");
         }
 
         while (before_flag == 0) { // busy loop waiting for SIGUSR1 from child process
@@ -289,6 +305,45 @@ int main( int argc, char* argv[] ) {
                     exit(-1);
                 }
                 write(skt_parent, PAYLOAD, strlen(PAYLOAD));
+                num_sent++;
+                close(skt_parent);
+            }
+
+            if (strncmp(IPC_mechanism, "socket", strlen(IPC_mechanism)) == 0) { // Internet socket
+                //printf("P: Before socket\n");
+                skt_parent = socket(AF_INET, SOCK_STREAM, 0);
+
+                if (skt_parent < 0) {
+                    printf("Error: socket() system call failed! Reason: %s\n", strerror(errno));
+                    exit(-1);
+                }
+
+                memset(&skt_parent_in_addr, 0, sizeof(struct sockaddr_in));
+
+                //printf("P: Before set skt_parent_in_addr\n");
+                skt_parent_in_addr.sin_family = AF_INET;
+                skt_parent_in_addr.sin_port = htons(PORT_NUM);
+                ret_inet_aton = inet_aton(IP_ADDRESS, &(skt_parent_in_addr.sin_addr));
+                if (ret_inet_aton < 0) {
+                    printf("Error: inet_aton function failed! Reason: %s\n", strerror(errno));
+                    exit(-1);
+                }
+
+                //printf("P: Before connect\n");
+                ret_connect = connect(skt_parent, (struct sockaddr *)&skt_parent_in_addr, sizeof(struct sockaddr_in));
+
+                if (ret_connect < 0) {
+                    printf("Error: connect() system call failed! Reason: %s\n", strerror(errno));
+                    exit(-1);
+                }
+
+                //printf("P: Before write\n");
+                ret_write = write(skt_parent, PAYLOAD, strlen(PAYLOAD));
+                if (ret_write < 0) {
+                    printf("Error: write() system call failed! Reason: %s\n", strerror(errno));
+                    exit(-1);
+                }
+                //printf("P: ret_write = %d\n", ret_write);
                 num_sent++;
                 close(skt_parent);
             }
@@ -353,6 +408,45 @@ int main( int argc, char* argv[] ) {
             }
 
             peer_addr_size = sizeof(struct sockaddr_un);
+        }
+
+        if (strncmp(IPC_mechanism, "socket", strlen(IPC_mechanism)) == 0) { // Internet socket
+
+            //printf("C: Before socket\n");
+            skt = socket(AF_INET, SOCK_STREAM, 0);
+
+            if (skt < 0) {
+                printf("Error: socket() system call failed! Reason: %s\n", strerror(errno));
+                exit(-1);
+            }
+
+            memset(&skt_in_addr, 0, sizeof(struct sockaddr_in));
+
+            //printf("C: Before set skt_in_addr\n");
+            skt_in_addr.sin_family = AF_INET;
+            skt_in_addr.sin_port = htons(PORT_NUM);
+            skt_in_addr.sin_addr.s_addr = INADDR_ANY;
+
+            on = 1;
+            setsockopt(skt, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
+            
+            //printf("C: Before bind\n");
+            ret_bind = bind(skt, (struct sockaddr *)&skt_in_addr, sizeof(struct sockaddr_in));
+
+            if (ret_bind < 0) {
+                printf("Error: bind() system call failed! Reason: %s\n", strerror(errno));
+                exit(-1);
+            }
+
+            //printf("C: Before listen\n");
+            ret_listen = listen(skt, LISTEN_BACKLOG);
+
+            if (ret_listen < 0) {
+                printf("Error: listen() system call failed! Reason: %s\n", strerror(errno));
+                exit(-1);
+            }
+
+            peer_in_addr_size = sizeof(struct sockaddr_in);
         }
         
 
@@ -452,8 +546,40 @@ int main( int argc, char* argv[] ) {
                 } 
             }
 
-            // net socket
+            if (strncmp(IPC_mechanism, "socket", strlen(IPC_mechanism)) == 0) {// Internet socket
 
+                //printf("C: Before accept\n");
+                accept_skt = accept(skt, (struct sockaddr *)&peer_in_addr, &peer_in_addr_size);
+
+                if (accept_skt < 0) {
+                    printf("Error: accept() system call failed! Reason: %s\n", strerror(errno));
+                    exit(-1);
+                } else {
+
+                    memset(buf, 0, BUF_SIZE);
+
+                    while (1) {
+
+                        ret_read = read(accept_skt, buf, BUF_SIZE);
+
+                        if (ret_read > 0) {
+                            //printf("RECEIVED: %s\n", buf);
+                            memset(buf, 0, BUF_SIZE);
+                            num_recieved++;
+                        }
+
+                        if (ret_read == 0) {
+                            break;
+                        }
+                    }
+                }
+
+                if (num_recieved == num_comm_times) {
+                    child_flag = 1;
+                    kill(getppid(), SIGUSR2);
+                   
+                }
+            }
         }
         
         
