@@ -507,6 +507,7 @@ int main( int argc, char* argv[] ) {
 		        if (fifo_recieved > 0) {
                 	num_recieved++;
 			        printf("num_recieved = %d\n", num_recieved);
+                    printf("fifo_recieved = %d\n", fifo_recieved);
 
 			        if (num_recieved == num_comm_times) {
                         child_flag = 1;
