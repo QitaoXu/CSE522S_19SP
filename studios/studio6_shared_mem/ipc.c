@@ -106,6 +106,7 @@ void sigusr2_handler_child(int signo) {
 
 int main( int argc, char* argv[] ) {
 
+    int ret_kill;
     int ret_fork, ret_sigaction, ret_pipe, nbytes, ret_mkfifo, ret_fprintf, ret_fscanf;
     int fd[2]; // for pipe use
 
@@ -511,7 +512,8 @@ int main( int argc, char* argv[] ) {
 
 			        if (num_recieved == num_comm_times) {
                         child_flag = 1;
-                        kill(getppid(), SIGUSR2);
+                        ret_kill = kill(getppid(), SIGUSR2);
+                        printf("ret_kill = %d\n", ret_kill);
                     }
 		        }
 
