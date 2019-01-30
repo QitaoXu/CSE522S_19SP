@@ -272,7 +272,7 @@ int main( int argc, char* argv[] ) {
 
             if (strncmp(IPC_mechanism, "FIFO", strlen(IPC_mechanism)) == 0) { // FIFO
 		
-		        //printf("In parent Process, trying to open FIFO...\n");
+		        printf("In parent Process, trying to open FIFO..., after_flag = %d\n", after_flag);
                 fp_w = fopen("/home/pi/Documents/CSE522S_19SP/studios/studio6_shared_mem/my_ao_fifo", "w");
                 if (fp_w == NULL) {
                     printf("ERROR: fopen failed! Reason: %s\n", strerror(errno));
