@@ -26,7 +26,7 @@
 #define HOSTNAME "qitaopi" /* you may chnage to your own hostname when run this program */
 #define IPADDRESS "172.27.38.176"
 
-char* getIPAddress(char *ifr_name);
+char* getIPAddress(char *inetfr_name);
 
 int main( int argc, char* argv[] ) {
     
@@ -216,7 +216,7 @@ int main( int argc, char* argv[] ) {
 
 }
 
-char* getIPAddress(char *ifr_name) {
+char* getIPAddress(char *inetfr_name) {
 
     int fd, ret_ioctl;
     struct ifreq ifr;
@@ -229,7 +229,7 @@ char* getIPAddress(char *ifr_name) {
         return "Error";
     }
 
-    strncpy(ifr.ifr_name, ifr_name, IFNAMSIZ-1);
+    strncpy(ifr.ifr_name, inetfr_name, IFNAMSIZ-1);
 
     ret_ioctl = ioctl(fd, SIOCGIFADDR, &ifr);
 
