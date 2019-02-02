@@ -50,6 +50,9 @@ int main( int argc, char* argv[] ) {
             }
 
         }
+        /* re-init readfds */
+        FD_ZERO(&readfds);
+        FD_SET(STDIN_FILENO, &readfds);
 
     }
 
