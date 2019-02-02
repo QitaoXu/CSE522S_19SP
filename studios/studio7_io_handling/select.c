@@ -39,33 +39,8 @@ int main( int argc, char* argv[] ) {
     struct sockaddr_in skt_addr, peer_addr;
     socklen_t peer_addr_size;
 
+    /* get server IP Address */
     char *IP_Addr = getIPAddress("wlan0");
-    printf("IP: %s\n", IP_Addr);
-    
-    // int fd, ret_ioctl;
-    // struct ifreq ifr;
-    // char *IP_Addr;
-
-    // fd = socket(AF_INET, SOCK_DGRAM, 0);
-
-    // if (fd < 0) {
-    //     printf("Error: socket() system call in getIPAddress function failed! Reason: %s\n", strerror(errno));
-    //     exit(-1);
-    // }
-
-    // strncpy(ifr.ifr_name, "wlan0", IFNAMSIZ-1);
-
-    // ret_ioctl = ioctl(fd, SIOCGIFADDR, &ifr);
-
-    // if (ret_ioctl < 0) {
-    //     printf("Error: ioctl() system call in getIPAddress function failed! Reason: %s\n",strerror(errno));
-    //     exit(-1);
-    // }
-    
-    // close(fd);
-
-    // IP_Addr = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
-    
     
     /* Time use */
     time_t raw_time;
@@ -148,12 +123,12 @@ int main( int argc, char* argv[] ) {
 
                     char buf[BUF_SIZE];
                     memset(buf, 0, BUF_SIZE);
-                    /*
+                    
                     time( &raw_time);
                     timeinfo = localtime( &raw_time );
                     sprintf(buf, "Hostname: %s | IP Address: %s | Time: %s\n", HOSTNAME, IPADDRESS, asctime(timeinfo));
-                    */
-                    sprintf(buf, "Hostname: %s | IP Address: %s\n", HOSTNAME, IP_Addr);
+                    
+                    //sprintf(buf, "Hostname: %s | IP Address: %s\n", HOSTNAME, IP_Addr);
                     ret_write = write(accept_skt, buf, strlen(buf));
 
                     if (ret_write < 0) {
