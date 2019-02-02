@@ -52,6 +52,8 @@ int main( int argc, char* argv[]) {
         exit(-1);
     }
 
+    printf("Connect done\n");
+
     while (1) {
 
         ret_read = read(skt, msg, strlen(msg));

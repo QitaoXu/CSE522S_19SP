@@ -74,7 +74,7 @@ int main( int argc, char* argv[] ) {
 
     while (1) {
 
-        ret_select = select(STDIN_FILENO + 1, &readfds, NULL, NULL, NULL);
+        ret_select = select(skt + 1, &readfds, NULL, NULL, NULL);
 
         if (ret_select < 0) {
             printf("Error: select() system call failed! Reason: %s\n", strerror(errno));
