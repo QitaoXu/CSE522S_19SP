@@ -113,9 +113,12 @@ int main( int argc, char* argv[] ) {
 
                     char buf[BUF_SIZE];
                     memset(buf, 0, BUF_SIZE);
+                    /*
                     time( &raw_time);
                     timeinfo = localtime( &raw_time );
                     sprintf(buf, "Hostname: %s | IP Address: %s | Time: %s\n", HOSTNAME, IPADDRESS, asctime(timeinfo));
+                    */
+                    sprintf(buf, "Hostname: %s | IP Address: %s\n", HOSTNAME, IPADDRESS);
                     ret_write = write(accept_skt, buf, strlen(buf));
 
                     if (ret_write < 0) {

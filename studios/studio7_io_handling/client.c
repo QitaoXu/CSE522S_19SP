@@ -10,6 +10,8 @@
 #include <netinet/ip.h>
 #include <arpa/inet.h>
 
+#define BUF_SIZE 1024
+
 const int num_expected_args = 3;
 
 int main( int argc, char* argv[]) {
@@ -56,7 +58,7 @@ int main( int argc, char* argv[]) {
 
     while (1) {
 
-        ret_read = read(skt, msg, strlen(msg));
+        ret_read = read(skt, msg, BUF_SIZE);
 
         if (ret_read < 0) {
             printf("Error: read() system call failed! Reason: %s\n", strerror(errno));
