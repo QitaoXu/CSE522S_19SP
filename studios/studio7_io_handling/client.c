@@ -16,7 +16,7 @@ int main( int argc, char* argv[]) {
     int skt, ret_inet_aton, ret_connect, ret_read;
     struct sockaddr_in skt_addr;
     char *ip;
-    char *port_num;
+    int port_num;
     char *msg;
 
     if (argc != num_expected_args) {
@@ -25,7 +25,7 @@ int main( int argc, char* argv[]) {
     }
 
     ip = argv[1];
-    port_num = argv[2];
+    port_num = atoi(argv[2]);
 
     skt = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -45,7 +45,7 @@ int main( int argc, char* argv[]) {
         exit(-1);
     }
 
-    ret_connect = ret_connect(skt, (struct sockaddr *)&skt_addr, sizeof(struct sockaddr_in));
+    ret_connect = connect(skt, (struct sockaddr *)&skt_addr, sizeof(struct sockaddr_in));
 
     if (ret_connect < 0) {
         printf("Error: connect() system call failed! Reason: %s\n", strerror(errno));
