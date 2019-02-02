@@ -29,6 +29,22 @@ int main( int argc, char* argv[] ) {
         if (ret_select == 0) continue;
 
         if (ret_select > 0) {
+            if (FD_ISSET(STDIN_FILENO, &readfds)) {
+                char buf[BUF_LEN + 1];
+                int len;
+                
+                len = read(STDIN_FILENO, buf, BUF_LEN);
+
+                if (len < 0) {
+                    printf("Error: read() system call failed! Reason: %s\n", strerror(errno));
+                    exit(-1);
+                }
+
+                if (len > 0) {
+                    buf[len] = '\0';
+                    printf("read: %s\n", buf);
+                }
+            }
 
         }
 
