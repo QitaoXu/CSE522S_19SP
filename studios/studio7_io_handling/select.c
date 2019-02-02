@@ -38,9 +38,33 @@ int main( int argc, char* argv[] ) {
     int skt, ret_bind, ret_listen, accept_skt, ret_read, ret_inet_aton, on, ret_write, ret_close;
     struct sockaddr_in skt_addr, peer_addr;
     socklen_t peer_addr_size;
-    //char *IP_Addr = getIPAddress("wlan0");
 
-    //printf("IP Address of wlan0: %s\n", IP_Addr);
+    //char *IP_Addr = getIPAddress("wlan0");
+    int fd, ret_ioctl;
+    struct ifreq ifr;
+    char *IP_Addr;
+
+    fd = socket(AF_INET, SOCK_DGRAM, 0);
+
+    if (fd < 0) {
+        printf("Error: socket() system call in getIPAddress function failed! Reason: %s\n", strerror(errno));
+        return "Error";
+    }
+
+    strncpy(ifr.ifr_name, "wlan0", IFNAMSIZ-1);
+
+    ret_ioctl = ioctl(fd, SIOCGIFADDR, &ifr);
+
+    if (ret_ioctl < 0) {
+        printf("Error: ioctl() system call in getIPAddress function failed! Reason: %s\n",strerror(errno));
+        return "Error";
+    }
+    
+    close(fd);
+
+    IP_Addr = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
+
+    printf("IP Address of wlan0: %s\n", IP_Addr);
 
     time_t raw_time;
     struct tm * timeinfo;
