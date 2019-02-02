@@ -48,7 +48,7 @@ int main( int argc, char* argv[] ) {
 
     if (fd < 0) {
         printf("Error: socket() system call in getIPAddress function failed! Reason: %s\n", strerror(errno));
-        return "Error";
+        exit(-1);
     }
 
     strncpy(ifr.ifr_name, "wlan0", IFNAMSIZ-1);
@@ -57,7 +57,7 @@ int main( int argc, char* argv[] ) {
 
     if (ret_ioctl < 0) {
         printf("Error: ioctl() system call in getIPAddress function failed! Reason: %s\n",strerror(errno));
-        return "Error";
+        exit(-1);
     }
     
     close(fd);
