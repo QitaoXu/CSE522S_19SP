@@ -8,6 +8,7 @@
 #include <sys/types.h>
 
 #define BUF_LEN 1024
+#define QUIT "quit"
 
 int main( int argc, char* argv[] ) {
     
@@ -43,7 +44,8 @@ int main( int argc, char* argv[] ) {
 
                 if (len > 0) {
                     buf[len] = '\0';
-                    printf("read: %s\n, size of readin string: %d\n", buf, len);
+                    printf("read: %s, size of readin string: %d, size of buf: %d\n", buf, len, strlen(buf));
+                    if (strncmp(buf, QUIT, strlen(QUIT)) == 0 ) break;
                 }
             }
 
