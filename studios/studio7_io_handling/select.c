@@ -43,8 +43,9 @@ int main( int argc, char* argv[] ) {
     char *IP_Addr = getIPAddress("wlan0");
     
     /* get server hostname */
-    char *hostname;
-    ret_gethostname = gethostname(hostname, 32);
+    char hostname[32];
+    hostname[31] = '\0';
+    ret_gethostname = gethostname(hostname, 31);
 
     printf("hostname: %s\n", hostname);
     
