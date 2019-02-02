@@ -44,7 +44,7 @@ int main( int argc, char* argv[] ) {
     
     /* get server hostname */
     char *hostname;
-    ret_gethostname = gethostname(hostname, BUF_LEN);
+    ret_gethostname = gethostname(hostname, 32);
 
     printf("hostname: %s\n", hostname);
     
