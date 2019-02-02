@@ -26,7 +26,7 @@
 #define HOSTNAME "qitaopi" /* you may chnage to your own hostname when run this program */
 #define IPADDRESS "172.27.38.176"
 
-//char *getIPAddress(char *ifr_name[]);
+char* getIPAddress(char *ifr_name[]);
 
 int main( int argc, char* argv[] ) {
     
@@ -44,6 +44,7 @@ int main( int argc, char* argv[] ) {
     struct ifreq ifr;
     char *IP_Addr;
 
+    /* To automatically get ip address */
     fd = socket(AF_INET, SOCK_DGRAM, 0);
 
     if (fd < 0) {
@@ -63,9 +64,9 @@ int main( int argc, char* argv[] ) {
     close(fd);
 
     IP_Addr = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
+    /* To automatically get ip address */
 
-    printf("IP Address of wlan0: %s\n", IP_Addr);
-
+    /* Time use */
     time_t raw_time;
     struct tm * timeinfo;
 
@@ -151,7 +152,7 @@ int main( int argc, char* argv[] ) {
                     timeinfo = localtime( &raw_time );
                     sprintf(buf, "Hostname: %s | IP Address: %s | Time: %s\n", HOSTNAME, IPADDRESS, asctime(timeinfo));
                     */
-                    sprintf(buf, "Hostname: %s | IP Address: %s\n", HOSTNAME, IPADDRESS);
+                    sprintf(buf, "Hostname: %s | IP Address: %s\n", HOSTNAME, IP_Addr);
                     ret_write = write(accept_skt, buf, strlen(buf));
 
                     if (ret_write < 0) {
@@ -214,8 +215,7 @@ int main( int argc, char* argv[] ) {
 
 }
 
-/*
-char *getIPAddress(char *ifr_name[]) {
+char* getIPAddress(char *ifr_name[]) {
 
     int fd, ret_ioctl;
     struct ifreq ifr;
@@ -244,4 +244,3 @@ char *getIPAddress(char *ifr_name[]) {
     return IP_Addr;
 
 }
-*/
