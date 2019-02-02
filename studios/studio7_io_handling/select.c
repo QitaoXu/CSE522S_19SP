@@ -11,6 +11,10 @@
 #include <netinet/ip.h>
 #include <arpa/inet.h>
 #include <time.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <netinet/in.h>
+#include <net/if.h>
 
 #define BUF_LEN 1024
 #define QUIT "quit"
@@ -22,6 +26,37 @@
 #define HOSTNAME "qitaopi" /* you may chnage to your own hostname when run this program */
 #define IPADDRESS "172.27.38.176"
 
+char * getIPAddress(char * ifr_name) {
+
+    int fd, ret_ioctl;
+    struct ifreq ifr;
+    char *IP_Addr;
+
+    fd = socket(AF_INET, SOCK_DGRAM, 0);
+
+    if (fd < 0) {
+        printf("Error: socket() system call in getIPAddress function failed! Reason: %s\n", strerror(errno));
+        return "Error";
+    }
+
+    strncpy(ifr.ifr_name, ifr_name, IFNAMSIZ-1);
+
+    ret_ioctl = ioctl(fd, SIOCGIFADDR, &ifr);
+
+    if (ret_ioctl < 0) {
+        printf("Error: ioctl() system call in getIPAddress function failed! Reason: %s\n",strerror(errno));
+        return "Error";
+    }
+    
+    close(fd);
+
+    IP_Addr = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
+
+    return IP_Addr;
+
+}
+
+
 int main( int argc, char* argv[] ) {
     
     int ret_select;
@@ -29,9 +64,12 @@ int main( int argc, char* argv[] ) {
     struct timeval tv;
     fd_set readfds;
 
-    int skt, ret_bind, ret_listen, accept_skt, ret_read, ret_inet_aton, on, ret_write;
+    int skt, ret_bind, ret_listen, accept_skt, ret_read, ret_inet_aton, on, ret_write, ret_close;
     struct sockaddr_in skt_addr, peer_addr;
     socklen_t peer_addr_size;
+    char *IP_Addr = getIPAddress("wlan0");
+
+    printf("IP Address of wlan0: %s\n", IP_Addr);
 
     time_t raw_time;
     struct tm * timeinfo;
@@ -123,6 +161,13 @@ int main( int argc, char* argv[] ) {
 
                     if (ret_write < 0) {
                         printf("Error: write() system call failed! Reason: %s\n", strerror(errno));
+                        exit(-1);
+                    }
+
+                    ret_close = close(accept_skt);
+
+                    if (ret_close < 0) {
+                        printf("Error: close() system call failed! Reason: %s\n", strerror(errno));
                         exit(-1);
                     }
 
