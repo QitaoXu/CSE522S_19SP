@@ -26,36 +26,7 @@
 #define HOSTNAME "qitaopi" /* you may chnage to your own hostname when run this program */
 #define IPADDRESS "172.27.38.176"
 
-char *getIPAddress(char *ifr_name) {
-
-    int fd, ret_ioctl;
-    struct ifreq ifr;
-    char *IP_Addr;
-
-    fd = socket(AF_INET, SOCK_DGRAM, 0);
-
-    if (fd < 0) {
-        printf("Error: socket() system call in getIPAddress function failed! Reason: %s\n", strerror(errno));
-        return "Error";
-    }
-
-    strncpy(ifr.ifr_name, ifr_name, IFNAMSIZ-1);
-
-    ret_ioctl = ioctl(fd, SIOCGIFADDR, &ifr);
-
-    if (ret_ioctl < 0) {
-        printf("Error: ioctl() system call in getIPAddress function failed! Reason: %s\n",strerror(errno));
-        return "Error";
-    }
-    
-    close(fd);
-
-    IP_Addr = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
-
-    return IP_Addr;
-
-}
-
+char *getIPAddress(char *ifr_name);
 
 int main( int argc, char* argv[] ) {
     
@@ -216,5 +187,35 @@ int main( int argc, char* argv[] ) {
 
 
     return 0;
+
+}
+
+char *getIPAddress(char *ifr_name) {
+
+    int fd, ret_ioctl;
+    struct ifreq ifr;
+    char *IP_Addr;
+
+    fd = socket(AF_INET, SOCK_DGRAM, 0);
+
+    if (fd < 0) {
+        printf("Error: socket() system call in getIPAddress function failed! Reason: %s\n", strerror(errno));
+        return "Error";
+    }
+
+    strncpy(ifr.ifr_name, ifr_name, IFNAMSIZ-1);
+
+    ret_ioctl = ioctl(fd, SIOCGIFADDR, &ifr);
+
+    if (ret_ioctl < 0) {
+        printf("Error: ioctl() system call in getIPAddress function failed! Reason: %s\n",strerror(errno));
+        return "Error";
+    }
+    
+    close(fd);
+
+    IP_Addr = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
+
+    return IP_Addr;
 
 }
