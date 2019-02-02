@@ -115,7 +115,7 @@ int main( int argc, char* argv[] ) {
 
                 if (len > 0) {
                     buf[len] = '\0';
-                    printf("Read from stdin: %s", buf);
+                    printf("Read from stdin: %s\n", buf);
                     printf("Please input from keyboard and use enter to complete your input: \n");
                     if (strncmp(buf, QUIT, strlen(QUIT)) == 0 ) break;
                 }
