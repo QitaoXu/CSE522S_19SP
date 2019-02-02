@@ -43,7 +43,7 @@ int main( int argc, char* argv[] ) {
 
                 if (len > 0) {
                     buf[len] = '\0';
-                    printf("read: %s\n", buf);
+                    printf("read: %s\n, size of readin string: %d\n", buf, len);
                 }
             }
 
