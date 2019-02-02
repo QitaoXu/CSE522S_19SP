@@ -134,7 +134,7 @@ int main( int argc, char* argv[] ) {
                     time( &raw_time);
                     timeinfo = localtime( &raw_time );
                     sprintf(buf, "Hostname: %s | IP Address: %s | Time: %s\n", hostname, IP_Addr, asctime(timeinfo));
-                    
+                    printf("server sent: %s", buf);
                     //sprintf(buf, "Hostname: %s | IP Address: %s\n", HOSTNAME, IP_Addr);
                     ret_write = write(accept_skt, buf, strlen(buf));
 
