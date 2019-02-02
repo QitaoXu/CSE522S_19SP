@@ -35,12 +35,18 @@ int main( int argc, char* argv[] ) {
     struct timeval tv;
     fd_set readfds;
 
-    int skt, ret_bind, ret_listen, accept_skt, ret_read, ret_inet_aton, on, ret_write, ret_close;
+    int skt, ret_bind, ret_listen, accept_skt, ret_read, ret_inet_aton, on, ret_write, ret_close, ret_gethostname;
     struct sockaddr_in skt_addr, peer_addr;
     socklen_t peer_addr_size;
 
     /* get server IP Address */
     char *IP_Addr = getIPAddress("wlan0");
+    
+    /* get server hostname */
+    char *hostname;
+    ret_gethostname = gethostname(hostname, BUF_LEN);
+
+    printf("hostname: %s\n", hostname);
     
     /* Time use */
     time_t raw_time;
