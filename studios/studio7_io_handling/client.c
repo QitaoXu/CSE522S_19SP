@@ -17,7 +17,7 @@
 const int num_expected_args = 3;
 
 int main( int argc, char* argv[]) {
-    int skt, ret_inet_aton, ret_connect, ret_read, int ret_select, ret_select;
+    int skt, ret_inet_aton, ret_connect, ret_read, ret_select, ret_select;
     struct sockaddr_in skt_addr;
     char *ip;
     int port_num;
