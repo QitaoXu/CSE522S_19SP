@@ -47,7 +47,7 @@ int main( int argc, char* argv[] ) {
     hostname[31] = '\0';
     ret_gethostname = gethostname(hostname, 31);
 
-    printf("hostname: %s\n", hostname);
+    //printf("hostname: %s\n", hostname);
     
     /* Time use */
     time_t raw_time;
@@ -133,7 +133,7 @@ int main( int argc, char* argv[] ) {
                     
                     time( &raw_time);
                     timeinfo = localtime( &raw_time );
-                    sprintf(buf, "Hostname: %s | IP Address: %s | Time: %s\n", HOSTNAME, IPADDRESS, asctime(timeinfo));
+                    sprintf(buf, "Hostname: %s | IP Address: %s | Time: %s\n", hostname, IP_Addr, asctime(timeinfo));
                     
                     //sprintf(buf, "Hostname: %s | IP Address: %s\n", HOSTNAME, IP_Addr);
                     ret_write = write(accept_skt, buf, strlen(buf));
