@@ -153,6 +153,7 @@ int main( int argc, char* argv[] ) {
                         exit(-1);
                     }
 
+                    printf("Please input from keyboard and use enter to complete your input: ");
                     /*
                     while (1) {
                         ret_read = read(accept_skt, buf, BUF_SIZE);
