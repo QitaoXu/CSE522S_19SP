@@ -39,7 +39,7 @@ int main( int argc, char* argv[] ) {
     struct sockaddr_in skt_addr, peer_addr;
     socklen_t peer_addr_size;
 
-    char *IP_Addr = getIPAddress("lo0");
+    char *IP_Addr = getIPAddress("wlan0");
     printf("IP: %s\n", IP_Addr);
     
     // int fd, ret_ioctl;
