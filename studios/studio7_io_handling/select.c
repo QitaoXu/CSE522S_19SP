@@ -26,7 +26,7 @@
 #define HOSTNAME "qitaopi" /* you may chnage to your own hostname when run this program */
 #define IPADDRESS "172.27.38.176"
 
-char* getIPAddress(char *ifr_name[]);
+char* getIPAddress(char *ifr_name);
 
 int main( int argc, char* argv[] ) {
     
@@ -39,33 +39,34 @@ int main( int argc, char* argv[] ) {
     struct sockaddr_in skt_addr, peer_addr;
     socklen_t peer_addr_size;
 
-    //char *IP_Addr = getIPAddress("wlan0");
-    int fd, ret_ioctl;
-    struct ifreq ifr;
-    char *IP_Addr;
-
-    /* To automatically get ip address */
-    fd = socket(AF_INET, SOCK_DGRAM, 0);
-
-    if (fd < 0) {
-        printf("Error: socket() system call in getIPAddress function failed! Reason: %s\n", strerror(errno));
-        exit(-1);
-    }
-
-    strncpy(ifr.ifr_name, "wlan0", IFNAMSIZ-1);
-
-    ret_ioctl = ioctl(fd, SIOCGIFADDR, &ifr);
-
-    if (ret_ioctl < 0) {
-        printf("Error: ioctl() system call in getIPAddress function failed! Reason: %s\n",strerror(errno));
-        exit(-1);
-    }
+    char *IP_Addr = getIPAddress("lo0");
+    printf("IP: %s\n", IP_Addr);
     
-    close(fd);
+    // int fd, ret_ioctl;
+    // struct ifreq ifr;
+    // char *IP_Addr;
 
-    IP_Addr = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
-    /* To automatically get ip address */
+    // fd = socket(AF_INET, SOCK_DGRAM, 0);
 
+    // if (fd < 0) {
+    //     printf("Error: socket() system call in getIPAddress function failed! Reason: %s\n", strerror(errno));
+    //     exit(-1);
+    // }
+
+    // strncpy(ifr.ifr_name, "wlan0", IFNAMSIZ-1);
+
+    // ret_ioctl = ioctl(fd, SIOCGIFADDR, &ifr);
+
+    // if (ret_ioctl < 0) {
+    //     printf("Error: ioctl() system call in getIPAddress function failed! Reason: %s\n",strerror(errno));
+    //     exit(-1);
+    // }
+    
+    // close(fd);
+
+    // IP_Addr = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
+    
+    
     /* Time use */
     time_t raw_time;
     struct tm * timeinfo;
@@ -215,7 +216,7 @@ int main( int argc, char* argv[] ) {
 
 }
 
-char* getIPAddress(char *ifr_name[]) {
+char* getIPAddress(char *ifr_name) {
 
     int fd, ret_ioctl;
     struct ifreq ifr;
