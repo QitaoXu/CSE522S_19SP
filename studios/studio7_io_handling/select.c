@@ -89,6 +89,8 @@ int main( int argc, char* argv[] ) {
     FD_SET(STDIN_FILENO, &readfds);
     FD_SET(skt, &readfds);
 
+    printf("Please input from keyboard and use enter to complete your input: ");
+
     while (1) {
 
         ret_select = select(skt + 1, &readfds, NULL, NULL, NULL);
@@ -113,7 +115,8 @@ int main( int argc, char* argv[] ) {
 
                 if (len > 0) {
                     buf[len] = '\0';
-                    printf("read: %s", buf);
+                    printf("Read from stdin: %s", buf);
+                    printf("Please input from keyboard and use enter to complete your input: ");
                     if (strncmp(buf, QUIT, strlen(QUIT)) == 0 ) break;
                 }
             }
