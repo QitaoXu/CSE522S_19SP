@@ -129,11 +129,10 @@ int main( int argc, char* argv[] ) {
                 if ( (fds[j].revents & POLLIN) && (j == 0) ) { // stdin is readable
                     char buf[BUF_LEN + 1];
                     int len;
-
-                    if (feof(stdin)) {
-                        printf("Capture Ctrl+D\n");
-                    }
                     len = read(STDIN_FILENO, buf, BUF_LEN);
+                    if (feof(STDIN_FILENO)) {
+                            printf("Capture Ctrl+D\n");
+                    }
 
                     if (len < 0) {
                         printf("Error: stdin read() system call failed! Reason: %s\n", strerror(errno));
