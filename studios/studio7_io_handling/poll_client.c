@@ -18,7 +18,7 @@
 const int num_expected_args = 3;
 
 int main( int argc, char* argv[]) {
-    int skt, ret_inet_aton, ret_connect, ret_read, ret_select, ret_write, i = 0;
+    int skt, ret_inet_aton, ret_connect, ret_read, ret_select, ret_write, ret_close, i = 0;
     struct sockaddr_in skt_addr;
     char *ip;
     int port_num;
@@ -72,6 +72,13 @@ int main( int argc, char* argv[]) {
 
         i++;
         
+    }
+
+    ret_close = close(skt);
+
+    if (ret_close < 0) {
+        printf("Error: close() system call failed! Reason: %s\n", strerror(errno));
+        exit(-1);
     }
 
     return 0;

@@ -163,7 +163,7 @@ int main( int argc, char* argv[] ) {
                     }
                 }
 
-                if ( (fds[j].revents & POLLIN) && (j > 1)) { // communication socket
+                if ( (fds[j].fd != -1) && (fds[j].revents & POLLIN) && (j > 1)) { // communication socket
                     
                     char delimiter = '\n';
                     char *token;
@@ -186,6 +186,7 @@ int main( int argc, char* argv[] ) {
                             }
                             printf("Please input from keyboard and use enter to complete your input: \n");
                             // put j into set closed_fd
+                            fds[j].fd = -1;
                             break;
                         }
 
