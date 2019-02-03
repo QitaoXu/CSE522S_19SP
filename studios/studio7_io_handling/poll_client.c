@@ -15,6 +15,8 @@
 #define BUF_SIZE 1024
 #define MESSAGE "TRICK OR TREAT|YES OR YES|"
 
+#define GET "GET|"
+
 const int num_expected_args = 3;
 
 int main( int argc, char* argv[]) {
@@ -73,6 +75,19 @@ int main( int argc, char* argv[]) {
         i++;
         
     }
+
+    ret_write = write(skt, GET, strlen(GET));
+    if (ret_write < 0) {
+            printf("Error: write() system call failed! Reason: %s\n", strerror(errno));
+            exit(-1);
+    }
+
+    ret_write = write(skt, "quit|", 5);
+    if (ret_write < 0) {
+            printf("Error: write() system call failed! Reason: %s\n", strerror(errno));
+            exit(-1);
+    }
+
 
     ret_close = close(skt);
 
