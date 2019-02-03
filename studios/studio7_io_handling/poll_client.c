@@ -61,13 +61,6 @@ int main( int argc, char* argv[]) {
 
     printf("Connect done\n");
 
-    ret_write = write(skt, MESSAGE, strlen(MESSAGE));
-
-    if (ret_write < 0) {
-        printf("Error: write() system call failed! Reason: %s\n", strerror(errno));
-        exit(-1);
-    }
-
     while ( i < 10) {
         //sprintf(msg, "Trcik or treat! i = %d", i);
         ret_write = write(skt, MESSAGE, strlen(MESSAGE));
