@@ -165,7 +165,7 @@ int main( int argc, char* argv[] ) {
 
                 if ( (fds[j].fd != -1) && (fds[j].revents & POLLIN) && (j > 1)) { // communication socket
                     
-                    char delimiter = '\n';
+                    char delimiter = '|';
                     char *token;
                     while (1) {
                         //printf("in read while loop\n");
