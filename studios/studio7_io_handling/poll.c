@@ -37,8 +37,9 @@ int main( int argc, char* argv[] ) {
     int ret_poll;
     int i = 0, j; /* largest index of monitored fds element */
     int while_flag = 0;
+    int four = 4;
     char cancel[2];
-    cancel[0] = char(4);
+    cancel[0] = char(four);
     cancel[1] = '\0';
 
     struct timeval tv;
