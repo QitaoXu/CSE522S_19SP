@@ -26,7 +26,7 @@
 #define PORT_NUM 2000
 #define HOSTNAME "qitaopi" /* you may chnage to your own hostname when run this program */
 #define IPADDRESS "172.27.38.176"
-#define MAX_NUM_FD 20
+#define MAX_NUM_FD 50
 
 char buf_socket[BUF_SIZE];
 
@@ -195,7 +195,7 @@ int main( int argc, char* argv[] ) {
                             token = strtok(buf_socket, &delimiter);
 
                             while (token != NULL) {
-                                printf("%s\n", token);
+                                printf("%s", token);
 
                                 token = strtok(NULL, &delimiter);
                             }
