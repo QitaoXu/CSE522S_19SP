@@ -195,7 +195,7 @@ int main( int argc, char* argv[] ) {
                             token = strtok(buf_socket, &delimiter);
 
                             while (token != NULL) {
-                                printf("%s", token);
+                                printf("%s\n", token);
 
                                 token = strtok(NULL, &delimiter);
                             }
