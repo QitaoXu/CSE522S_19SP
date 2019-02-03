@@ -35,7 +35,7 @@ char* getIPAddress(char *inetfr_name);
 int main( int argc, char* argv[] ) {
     
     int ret_poll;
-    int i = 0, j; /* largest index of monitored fds element */
+    int i = 0, j, k; /* largest index of monitored fds element */
     int while_flag = 0;
     //char cancel = atoi(4);
 
@@ -125,6 +125,7 @@ int main( int argc, char* argv[] ) {
 
         if (ret_poll > 0) {
             for (j = 0; j < i; j++) {
+                if (while_flag == 1) break;
                 if (fds[j].fd == -1) continue;
 
                 if ( (fds[j].fd != -1) && (fds[j].revents & POLLIN) && (j == 0) ) { // stdin is readable
@@ -138,8 +139,9 @@ int main( int argc, char* argv[] ) {
                     }
 
                     if (len == 0) { // Capture Ctrl+D
-                        printf("Ctrl+D is captured\n");
+                        printf("Ctrl+D is captured and quit monitoring stdin\n");
                         fds[0].fd = -1;
+                        printf("\nWaiting for new connection: \n");
                     }
 
                     if (len > 0) {
@@ -147,6 +149,16 @@ int main( int argc, char* argv[] ) {
                         printf("Read from stdin: %s\n", buf);
                         if (strncmp(buf, QUIT, strlen(QUIT)) == 0 ) {
                             while_flag = 1;
+                            
+                            for (k = 0; k < i; k++) {
+                                if (fds[k].fd != -1) {
+                                    ret_close = close(fds[k].fd);
+                                    if (ret_close < 0) {
+                                        printf("Error: close(fds[%d].%d) system call failed\n", k, fds[k].fd);
+                                        exit(-1);
+                                    }
+                                }
+                            }
                             break;
                         }
                         
@@ -210,6 +222,20 @@ int main( int argc, char* argv[] ) {
 
                             while (token != NULL) {
                                 printf("%s\n", token);
+
+                                if (strncmp(token, QUIT, strlen(QUIT)) == 0) {
+                                    for (k = 0; k < i; k++) {
+                                        if (fds[k].fd != -1) {
+                                            ret_close = close(fds[k].fd);
+                                            if (ret_close < 0) {
+                                                printf("Error: close(fds[%d].%d) system call failed\n", k, fds[k].fd);
+                                                exit(-1);
+                                            }
+                                        }
+                                    }
+                                    while_flag = 1;
+                                    break;
+                                }
 
                                 token = strtok(NULL, &delimiter);
                             }
