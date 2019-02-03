@@ -132,7 +132,7 @@ int main( int argc, char* argv[] ) {
                     len = read(STDIN_FILENO, buf, BUF_LEN);
 
                     if (len < 0) {
-                        printf("Error: read() system call failed! Reason: %s\n", strerror(errno));
+                        printf("Error: stdin read() system call failed! Reason: %s\n", strerror(errno));
                         exit(-1);
                     }
 
@@ -173,7 +173,7 @@ int main( int argc, char* argv[] ) {
                         //printf("fds[j].fd = %d, ret_read = %d buf_socket: %s\n", fds[j].fd, ret_read, buf_socket);
                         sleep(2);
                         if (ret_read < 0) {
-                            printf("Error: read() system call failed! Reason: %s\n", strerror(errno));
+                            printf("Error: socket read() system call failed! Reason: %s\n", strerror(errno));
                             exit(-1);
                         }
 

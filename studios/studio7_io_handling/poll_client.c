@@ -22,7 +22,7 @@ int main( int argc, char* argv[]) {
     struct sockaddr_in skt_addr;
     char *ip;
     int port_num;
-    char *msg;
+    char msg[30];
     fd_set readfds;
     
 
@@ -68,14 +68,16 @@ int main( int argc, char* argv[]) {
         exit(-1);
     }
 
-    while (1) {
-        sprintf(msg, "Trcik or treat!\ni = %d", i);
+    while ( i < 10) {
+        sprintf(msg, "Trcik or treat! i = %d", i);
         ret_write = write(skt, msg, strlen(msg));
 
         if (ret_write < 0) {
             printf("Error: write() system call failed! Reason: %s\n", strerror(errno));
             exit(-1);
         }
+
+        i++;
         
     }
 
