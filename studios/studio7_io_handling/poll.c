@@ -96,13 +96,13 @@ int main( int argc, char* argv[] ) {
     */
 
     /* Watch for stdin(keyboard input) */
-    fds[i]->fd = STDIN_FILENO;
-    fds[i]->events = POLLIN;
+    fds[i].fd = STDIN_FILENO;
+    fds[i].events = POLLIN;
     i++;
 
     /* Watch for new socket connection */
-    fds[i]->fd = skt;
-    fds[i]->events = POLLIN;
+    fds[i].fd = skt;
+    fds[i].events = POLLIN;
     i++;
 
     printf("Please input from keyboard and use enter to complete your input: \n");
