@@ -37,10 +37,7 @@ int main( int argc, char* argv[] ) {
     int ret_poll;
     int i = 0, j; /* largest index of monitored fds element */
     int while_flag = 0;
-    int four = 4;
-    char cancel[2];
-    cancel[0] = four;
-    cancel[1] = '\0';
+    //char cancel = atoi(4);
 
     struct timeval tv;
     //fd_set readfds;
@@ -147,7 +144,7 @@ int main( int argc, char* argv[] ) {
                             while_flag = 1;
                             break;
                         }
-                        if (strncmp(buf, cancel, 1) == 0) {
+                        if (feof(stdin)) {
                             printf("Capture Ctrl+D\n");
                         }
                         printf("\nPlease input from keyboard and use enter to complete your input: \n");
