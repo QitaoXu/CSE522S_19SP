@@ -173,7 +173,7 @@ int main( int argc, char* argv[] ) {
                         //printf("fds[j].fd = %d, ret_read = %d buf_socket: %s\n", fds[j].fd, ret_read, buf_socket);
                         //sleep(2);
                         if (ret_read < 0) {
-                            printf("Error: socket fd = %d, j = %d read() system call failed! Reason: %s\n", fds[j].fd, j, strerror(errno));
+                            printf("Error: socket fds[j].fd = %d, j = %d read() system call failed! Reason: %s\n", fds[j].fd, j, strerror(errno));
                             exit(-1);
                         }
 
