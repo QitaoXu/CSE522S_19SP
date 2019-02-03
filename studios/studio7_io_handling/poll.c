@@ -189,6 +189,7 @@ int main( int argc, char* argv[] ) {
                         }
 
                         if (ret_read > 0) {
+                            printf("Before token\n");
                             token = strtok(buf_socket, &delimiter);
 
                             while (token != NULL) {
@@ -196,7 +197,7 @@ int main( int argc, char* argv[] ) {
 
                                 token = strtok(NULL, &delimiter);
                             }
-                            memset(buf_socket, 0, BUF_SIZE);
+                            //memset(buf_socket, 0, BUF_SIZE);
                         }
                     }
                 }
