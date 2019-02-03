@@ -178,7 +178,7 @@ int main( int argc, char* argv[] ) {
                         }
 
                         if (ret_read == 0) { // end of file
-                            printf("end of file, fd = %d, j = %d\n", fds[j].fd, j);
+                            printf("end of file, fds[j].fd = %d, j = %d\n", fds[j].fd, j);
                             ret_close = close(fds[j].fd);
                             if (ret_close < 0) {
                                 printf("Error: close() system call failed! Reason: %s\n", strerror(errno));
