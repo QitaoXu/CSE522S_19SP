@@ -129,7 +129,10 @@ int main( int argc, char* argv[] ) {
                 if ( (fds[j].revents & POLLIN) && (j == 0) ) { // stdin is readable
                     char buf[BUF_LEN + 1];
                     int len;
-                    
+
+                    if (feof(stdin)) {
+                        printf("Capture Ctrl+D\n");
+                    }
                     len = read(STDIN_FILENO, buf, BUF_LEN);
 
                     if (len < 0) {
@@ -144,9 +147,7 @@ int main( int argc, char* argv[] ) {
                             while_flag = 1;
                             break;
                         }
-                        if (feof(stdin)) {
-                            printf("Capture Ctrl+D\n");
-                        }
+                        
                         printf("\nPlease input from keyboard and use enter to complete your input: \n");
                     }
                 }
