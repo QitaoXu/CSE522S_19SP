@@ -61,9 +61,6 @@ int main( int argc, char* argv[]) {
 
     printf("Connect done\n");
 
-    FD_ZERO(&readfds);
-    FD_SET(skt, &readfds);
-
     ret_write = write(skt, MESSAGE, strlen(MESSAGE));
 
     if (ret_write < 0) {
