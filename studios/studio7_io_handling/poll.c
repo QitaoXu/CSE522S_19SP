@@ -108,7 +108,7 @@ int main( int argc, char* argv[] ) {
     fds[i].events = POLLIN;
     i++;
 
-    printf("Please input from keyboard and use enter to complete your input: \n");
+    printf("\nPlease input from keyboard and use enter to complete your input: \n");
 
     memset(buf_socket, 0, BUF_SIZE);
 
@@ -143,7 +143,7 @@ int main( int argc, char* argv[] ) {
                             while_flag = 1;
                             break;
                         }
-                        printf("Please input from keyboard and use enter to complete your input: \n");
+                        printf("\nPlease input from keyboard and use enter to complete your input: \n");
                     }
                 }
 
@@ -155,7 +155,7 @@ int main( int argc, char* argv[] ) {
                         exit(-1);
                     } else {
                         //printf("\nA new connection is established!, i = %d\n", i);
-                        printf("\nA new connection is established!");
+                        printf("\nA new connection is established!\n");
                         fds[i].fd = accept_skt;
                         fds[i].events = POLLIN;
                         i++;
@@ -184,7 +184,7 @@ int main( int argc, char* argv[] ) {
                                 printf("Error: close() system call failed! Reason: %s\n", strerror(errno));
                                 exit(-1);
                             }
-                            printf("Please input from keyboard and use enter to complete your input: \n");
+                            printf("\nPlease input from keyboard and use enter to complete your input: \n");
                             // put j into set closed_fd
                             fds[j].fd = -1;
                             break;
@@ -199,7 +199,7 @@ int main( int argc, char* argv[] ) {
 
                                 token = strtok(NULL, &delimiter);
                             }
-                            printf("\n");
+                            //printf("\n");
                             memset(buf_socket, 0, BUF_SIZE);
                         }
                     }
