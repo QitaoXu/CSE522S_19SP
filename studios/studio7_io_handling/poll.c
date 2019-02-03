@@ -130,9 +130,6 @@ int main( int argc, char* argv[] ) {
                     char buf[BUF_LEN + 1];
                     int len;
                     len = read(STDIN_FILENO, buf, BUF_LEN);
-                    if (feof(STDIN_FILENO)) {
-                            printf("Capture Ctrl+D\n");
-                    }
 
                     if (len < 0) {
                         printf("Error: stdin read() system call failed! Reason: %s\n", strerror(errno));
