@@ -159,7 +159,7 @@ int main( int argc, char* argv[] ) {
                         fds[i].fd = accept_skt;
                         fds[i].events = POLLIN;
                         i++;
-                        break;
+                        //break;
                     }
                 }
 
