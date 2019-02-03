@@ -154,7 +154,7 @@ int main( int argc, char* argv[] ) {
                         printf("Error: accept() system call failed!\n, Reason: %s\n", strerror(errno));
                         exit(-1);
                     } else {
-                        printf("\nA new connection is established!\n");
+                        printf("\nA new connection is established!, i = %d\n", i);
                         //printf("accept_skt = %d\n", accept_skt);
                         fds[i].fd = accept_skt;
                         fds[i].events = POLLIN;
