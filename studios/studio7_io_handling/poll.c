@@ -15,6 +15,7 @@
 #include <sys/ioctl.h>
 #include <netinet/in.h>
 #include <net/if.h>
+#include <poll.h>
 
 #define BUF_LEN 1024
 #define QUIT "quit"
@@ -25,15 +26,18 @@
 #define PORT_NUM 2000
 #define HOSTNAME "qitaopi" /* you may chnage to your own hostname when run this program */
 #define IPADDRESS "172.27.38.176"
+#define MAX_NUM_FD 20
 
 char* getIPAddress(char *inetfr_name);
 
 int main( int argc, char* argv[] ) {
     
-    int ret_select;
+    int ret_poll;
+    int i = 0, j; /* largest index of monitored fds element */
 
     struct timeval tv;
-    fd_set readfds;
+    //fd_set readfds;
+    struct pollfd fds[MAX_NUM_FD];
 
     int skt, ret_bind, ret_listen, accept_skt, ret_read, ret_inet_aton, on, ret_write, ret_close, ret_gethostname;
     struct sockaddr_in skt_addr, peer_addr;
@@ -85,116 +89,107 @@ int main( int argc, char* argv[] ) {
 
     peer_addr_size = sizeof(struct sockaddr_in);
 
+    /*
     FD_ZERO(&readfds);
     FD_SET(STDIN_FILENO, &readfds);
     FD_SET(skt, &readfds);
+    */
+
+    /* Watch for stdin(keyboard input) */
+    fds[i]->fd = STDIN_FILENO;
+    fds[i]->events = POLLIN;
+    i++;
+
+    /* Watch for new socket connection */
+    fds[i]->fd = skt;
+    fds[i]->events = POLLIN;
+    i++;
 
     printf("Please input from keyboard and use enter to complete your input: \n");
 
     while (1) {
 
-        ret_select = select(skt + 1, &readfds, NULL, NULL, NULL);
+        ret_poll = poll(fds, i + 1, 0);
 
-        if (ret_select < 0) {
-            printf("Error: select() system call failed! Reason: %s\n", strerror(errno));
+        if (ret_poll < 0) {
+            printf("Error: poll() system call failed! Reason: %s\n", strerror(errno));
             exit(-1);
         }
-        if (ret_select == 0) continue;
+        if (ret_poll == 0) continue;
 
-        if (ret_select > 0) {
-            if (FD_ISSET(STDIN_FILENO, &readfds)) {
-                char buf[BUF_LEN + 1];
-                int len;
-                
-                len = read(STDIN_FILENO, buf, BUF_LEN);
+        if (ret_poll > 0) {
+            for (j = 0; j < i; j++) {
 
-                if (len < 0) {
-                    printf("Error: read() system call failed! Reason: %s\n", strerror(errno));
-                    exit(-1);
-                }
-
-                if (len > 0) {
-                    buf[len] = '\0';
-                    printf("Read from stdin: %s\n", buf);
-                    if (strncmp(buf, QUIT, strlen(QUIT)) == 0 ) break;
-                    printf("Please input from keyboard and use enter to complete your input: \n");
-                }
-            }
-
-            if (FD_ISSET(skt, &readfds)) {
-                accept_skt = accept(skt, (struct sockaddr *)&peer_addr, &peer_addr_size);
-
-                if (accept_skt < 0) {
-                    printf("Error: accept() system call failed!\n, Reason: %s\n", strerror(errno));
-                    exit(-1);
-                } else {
-
-                    printf("\nA new connection is established!\n");
-
-                    char buf[BUF_SIZE];
-                    memset(buf, 0, BUF_SIZE);
+                if ( (fds[j].revents & POLLIN) && (j == 0) ) { // stdin is readable
+                    char buf[BUF_LEN + 1];
+                    int len;
                     
-                    time( &raw_time);
-                    timeinfo = localtime( &raw_time );
-                    sprintf(buf, "Hostname: %s | IP Address: %s | Time: %s\n", hostname, IP_Addr, asctime(timeinfo));
-                    printf("server sent: %s", buf);
-                    //sprintf(buf, "Hostname: %s | IP Address: %s\n", HOSTNAME, IP_Addr);
-                    ret_write = write(accept_skt, buf, strlen(buf));
+                    len = read(STDIN_FILENO, buf, BUF_LEN);
 
-                    if (ret_write < 0) {
-                        printf("Error: write() system call failed! Reason: %s\n", strerror(errno));
+                    if (len < 0) {
+                        printf("Error: read() system call failed! Reason: %s\n", strerror(errno));
                         exit(-1);
                     }
 
-                    ret_close = close(accept_skt);
-
-                    if (ret_close < 0) {
-                        printf("Error: close() system call failed! Reason: %s\n", strerror(errno));
-                        exit(-1);
+                    if (len > 0) {
+                        buf[len] = '\0';
+                        printf("Read from stdin: %s\n", buf);
+                        if (strncmp(buf, QUIT, strlen(QUIT)) == 0 ) break;
+                        printf("Please input from keyboard and use enter to complete your input: \n");
                     }
+                }
 
-                    printf("Please input from keyboard and use enter to complete your input: \n");
-                    /*
+                if ( (fds[j].revents & POLLIN) && (j == 1) ) { // connection socket
+                    accept_skt = accept(skt, (struct sockaddr *)&peer_addr, &peer_addr_size);
+
+                    if (accept_skt < 0) {
+                        printf("Error: accept() system call failed!\n, Reason: %s\n", strerror(errno));
+                        exit(-1);
+                    } else {
+                        printf("\nA new connection is established!\n");
+                        fds[i].fd = accept_skt;
+                        fds[i].events = POLLIN;
+                        i++;
+                        break;
+                    }
+                }
+
+                if ( (fds[j].revents & POLLIN) && (j > 1)) { // communication socket
+                    char buf[BUF_SIZE];
+                    char delimiter = '\n';
+                    char *token;
                     while (1) {
-                        ret_read = read(accept_skt, buf, BUF_SIZE);
+                        ret_read = (fds[j].fd, buf, BUF_SIZE);
 
-                        if (ret_read  < 0) {
+                        if (ret_read < 0) {
                             printf("Error: read() system call failed! Reason: %s\n", strerror(errno));
                             exit(-1);
                         }
 
-                        if (ret_read == 0) break;
-                        if (ret_read > 0) {
-                            
-                            printf("recieved: %s\n", buf);
-                            memset(buf, 0, BUF_SIZE);
-                            time( &raw_time);
-                            timeinfo = localtime( &raw_time );
-                            sprintf(buf, "Hostname: %s | IP Address: %s | Time: %s\n", HOSTNAME, IPADDRESS, asctime(timeinfo));
-                            ret_write = write(accept_skt, buf, strlen(buf));
-
-                            if (ret_write < 0) {
-                                printf("Error: write() system call failed! Reason: %s\n", strerror(errno));
+                        if (ret_read == 0) { // end of file
+                            ret_close = close(fds[j].fd);
+                            if (ret_close < 0) {
+                                printf("Error: close() system call failed! Reason: %s\n", strerror(errno));
                                 exit(-1);
                             }
-
-                            if (strncmp(buf, QUIT, strlen(QUIT)) == 0) {
-                                break;
-                            }
-
+                            // put j into set closed_fd
+                            break;
                         }
-                        
-                    }
-                    */
 
+                        if (ret_read > 0) {
+                            token = strtok(buf, &delimiter);
+
+                            while (token != null) {
+                                printf("%s\n", token);
+
+                                token = strtok(NULL, &delimiter);
+                            }
+                        }
+                    }
                 }
             }
 
         }
-        /* re-init readfds */
-        FD_ZERO(&readfds);
-        FD_SET(STDIN_FILENO, &readfds);
-        FD_SET(skt, &readfds);
     }
 
 
