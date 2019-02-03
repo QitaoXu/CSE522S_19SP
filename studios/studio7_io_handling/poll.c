@@ -38,8 +38,8 @@ int main( int argc, char* argv[] ) {
     int i = 0, j; /* largest index of monitored fds element */
     int while_flag = 0;
     char cancel[2];
-    char cancel[0] = char(4);
-    char cancel[1] = '\0';
+    cancel[0] = char(4);
+    cancel[1] = '\0';
 
     struct timeval tv;
     //fd_set readfds;
