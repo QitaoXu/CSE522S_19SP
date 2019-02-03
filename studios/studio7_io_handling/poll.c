@@ -126,8 +126,8 @@ int main( int argc, char* argv[] ) {
         if (ret_poll > 0) {
             for (j = 0; j < i; j++) {
                 if (fds[j].fd == -1) continue;
-                
-                if ( (fds[j] != -1) && (fds[j].revents & POLLIN) && (j == 0) ) { // stdin is readable
+
+                if ( (fds[j].fd != -1) && (fds[j].revents & POLLIN) && (j == 0) ) { // stdin is readable
                     char buf[BUF_LEN + 1];
                     int len;
                     len = read(STDIN_FILENO, buf, BUF_LEN);
