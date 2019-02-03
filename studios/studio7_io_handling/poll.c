@@ -191,7 +191,14 @@ int main( int argc, char* argv[] ) {
                                 printf("Error: close() system call failed! Reason: %s\n", strerror(errno));
                                 exit(-1);
                             }
-                            printf("\nPlease input from keyboard and use enter to complete your input: \n");
+
+                            if (fds[0].fd == -1) {
+                                printf("\nWaiting for new connection: \n");
+                            }
+
+                            if (fds[0].fd != -1) {
+                                printf("\nPlease input from keyboard and use enter to complete your input: \n");
+                            }
                             // put j into set closed_fd
                             fds[j].fd = -1;
                             break;
