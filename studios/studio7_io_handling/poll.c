@@ -154,8 +154,8 @@ int main( int argc, char* argv[] ) {
                         printf("Error: accept() system call failed!\n, Reason: %s\n", strerror(errno));
                         exit(-1);
                     } else {
-                        printf("\nA new connection is established!, i = %d\n", i);
-                        //printf("accept_skt = %d\n", accept_skt);
+                        //printf("\nA new connection is established!, i = %d\n", i);
+                        printf("\nA new connection is established!");
                         fds[i].fd = accept_skt;
                         fds[i].events = POLLIN;
                         i++;
@@ -178,7 +178,7 @@ int main( int argc, char* argv[] ) {
                         }
 
                         if (ret_read == 0) { // end of file
-                            printf("end of file, fds[j].fd = %d, j = %d\n", fds[j].fd, j);
+                            //printf("end of file, fds[j].fd = %d, j = %d\n", fds[j].fd, j);
                             ret_close = close(fds[j].fd);
                             if (ret_close < 0) {
                                 printf("Error: close() system call failed! Reason: %s\n", strerror(errno));

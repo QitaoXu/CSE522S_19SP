@@ -13,7 +13,7 @@
 
 
 #define BUF_SIZE 1024
-#define MESSAGE "TRICK OR TREAT|YES OR YES"
+#define MESSAGE "TRICK OR TREAT|YES OR YES|"
 
 const int num_expected_args = 3;
 
