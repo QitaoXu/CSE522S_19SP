@@ -136,6 +136,11 @@ int main( int argc, char* argv[] ) {
                         exit(-1);
                     }
 
+                    if (len == 0) {
+                        printf("Ctrl+D is captured\n");
+                        exit(-1);
+                    }
+
                     if (len > 0) {
                         buf[len] = '\0';
                         printf("Read from stdin: %s\n", buf);
