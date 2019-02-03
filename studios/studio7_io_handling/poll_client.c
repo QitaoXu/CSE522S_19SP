@@ -13,7 +13,7 @@
 
 
 #define BUF_SIZE 1024
-#define MESSAGE "TRICK OR TREAT\nYES OR YES"
+#define MESSAGE "TRICK OR TREAT\nYES OR YES\n"
 
 const int num_expected_args = 3;
 
@@ -69,8 +69,8 @@ int main( int argc, char* argv[]) {
     }
 
     while ( i < 10) {
-        sprintf(msg, "Trcik or treat! i = %d", i);
-        ret_write = write(skt, msg, strlen(msg));
+        //sprintf(msg, "Trcik or treat! i = %d", i);
+        ret_write = write(skt, MESSAGE, strlen(MESSAGE));
 
         if (ret_write < 0) {
             printf("Error: write() system call failed! Reason: %s\n", strerror(errno));
