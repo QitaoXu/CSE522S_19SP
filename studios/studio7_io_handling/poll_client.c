@@ -67,13 +67,17 @@ int main( int argc, char* argv[]) {
         printf("Error: write() system call failed! Reason: %s\n", strerror(errno));
         exit(-1);
     }
-    /*
+
     while (1) {
         sprintf(msg, "Trcik or treat!\ni = %d", i);
         ret_write = write(skt, msg, strlen(msg));
+
+        if (ret_write < 0) {
+            printf("Error: write() system call failed! Reason: %s\n", strerror(errno));
+            exit(-1);
+        }
         
     }
-    */
 
     return 0;
 
