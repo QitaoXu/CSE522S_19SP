@@ -34,6 +34,7 @@ int main( int argc, char* argv[] ) {
     
     int ret_poll;
     int i = 0, j; /* largest index of monitored fds element */
+    int while_flag = 0;
 
     struct timeval tv;
     //fd_set readfds;
@@ -107,7 +108,7 @@ int main( int argc, char* argv[] ) {
 
     printf("Please input from keyboard and use enter to complete your input: \n");
 
-    while (1) {
+    while (while_flag == 0) {
 
         ret_poll = poll(fds, i + 1, 0);
 
@@ -134,7 +135,10 @@ int main( int argc, char* argv[] ) {
                     if (len > 0) {
                         buf[len] = '\0';
                         printf("Read from stdin: %s\n", buf);
-                        if (strncmp(buf, QUIT, strlen(QUIT)) == 0 ) break;
+                        if (strncmp(buf, QUIT, strlen(QUIT)) == 0 ) {
+                            while_flag = 1;
+                            break;
+                        }
                         printf("Please input from keyboard and use enter to complete your input: \n");
                     }
                 }
@@ -159,6 +163,7 @@ int main( int argc, char* argv[] ) {
                     char delimiter = '\n';
                     char *token;
                     while (1) {
+                        printf("in read while loop\n");
                         ret_read = (fds[j].fd, buf, BUF_SIZE);
 
                         if (ret_read < 0) {
@@ -167,6 +172,7 @@ int main( int argc, char* argv[] ) {
                         }
 
                         if (ret_read == 0) { // end of file
+                            printf("end of file\n");
                             ret_close = close(fds[j].fd);
                             if (ret_close < 0) {
                                 printf("Error: close() system call failed! Reason: %s\n", strerror(errno));
