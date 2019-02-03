@@ -171,7 +171,7 @@ int main( int argc, char* argv[] ) {
                         //printf("in read while loop\n");
                         ret_read = read(fds[j].fd, buf_socket, BUF_SIZE);
                         //printf("fds[j].fd = %d, ret_read = %d buf_socket: %s\n", fds[j].fd, ret_read, buf_socket);
-                        //sleep(2);
+                        sleep(2);
                         if (ret_read < 0) {
                             printf("Error: read() system call failed! Reason: %s\n", strerror(errno));
                             exit(-1);
