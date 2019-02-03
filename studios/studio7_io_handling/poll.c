@@ -224,7 +224,7 @@ int main( int argc, char* argv[] ) {
                             while (token != NULL) {
                                 printf("%s\n", token);
 
-                                if (strncmp(token, "u", 1) == 0) {
+                                if (strncmp(token, "QUIT", 4) == 0) {
                                     printf("recieved quit from client! \n");
                                     for (k = 0; k < i; k++) {
                                         if (fds[k].fd != -1) {
