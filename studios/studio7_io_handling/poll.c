@@ -155,7 +155,7 @@ int main( int argc, char* argv[] ) {
                         exit(-1);
                     } else {
                         printf("\nA new connection is established!\n");
-                        printf("accept_skt = %d\n", accept_skt);
+                        //printf("accept_skt = %d\n", accept_skt);
                         fds[i].fd = accept_skt;
                         fds[i].events = POLLIN;
                         i++;
@@ -198,7 +198,8 @@ int main( int argc, char* argv[] ) {
 
                                 token = strtok(NULL, &delimiter);
                             }
-                            //memset(buf_socket, 0, BUF_SIZE);
+                            printf("\n");
+                            memset(buf_socket, 0, BUF_SIZE);
                         }
                     }
                 }
