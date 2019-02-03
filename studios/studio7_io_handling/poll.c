@@ -125,8 +125,9 @@ int main( int argc, char* argv[] ) {
 
         if (ret_poll > 0) {
             for (j = 0; j < i; j++) {
-
-                if ( (fds[j].revents & POLLIN) && (j == 0) ) { // stdin is readable
+                if (fds[j].fd == -1) continue;
+                
+                if ( (fds[j] != -1) && (fds[j].revents & POLLIN) && (j == 0) ) { // stdin is readable
                     char buf[BUF_LEN + 1];
                     int len;
                     len = read(STDIN_FILENO, buf, BUF_LEN);
@@ -136,9 +137,9 @@ int main( int argc, char* argv[] ) {
                         exit(-1);
                     }
 
-                    if (len == 0) {
+                    if (len == 0) { // Capture Ctrl+D
                         printf("Ctrl+D is captured\n");
-                        exit(-1);
+                        fds[0].fd = -1;
                     }
 
                     if (len > 0) {
