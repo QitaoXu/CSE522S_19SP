@@ -168,7 +168,7 @@ int main( int argc, char* argv[] ) {
                     char delimiter = '\n';
                     char *token;
                     while (1) {
-                        printf("in read while loop\n");
+                        //printf("in read while loop\n");
                         ret_read = (fds[j].fd, buf_socket, BUF_SIZE);
 
                         if (ret_read < 0) {
