@@ -28,6 +28,8 @@
 #define IPADDRESS "172.27.38.176"
 #define MAX_NUM_FD 20
 
+char buf_socket[BUF_SIZE];
+
 char* getIPAddress(char *inetfr_name);
 
 int main( int argc, char* argv[] ) {
@@ -108,6 +110,8 @@ int main( int argc, char* argv[] ) {
 
     printf("Please input from keyboard and use enter to complete your input: \n");
 
+    memset(buf_socket, 0, BUF_SIZE);
+
     while (while_flag == 0) {
 
         ret_poll = poll(fds, i + 1, 0);
@@ -151,6 +155,7 @@ int main( int argc, char* argv[] ) {
                         exit(-1);
                     } else {
                         printf("\nA new connection is established!\n");
+                        printf("accept_skt = %d\n", accept_skt);
                         fds[i].fd = accept_skt;
                         fds[i].events = POLLIN;
                         i++;
@@ -159,12 +164,12 @@ int main( int argc, char* argv[] ) {
                 }
 
                 if ( (fds[j].revents & POLLIN) && (j > 1)) { // communication socket
-                    char buf[BUF_SIZE];
+                    
                     char delimiter = '\n';
                     char *token;
                     while (1) {
                         printf("in read while loop\n");
-                        ret_read = (fds[j].fd, buf, BUF_SIZE);
+                        ret_read = (fds[j].fd, buf_socket, BUF_SIZE);
 
                         if (ret_read < 0) {
                             printf("Error: read() system call failed! Reason: %s\n", strerror(errno));
@@ -183,13 +188,14 @@ int main( int argc, char* argv[] ) {
                         }
 
                         if (ret_read > 0) {
-                            token = strtok(buf, &delimiter);
+                            token = strtok(buf_socket, &delimiter);
 
                             while (token != NULL) {
                                 printf("%s\n", token);
 
                                 token = strtok(NULL, &delimiter);
                             }
+                            memset(buf_socket, 0, BUF_SIZE);
                         }
                     }
                 }
