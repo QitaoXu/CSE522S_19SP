@@ -187,6 +187,7 @@ int main( int argc, char* argv[] ) {
                     char delimiter = '|';
                     char *token;
                     while (1) {
+                        if (while_flag == 1) break;
                         //printf("in read while loop\n");
                         ret_read = read(fds[j].fd, buf_socket, BUF_SIZE);
                         //printf("fds[j].fd = %d, ret_read = %d buf_socket: %s\n", fds[j].fd, ret_read, buf_socket);
