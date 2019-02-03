@@ -179,11 +179,11 @@ int main( int argc, char* argv[] ) {
 
                         if (ret_read == 0) { // end of file
                             printf("end of file, fd = %d\n", fds[j].fd);
-                            // ret_close = close(fds[j].fd);
-                            // if (ret_close < 0) {
-                            //     printf("Error: close() system call failed! Reason: %s\n", strerror(errno));
-                            //     exit(-1);
-                            // }
+                            ret_close = close(fds[j].fd);
+                            if (ret_close < 0) {
+                                printf("Error: close() system call failed! Reason: %s\n", strerror(errno));
+                                exit(-1);
+                            }
                             printf("Please input from keyboard and use enter to complete your input: \n");
                             // put j into set closed_fd
                             break;
