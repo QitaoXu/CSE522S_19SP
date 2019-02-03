@@ -179,7 +179,7 @@ int main( int argc, char* argv[] ) {
                         if (ret_read > 0) {
                             token = strtok(buf, &delimiter);
 
-                            while (token != null) {
+                            while (token != NULL) {
                                 printf("%s\n", token);
 
                                 token = strtok(NULL, &delimiter);
