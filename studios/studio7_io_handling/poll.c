@@ -39,7 +39,7 @@ int main( int argc, char* argv[] ) {
     int while_flag = 0;
     int four = 4;
     char cancel[2];
-    cancel[0] = char(four);
+    cancel[0] = four;
     cancel[1] = '\0';
 
     struct timeval tv;
