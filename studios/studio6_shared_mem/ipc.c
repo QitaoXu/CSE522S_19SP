@@ -88,7 +88,7 @@ void sigusr2_handler_parent(int signo) {
         _exit(-1);
     }
 
-    write(0, PAYLOAD, strlen(PAYLOAD));
+    //write(0, PAYLOAD, strlen(PAYLOAD));
 
     after_flag = 1;
 }
@@ -370,6 +370,7 @@ int main( int argc, char* argv[] ) {
                 num_sent++;
                 close(skt_parent);
             }
+            write(0, PAYLOAD, strlen(PAYLOAD));
         }
 
         printf("Here is parent process:\n");
