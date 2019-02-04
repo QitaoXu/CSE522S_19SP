@@ -234,7 +234,7 @@ int main( int argc, char* argv[] ) {
 
     if (ret_fork > 0) { // parent process
 
-        if (strncmp(IPC_mechanism, "pipe", strlen(IPC_mechanism)) == 0) { // signals
+        if (strncmp(IPC_mechanism, "signals", strlen(IPC_mechanism)) == 0) { // signals
             // nothing needed to do here
         }
 
