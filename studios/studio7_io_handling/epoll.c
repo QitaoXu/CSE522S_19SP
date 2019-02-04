@@ -5,55 +5,63 @@
 #include <errno.h>
 #include <sys/select.h>
 #include <sys/types.h>
+#include <sys/epoll.h>
 
 #define BUF_LEN 1024
 #define QUIT "quit"
+#define MAX_EVENTS 64
 
 int main(int argc, char* argv[]) {
 
-    fd_set readfds;
-    int ret_select;
+    int ret_select, epfd, ret_epoll_ctl, nr_events, i;
+    struct epoll_event event;
+    struct epoll_event *captured_events;
 
-    FD_ZERO(&readfds);
-    FD_SET(STDIN_FILENO, &readfds);
+    captured_events = (struct epoll_event *)malloc(sizeof(struct epoll_event));
+
+    if (captured_events == NULL) {
+        printf("Error: malloc() failed! Reason: %s\n", strerror(errno));
+        exit(-1);
+    }
+
+    epfd = epoll_create1(0);
+
+    if (epfd < 0) {
+        printf("Error: epoll_create1() system call failed! Reason: %s\n", strerror(errno));
+        exit(-1);
+    }
+
+    event.data.fd = STDIN_FILENO;
+    event.events = EPOLLIN;
+
+    ret_epoll_ctl = epoll_ctl(epfd, EPOLL_CTL_ADD, STDIN_FILENO, &event);
+
+    if (ret_epoll_ctl < 0) {
+        printf("Error: epoll_ctl() system call failed! Reason: %s\n", strerror(errno));
+        exit(-1);
+    }
 
     printf("Please input from keyboard and use enter to complete your input: \n");
 
     while (1) {
-        ret_select = select(STDIN_FILENO + 1, &readfds, NULL, NULL, NULL);
+        
+        nr_events = epoll_wait(epfd, captured_events, MAX_EVENTS, -1);
 
-        if (ret_select < 0) {
-            printf("Error: select() system call failed! Reason: %s\n", strerror(errno));
+        if (nr_events < 0) {
+            printf("Error: epoll_wait() system call failed! Reason: %s\n", strerror(errno));
             exit(-1);
         }
 
-        if (ret_select == 0) continue;
+        if (nr_events == 0) continue;
 
-        if (ret_select > 0) {
+        if (nr_events > 0) {
 
-            if (FD_ISSET(STDIN_FILENO, &readfds)) {
-                char buf[BUF_LEN + 1];
-                int len;
-                
-                len = read(STDIN_FILENO, buf, BUF_LEN);
+            for (i = 0; i < nr_events; i++) {
+                printf("event=%ld on fd = %d\n", captured_events[i].events, captured_events[i].data.fd);
 
-                if (len < 0) {
-                    printf("Error: read() system call failed! Reason: %s\n", strerror(errno));
-                    exit(-1);
-                }
-
-                if (len > 0) {
-                    buf[len] = '\0';
-                    printf("Read from stdin: %s\n", buf);
-                    if (strncmp(buf, QUIT, strlen(QUIT)) == 0 ) break;
-                    printf("Please input from keyboard and use enter to complete your input: \n");
-                }
-            }
-            
+            } 
         }
 
-        FD_ZERO(&readfds);
-        FD_SET(STDIN_FILENO, &readfds);
     }
 
 
