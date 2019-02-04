@@ -11,13 +11,13 @@
 
 int main(int argc, char* argv[]) {
 
-    return 0;
-
     fd_set readfds;
     int ret_select;
 
     FD_ZERO(&readfds);
     FD_SET(STDIN_FILENO, &readfds);
+
+    printf("Please input from keyboard and use enter to complete your input: \n");
 
     while (1) {
         ret_select = select(STDIN_FILENO + 1, &readfds, NULL, NULL, NULL);
@@ -32,7 +32,6 @@ int main(int argc, char* argv[]) {
         if (ret_select > 0) {
 
             if (FD_ISSET(STDIN_FILENO, &readfds)) {
-
                 char buf[BUF_LEN + 1];
                 int len;
                 
@@ -56,4 +55,8 @@ int main(int argc, char* argv[]) {
         FD_ZERO(&readfds);
         FD_SET(STDIN_FILENO, &readfds);
     }
+
+
+
+    return 0;
 }
