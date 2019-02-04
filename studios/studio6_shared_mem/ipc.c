@@ -88,6 +88,8 @@ void sigusr2_handler_parent(int signo) {
         _exit(-1);
     }
 
+    write(0, PAYLOAD, strlen(PAYLOAD));
+
     after_flag = 1;
 }
 
