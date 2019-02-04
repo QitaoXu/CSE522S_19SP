@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
     }
 
     event.data.fd = STDIN_FILENO;
-    event.events = EPOLLIN;
+    event.events = EPOLLIN | EPOLLET;
 
     ret_epoll_ctl = epoll_ctl(epfd, EPOLL_CTL_ADD, STDIN_FILENO, &event);
 
