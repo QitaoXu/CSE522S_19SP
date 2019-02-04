@@ -57,7 +57,12 @@ int main(int argc, char* argv[]) {
         if (nr_events > 0) {
 
             for (i = 0; i < nr_events; i++) {
-                printf("event=%ld on fd = %d\n", captured_events[i].events, captured_events[i].data.fd);
+                //printf("event=%ld on fd = %d\n", captured_events[i].events, captured_events[i].data.fd);
+
+                if (captured_events[i].data.fd == STDIN_FILENO) {
+                    printf("Data is available!\n");
+                    sleep(1);
+                }
 
             } 
         }
