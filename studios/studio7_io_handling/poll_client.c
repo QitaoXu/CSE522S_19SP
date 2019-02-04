@@ -15,7 +15,7 @@
 #define BUF_SIZE 1024
 #define MESSAGE "TRICK OR TREAT|YES OR YES|"
 
-#define GET "GET|quit|"
+#define GET "GET|QUIT|"
 
 const int num_expected_args = 3;
 
