@@ -24,7 +24,7 @@ const int num_expected_args = 3;
 
 int main( int argc, char *argv[] ) {
 
-    int port_num, ret_fprintf;
+    int port_num, ret_fprintf, ret_fclose;
     char *pwd = "/home/pi/Documents/CSE522S_19SP/labs/lab1/";
     char *file_name;
     char *file_path;
@@ -80,7 +80,7 @@ int main( int argc, char *argv[] ) {
 
     ret_fclose = fclose(file);
 
-    if (ret_close < 0) {
+    if (ret_fclose < 0) {
         printf("Error: fclose() function failed! Reason: %s\n", strerror(errno));
         free(file_path);
         exit(-1);
