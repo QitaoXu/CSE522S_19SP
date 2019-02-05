@@ -25,11 +25,13 @@ const int num_expected_args = 3;
 int main( int argc, char *argv[] ) {
 
     int port_num, ret_fprintf, ret_fclose;
+    int i = 0, j = 0;
     char *pwd = "/home/pi/Documents/CSE522S_19SP/labs/lab1/";
     char *file_name;
     char *file_path;
     char line[256];
     FILE *file;
+    FILE **outputs;
 
     if (argc != num_expected_args) {
         printf("Usage: ./server <file name> <port number>\n");
@@ -76,6 +78,36 @@ int main( int argc, char *argv[] ) {
     while (fgets(line, sizeof(line), file)) {
 
         printf("%s", line);
+        i++;
+    }
+
+    memset(line, 0, 256);
+
+    outputs = (FILE **)malloc(sizeof(FILE *) * i);
+
+    if (outputs == NULL) {
+        printf("Error: malloc() function failed for outputs! Reason: %s\n", strerror(errno));
+        free(file_path);
+        exit(-1);      
+    }
+
+    while (fgets(line, sizeof(line), file)) {
+
+        memset(file_path, 0, strlen(PWD) + MAX_FILENAME);
+        strcpy(file_path, pwd);
+        strcat(file_path, line);
+
+        outputs[j] = fopen(file_path, "a");
+
+        if (outputs[j] == NULL) {
+            printf("Error: fopen(%s) function failed! Reason: %s\n", file_path, strerror(errno));
+            free(file_path);
+            free(outputs);
+            exit(-1);
+        }
+
+        j++;
+        
     }
 
     ret_fclose = fclose(file);
@@ -83,11 +115,25 @@ int main( int argc, char *argv[] ) {
     if (ret_fclose < 0) {
         printf("Error: fclose() function failed! Reason: %s\n", strerror(errno));
         free(file_path);
+        free(outputs);
         exit(-1);
     }
 
-    free(file_path); 
+    for (j = 0; j < i; j ++) {
+        
+        ret_fclose = fclose(outputs[j]);
+        if (ret_fclose < 0) {
+            printf("Error: fclose() function failed! Reason: %s\n", strerror(errno));
+            free(file_path);
+            free(outputs);
+            exit(-1);
+        }
 
+
+    }
+
+    free(file_path); 
+    free(outputs);
 
     return 0;
 }
