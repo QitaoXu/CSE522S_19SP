@@ -26,8 +26,8 @@ int main( int argc, char *argv[] ) {
 
     int port_num, ret_fprintf;
     char *pwd = "/home/pi/Documents/CSE522S_19SP/labs/lab1/";
-    char *file_name[MAX_FILENAME];
-    char *file_path[strlen(PWD) + MAX_FILENAME];
+    char *file_name;
+    char *file_path;
     FILE *file;
 
     if (argc != num_expected_args) {
@@ -48,6 +48,8 @@ int main( int argc, char *argv[] ) {
         printf("Error: port_num cannot be less than 1024!\n");
         exit(-1);
     }
+
+    file_path = (char *)malloc(sizeof(char) * (strlen(PWD) + MAX_FILENAME));
 
     strcpy(file_path, pwd);
 
