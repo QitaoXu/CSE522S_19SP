@@ -28,6 +28,7 @@ int main( int argc, char *argv[] ) {
     char *pwd = "/home/pi/Documents/CSE522S_19SP/labs/lab1/";
     char *file_name;
     char *file_path;
+    char *line[256];
     FILE *file;
 
     if (argc != num_expected_args) {
@@ -55,20 +56,35 @@ int main( int argc, char *argv[] ) {
 
     strcat(file_path, file_name);
 
-    file = fopen(file_path, "w+");
+    file = fopen(file_path, "r");
 
     if (file == NULL) {
         printf("Error: fopen() function failed! Reason: %s\n", strerror(errno));
         exit(-1);
     }
 
+    /*
     ret_fprintf = fprintf(file, PWD);
 
     if (ret_fprintf < 0) {
         printf("Error: fprintf() function failed! Reason: %s\n", strerror(errno));
         free(file_path);
         exit(-1);
-    } 
+    }
+    */
+
+    while (fgets(line, sizeof(line), file)) {
+
+        printf("%s", line);
+    }
+
+    ret_fclose = fclose(file);
+
+    if (ret_close < 0) {
+        printf("Error: fclose() function failed! Reason: %s\n", strerror(errno));
+        free(file_path);
+        exit(-1);
+    }
 
     free(file_path); 
 
