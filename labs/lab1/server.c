@@ -28,7 +28,7 @@ int main( int argc, char *argv[] ) {
     char *pwd = "/home/pi/Documents/CSE522S_19SP/labs/lab1/";
     char *file_name;
     char *file_path;
-    char *line[256];
+    char line[256];
     FILE *file;
 
     if (argc != num_expected_args) {
