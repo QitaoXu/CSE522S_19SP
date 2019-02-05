@@ -101,7 +101,9 @@ int main( int argc, char *argv[] ) {
         strcpy(file_path, pwd);
         strcat(file_path, line);
 
-        outputs[j] = fopen(file_path, "r");
+        if (j == 0) outputs[j] = fopen(file_path, "a");
+
+        if (j > 0) outputs[j] = fopen(file_path, "r");
 
         if (outputs[j] == NULL) {
             printf("Error: fopen(%s) function failed! Reason: %s\n", file_path, strerror(errno));
