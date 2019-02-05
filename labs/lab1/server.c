@@ -66,8 +66,11 @@ int main( int argc, char *argv[] ) {
 
     if (ret_fprintf < 0) {
         printf("Error: fprintf() function failed! Reason: %s\n", strerror(errno));
+        free(file_path);
         exit(-1);
-    }  
+    } 
+
+    free(file_path); 
 
 
     return 0;
