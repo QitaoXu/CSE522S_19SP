@@ -99,6 +99,7 @@ int main( int argc, char *argv[] ) {
 
         memset(file_path, 0, strlen(PWD) + MAX_FILENAME);
         strcpy(file_path, pwd);
+        printf("length: %d\n", strlen(line));
         strcat(file_path, line);
 
         if (j == 0) outputs[j] = fopen(file_path, "a");
