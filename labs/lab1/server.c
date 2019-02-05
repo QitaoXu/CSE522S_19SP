@@ -20,7 +20,7 @@
 #define PWD "/home/pi/Documents/CSE522S_19SP/labs/lab1/"
 #define MAX_FILENAME 20
 
-const int num_expected_args = 4;
+const int num_expected_args = 3;
 
 int main( int argc, char *argv[] ) {
 
