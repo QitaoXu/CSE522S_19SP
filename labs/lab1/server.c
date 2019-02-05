@@ -18,6 +18,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <net/if.h>
+#include <sys/ioctl.h>
 
 #define PWD "/home/pi/Documents/CSE522S_19SP/labs/lab1/"
 #define MAX_FILENAME 20
