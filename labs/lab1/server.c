@@ -91,6 +91,8 @@ int main( int argc, char *argv[] ) {
         exit(-1);      
     }
 
+    printf("i = %d\n", i);
+
     while (fgets(line, sizeof(line), file)) {
 
         memset(file_path, 0, strlen(PWD) + MAX_FILENAME);
@@ -120,7 +122,7 @@ int main( int argc, char *argv[] ) {
     }
 
     for (j = 0; j < i; j ++) {
-        
+
         ret_fclose = fclose(outputs[j]);
         if (ret_fclose < 0) {
             printf("Error: fclose() function failed! Reason: %s\n", strerror(errno));
