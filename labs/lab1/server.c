@@ -93,7 +93,7 @@ int main( int argc, char *argv[] ) {
         exit(-1);      
     }
 
-    printf("i = %d\n", i);
+    //printf("i = %d\n", i);
 
     while (fgets(line, sizeof(line), file_cp)) {
 
@@ -101,7 +101,7 @@ int main( int argc, char *argv[] ) {
         strcpy(file_path, pwd);
         strcat(file_path, line);
 
-        outputs[j] = fopen(file_path, "a");
+        outputs[j] = fopen(file_path, "r");
 
         if (outputs[j] == NULL) {
             printf("Error: fopen(%s) function failed! Reason: %s\n", file_path, strerror(errno));
