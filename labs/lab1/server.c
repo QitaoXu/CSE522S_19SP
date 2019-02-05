@@ -16,11 +16,16 @@
 #include <sys/un.h> // for unix()
 #include <netinet/ip.h>
 #include <arpa/inet.h>
+#include <netinet/in.h>
+#include <net/if.h>
 
 #define PWD "/home/pi/Documents/CSE522S_19SP/labs/lab1/"
 #define MAX_FILENAME 20
+#define ERROR_MSG "Error"
 
 const int num_expected_args = 3;
+
+char* getIPAddress(char *inetfr_name);
 
 int main( int argc, char *argv[] ) {
 
@@ -33,6 +38,8 @@ int main( int argc, char *argv[] ) {
     FILE *file;
     FILE *file_cp;
     FILE **outputs;
+
+    char *server_ip;
 
     if (argc != num_expected_args) {
         printf("Usage: ./server <file name> <port number>\n");
@@ -52,6 +59,14 @@ int main( int argc, char *argv[] ) {
         printf("Error: port_num cannot be less than 1024!\n");
         exit(-1);
     }
+
+    server_ip = getIPAddress("wlan0");
+    if (strncmp(server_ip, ERROR_MSG, strlen(ERROR_MSG)) == 0) {
+        printf("Error: cannot find server ip address!\n");
+        exit(-1);
+    }
+
+    printf("Server IP Address: %s, Request Connection Port Number: %d\n", server_ip, port_num);
 
     file_path = (char *)malloc(sizeof(char) * (strlen(PWD) + MAX_FILENAME));
 
@@ -117,6 +132,8 @@ int main( int argc, char *argv[] ) {
         
     }
 
+
+
     ret_fclose = fclose(file);
     if (ret_fclose < 0) {
         printf("Error: fclose() function failed! Reason: %s\n", strerror(errno));
@@ -150,4 +167,34 @@ int main( int argc, char *argv[] ) {
     free(outputs);
 
     return 0;
+}
+
+char* getIPAddress(char *inetfr_name) {
+
+    int fd, ret_ioctl;
+    struct ifreq ifr;
+    char *IP_Addr;
+
+    fd = socket(AF_INET, SOCK_DGRAM, 0);
+
+    if (fd < 0) {
+        printf("Error: socket() system call in getIPAddress function failed! Reason: %s\n", strerror(errno));
+        return "Error";
+    }
+
+    strncpy(ifr.ifr_name, inetfr_name, IFNAMSIZ-1);
+
+    ret_ioctl = ioctl(fd, SIOCGIFADDR, &ifr);
+
+    if (ret_ioctl < 0) {
+        printf("Error: ioctl() system call in getIPAddress function failed! Reason: %s\n",strerror(errno));
+        return "Error";
+    }
+    
+    close(fd);
+
+    IP_Addr = inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr);
+
+    return IP_Addr;
+
 }
