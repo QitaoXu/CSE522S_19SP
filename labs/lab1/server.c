@@ -25,7 +25,7 @@ const int num_expected_args = 4;
 int main( int argc, char *argv[] ) {
 
     int port_num, ret_fprintf;
-    char *pwd = "/home/pi/Documents/CSE522S_19SP/labs/lab1/"
+    char *pwd = "/home/pi/Documents/CSE522S_19SP/labs/lab1/";
     char *file_name[MAX_FILENAME];
     char *file_path[strlen(PWD) + MAX_FILENAME];
     FILE *file;
