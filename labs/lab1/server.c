@@ -31,6 +31,7 @@ int main( int argc, char *argv[] ) {
     char *file_path;
     char line[256];
     FILE *file;
+    FILE *file_cp;
     FILE **outputs;
 
     if (argc != num_expected_args) {
@@ -59,8 +60,9 @@ int main( int argc, char *argv[] ) {
     strcat(file_path, file_name);
 
     file = fopen(file_path, "r");
+    file_cp = fopen(file_path, "r");
 
-    if (file == NULL) {
+    if (file == NULL || file_cp == NULL) {
         printf("Error: fopen() function failed! Reason: %s\n", strerror(errno));
         exit(-1);
     }
@@ -93,7 +95,7 @@ int main( int argc, char *argv[] ) {
 
     printf("i = %d\n", i);
 
-    while (fgets(line, sizeof(line), file)) {
+    while (fgets(line, sizeof(line), file_cp)) {
 
         memset(file_path, 0, strlen(PWD) + MAX_FILENAME);
         strcpy(file_path, pwd);
@@ -113,7 +115,14 @@ int main( int argc, char *argv[] ) {
     }
 
     ret_fclose = fclose(file);
+    if (ret_fclose < 0) {
+        printf("Error: fclose() function failed! Reason: %s\n", strerror(errno));
+        free(file_path);
+        free(outputs);
+        exit(-1);
+    }
 
+    ret_fclose = fclose(file_cp);
     if (ret_fclose < 0) {
         printf("Error: fclose() function failed! Reason: %s\n", strerror(errno));
         free(file_path);
