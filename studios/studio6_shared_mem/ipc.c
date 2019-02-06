@@ -304,6 +304,8 @@ int main( int argc, char* argv[] ) {
                     num_sent++;
                     printf("num_sent = %d\n", num_sent);
                 }
+
+                usleep(1);
 		
             }
 
