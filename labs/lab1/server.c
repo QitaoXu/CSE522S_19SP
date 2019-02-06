@@ -19,10 +19,13 @@
 #include <netinet/in.h>
 #include <net/if.h>
 #include <sys/ioctl.h>
+#include <sys/select.h>
 
 #define PWD "/home/pi/Documents/CSE522S_19SP/labs/lab1/"
 #define MAX_FILENAME 20
 #define ERROR_MSG "Error"
+#define LISTEN_BLOCKLOG 50
+#define MAX_NUM_FD 50
 
 const int num_expected_args = 3;
 
@@ -30,6 +33,8 @@ char* getIPAddress(char *inetfr_name);
 
 int main( int argc, char *argv[] ) {
 
+    /* Variables related to files opened
+    */
     int port_num, ret_fprintf, ret_fclose;
     int i = 0, j = 0;
     char *pwd = "/home/pi/Documents/CSE522S_19SP/labs/lab1/";
@@ -40,7 +45,18 @@ int main( int argc, char *argv[] ) {
     FILE *file_cp;
     FILE **outputs;
 
+    /* Variables realted to sockets
+    */
     char *server_ip;
+    int skt, ret_bind, ret_listen, accept_skt, ret_read, ret_write, ret_inet_aton, on, ret_close;
+    struct sockaddr_in skt_addr, peer_addr;
+    socklen_t peer_addr_size;
+
+    /* Variables realted to multiplexing io
+    */
+    int t = 0, m, n, k;
+    int ret_poll;
+    struct pollfd fds[MAX_NUM_FD];
 
     if (argc != num_expected_args) {
         printf("Usage: ./server <file name> <port number>\n");
@@ -133,7 +149,52 @@ int main( int argc, char *argv[] ) {
         
     }
 
+    /* After all those above files are opened,
+     * server needs to create a socket monitoring 
+     * incoming request from client
+     */
 
+     skt = socket(AF_INET, SOCK_STREAM, 0);
+     if (skt < 0) {
+         printf("Error: socket() system call failed! Reason: %s\n", strerror(errno));
+         free(file_path); 
+         free(outputs);
+         exit(-1);
+     }
+
+    memset(&skt_addr, 0, sizeof(struct sockaddr_in));
+
+    skt_addr.sin_family = AF_INET;
+    skt_addr.sin_port = htons(port_num);
+    skt_addr.sin_addr.s_addr = INADDR_ANY;
+
+    on = 1;
+    setsockopt(skt, SOL_SOCKET, SO,_REUSEADDR, &on, sizeof(on));
+
+    ret_bind = bind(skt, (struct sockaddr *)&skt_addr, sizeof(struct sockaddr_in));
+    if (ret_bind < 0) {
+        printf("bind() system call failed! Reason: %s\n", strerror(errno));
+        free(file_path); 
+        free(outputs);
+        exit(-1);
+    }
+
+    ret_listen = listen(skt, LISTEN_BLOCKLOG);
+    if (ret_listen < 0) {
+        printf("listen() system call failed! Reason: %s\n", strerror(errno));
+        free(file_path); 
+        free(outputs);
+        exit(-1);       
+    }
+
+    peer_addr_size = sizeof(struct sockaddr_in);
+
+    /* Add skt to fds to be monitored
+    */
+
+    fds[t].fd = skt;
+    fds[t].events = POLLIN;
+    t++; 
 
     ret_fclose = fclose(file);
     if (ret_fclose < 0) {
