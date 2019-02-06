@@ -226,6 +226,9 @@ int main( int argc, char* argv[] ) {
 
     if (strncmp(IPC_mechanism, "socket", strlen(IPC_mechanism)) == 0) { // Internet socket
 
+    } else {
+        printf("In valid IPC mechanism!\n");
+        exit(-1);
     }
 
     ret_fork = fork();
