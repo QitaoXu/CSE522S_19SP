@@ -66,7 +66,7 @@ void sigusr1_handler(int signo) {
     ret_clock_gettime = clock_gettime(CLOCK_MONOTONIC_RAW, &ts_before);
 
     if (ret_clock_gettime < 0) {
-        printf("clock_gettime() failedd! Reason: %s\n", strerror(errno));
+        //printf("clock_gettime() failedd! Reason: %s\n", strerror(errno));
         _exit(-1);
     }
 
