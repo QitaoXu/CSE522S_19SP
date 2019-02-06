@@ -76,7 +76,7 @@ void sigusr1_handler(int signo) {
 
 void sigusr2_handler_parent(int signo) {
 
-    write(0, notification2_parent, strlen(notification2_parent));
+    //write(0, notification2_parent, strlen(notification2_parent));
     //write(0, )
 
     int ret_clock_gettime;
