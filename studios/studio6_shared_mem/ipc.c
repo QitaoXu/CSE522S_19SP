@@ -528,6 +528,7 @@ int main( int argc, char* argv[] ) {
 
 			        if (num_recieved == num_comm_times) {
                         child_flag = 1;
+                        printf("ppid = %d\n", getppid());
                         ret_kill = kill(getppid(), SIGUSR2);
                         printf("ret_kill = %d\n", ret_kill);
                     }
