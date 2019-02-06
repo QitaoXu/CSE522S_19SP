@@ -370,9 +370,10 @@ int main( int argc, char* argv[] ) {
                 num_sent++;
                 close(skt_parent);
             }
-            write(0, PAYLOAD, strlen(PAYLOAD));
+            //write(0, PAYLOAD, strlen(PAYLOAD));
         }
 
+        fflush(stdout);
         printf("Here is parent process:\n");
         printf("Times of parent process communicating with child process: %d.\nTime before communication: %ld.%ld. \nTime after communication: %ld.%ld\n", 
                 num_sent, ts_before.tv_sec, ts_before.tv_nsec,
