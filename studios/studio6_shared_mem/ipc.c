@@ -302,7 +302,7 @@ int main( int argc, char* argv[] ) {
 
                 if (ret_fprintf > 0) {
                     num_sent++;
-                    printf("num_sent = %d\n", num_sent);
+                    // printf("num_sent = %d\n", num_sent);
                 }
 
                 usleep(1);
@@ -525,14 +525,14 @@ int main( int argc, char* argv[] ) {
 
 		        if (fifo_recieved > 0) {
                 	num_recieved++;
-			        printf("num_recieved = %d\n", num_recieved);
-                    printf("fifo_recieved = %d\n", fifo_recieved);
+			        //printf("num_recieved = %d\n", num_recieved);
+                    //printf("fifo_recieved = %d\n", fifo_recieved);
 
 			        if (num_recieved == num_comm_times) {
                         child_flag = 1;
-                        printf("ppid = %d\n", getppid());
+                        //printf("ppid = %d\n", getppid());
                         ret_kill = kill(getppid(), SIGUSR2);
-                        printf("ret_kill = %d\n", ret_kill);
+                        //printf("ret_kill = %d\n", ret_kill);
                     }
 		        }
 
