@@ -1,0 +1,48 @@
+Here is parent process. num_comm_times = 3, IPC_mechanism is signals
+Here is child process. num_comm_times = 3, IPC_mechanism is signals
+Here is parent process:
+Times of parent process communicating with child process: 20.
+Time before communication: 2345.490419417. 
+Time after communication: 2345.490813897
+Here is parent process. num_comm_times = 4, IPC_mechanism is signals
+Here is child process. num_comm_times = 4, IPC_mechanism is signals
+Here is parent process:
+Times of parent process communicating with child process: 18.
+Time before communication: 2353.548385352. 
+Time after communication: 2353.548731914
+Here is parent process. num_comm_times = 5, IPC_mechanism is signals
+Here is child process. num_comm_times = 5, IPC_mechanism is signals
+Here is parent process:
+Times of parent process communicating with child process: 5.
+Time before communication: 2361.605060922. 
+Time after communication: 2361.605266703
+Here is parent process. num_comm_times = 6, IPC_mechanism is signals
+Here is child process. num_comm_times = 6, IPC_mechanism is signals
+Here is parent process:
+Times of parent process communicating with child process: 7.
+Time before communication: 2369.664334460. 
+Time after communication: 2369.664879304
+Here is parent process. num_comm_times = 7, IPC_mechanism is signals
+Here is child process. num_comm_times = 7, IPC_mechanism is signals
+Here is parent process:
+Times of parent process communicating with child process: 25.
+Time before communication: 2377.725955238. 
+Time after communication: 2377.726508103
+Here is parent process. num_comm_times = 8, IPC_mechanism is signals
+Here is child process. num_comm_times = 8, IPC_mechanism is signals
+Here is parent process:
+Times of parent process communicating with child process: 9.
+Time before communication: 2385.789745600. 
+Time after communication: 2385.789962996
+Here is parent process. num_comm_times = 9, IPC_mechanism is signals
+Here is child process. num_comm_times = 9, IPC_mechanism is signals
+Here is parent process:
+Times of parent process communicating with child process: 9.
+Time before communication: 2393.856826639. 
+Time after communication: 2393.857064764
+Here is parent process. num_comm_times = 10, IPC_mechanism is signals
+Here is child process. num_comm_times = 10, IPC_mechanism is signals
+Here is parent process:
+Times of parent process communicating with child process: 10.
+Time before communication: 2401.913590333. 
+Time after communication: 2401.914464656

@@ -1,0 +1,48 @@
+Here is parent process. num_comm_times = 3, IPC_mechanism is socket
+Here is child process. num_comm_times = 3, IPC_mechanism is socket
+Here is parent process:
+Times of parent process communicating with child process: 3.
+Time before communication: 2351.533619311. 
+Time after communication: 2351.534921655
+Here is parent process. num_comm_times = 4, IPC_mechanism is socket
+Here is child process. num_comm_times = 4, IPC_mechanism is socket
+Here is parent process:
+Times of parent process communicating with child process: 4.
+Time before communication: 2359.590030506. 
+Time after communication: 2359.591544568
+Here is parent process. num_comm_times = 5, IPC_mechanism is socket
+Here is child process. num_comm_times = 5, IPC_mechanism is socket
+Here is parent process:
+Times of parent process communicating with child process: 5.
+Time before communication: 2367.647426753. 
+Time after communication: 2367.650991701
+Here is parent process. num_comm_times = 6, IPC_mechanism is socket
+Here is child process. num_comm_times = 6, IPC_mechanism is socket
+Here is parent process:
+Times of parent process communicating with child process: 6.
+Time before communication: 2375.708286645. 
+Time after communication: 2375.712377791
+Here is parent process. num_comm_times = 7, IPC_mechanism is socket
+Here is child process. num_comm_times = 7, IPC_mechanism is socket
+Here is parent process:
+Times of parent process communicating with child process: 7.
+Time before communication: 2383.770731642. 
+Time after communication: 2383.776160340
+Here is parent process. num_comm_times = 8, IPC_mechanism is socket
+Here is child process. num_comm_times = 8, IPC_mechanism is socket
+Here is parent process:
+Times of parent process communicating with child process: 9.
+Time before communication: 2391.840355962. 
+Time after communication: 2391.843236014
+Here is parent process. num_comm_times = 9, IPC_mechanism is socket
+Here is child process. num_comm_times = 9, IPC_mechanism is socket
+Here is parent process:
+Times of parent process communicating with child process: 10.
+Time before communication: 2399.895835803. 
+Time after communication: 2399.899102470
+Here is parent process. num_comm_times = 10, IPC_mechanism is socket
+Here is child process. num_comm_times = 10, IPC_mechanism is socket
+Here is parent process:
+Times of parent process communicating with child process: 34.
+Time before communication: 2407.959403352. 
+Time after communication: 2407.969661633

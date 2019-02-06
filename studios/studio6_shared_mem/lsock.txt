@@ -1,0 +1,48 @@
+Here is parent process. num_comm_times = 3, IPC_mechanism is lsock
+Here is child process. num_comm_times = 3, IPC_mechanism is lsock
+Here is parent process:
+Times of parent process communicating with child process: 3.
+Time before communication: 2349.519483530. 
+Time after communication: 2349.519854989
+Here is parent process. num_comm_times = 4, IPC_mechanism is lsock
+Here is child process. num_comm_times = 4, IPC_mechanism is lsock
+Here is parent process:
+Times of parent process communicating with child process: 4.
+Time before communication: 2357.575986079. 
+Time after communication: 2357.576408371
+Here is parent process. num_comm_times = 5, IPC_mechanism is lsock
+Here is child process. num_comm_times = 5, IPC_mechanism is lsock
+Here is parent process:
+Times of parent process communicating with child process: 10.
+Time before communication: 2365.632952274. 
+Time after communication: 2365.633807691
+Here is parent process. num_comm_times = 6, IPC_mechanism is lsock
+Here is child process. num_comm_times = 6, IPC_mechanism is lsock
+Here is parent process:
+Times of parent process communicating with child process: 6.
+Time before communication: 2373.692656177. 
+Time after communication: 2373.694712480
+Here is parent process. num_comm_times = 7, IPC_mechanism is lsock
+Here is child process. num_comm_times = 7, IPC_mechanism is lsock
+Here is parent process:
+Times of parent process communicating with child process: 50.
+Time before communication: 2381.753631174. 
+Time after communication: 2381.757178154
+Here is parent process. num_comm_times = 8, IPC_mechanism is lsock
+Here is child process. num_comm_times = 8, IPC_mechanism is lsock
+Here is parent process:
+Times of parent process communicating with child process: 37.
+Time before communication: 2389.823718619. 
+Time after communication: 2389.826421067
+Here is parent process. num_comm_times = 9, IPC_mechanism is lsock
+Here is child process. num_comm_times = 9, IPC_mechanism is lsock
+Here is parent process:
+Times of parent process communicating with child process: 9.
+Time before communication: 2397.879660022. 
+Time after communication: 2397.882418616
+Here is parent process. num_comm_times = 10, IPC_mechanism is lsock
+Here is child process. num_comm_times = 10, IPC_mechanism is lsock
+Here is parent process:
+Times of parent process communicating with child process: 23.
+Time before communication: 2405.943869342. 
+Time after communication: 2405.945598978

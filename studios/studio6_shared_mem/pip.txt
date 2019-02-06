@@ -1,0 +1,48 @@
+Here is parent process. num_comm_times = 3, IPC_mechanism is pipe
+Here is child process. num_comm_times = 3, IPC_mechanism is pipe
+Here is parent process:
+Times of parent process communicating with child process: 4.
+Time before communication: 2347.505228323. 
+Time after communication: 2347.505539104
+Here is parent process. num_comm_times = 4, IPC_mechanism is pipe
+Here is child process. num_comm_times = 4, IPC_mechanism is pipe
+Here is parent process:
+Times of parent process communicating with child process: 15.
+Time before communication: 2355.561983997. 
+Time after communication: 2355.562359466
+Here is parent process. num_comm_times = 5, IPC_mechanism is pipe
+Here is child process. num_comm_times = 5, IPC_mechanism is pipe
+Here is parent process:
+Times of parent process communicating with child process: 9.
+Time before communication: 2363.618345765. 
+Time after communication: 2363.618722275
+Here is parent process. num_comm_times = 6, IPC_mechanism is pipe
+Here is child process. num_comm_times = 6, IPC_mechanism is pipe
+Here is parent process:
+Times of parent process communicating with child process: 6.
+Time before communication: 2371.678171543. 
+Time after communication: 2371.679404928
+Here is parent process. num_comm_times = 7, IPC_mechanism is pipe
+Here is child process. num_comm_times = 7, IPC_mechanism is pipe
+Here is parent process:
+Times of parent process communicating with child process: 19.
+Time before communication: 2379.739718779. 
+Time after communication: 2379.740173623
+Here is parent process. num_comm_times = 8, IPC_mechanism is pipe
+Here is child process. num_comm_times = 8, IPC_mechanism is pipe
+Here is parent process:
+Times of parent process communicating with child process: 372.
+Time before communication: 2387.803101433. 
+Time after communication: 2387.810052630
+Here is parent process. num_comm_times = 9, IPC_mechanism is pipe
+Here is child process. num_comm_times = 9, IPC_mechanism is pipe
+Here is parent process:
+Times of parent process communicating with child process: 23.
+Time before communication: 2395.867693773. 
+Time after communication: 2395.867986065
+Here is parent process. num_comm_times = 10, IPC_mechanism is pipe
+Here is child process. num_comm_times = 10, IPC_mechanism is pipe
+Here is parent process:
+Times of parent process communicating with child process: 13.
+Time before communication: 2403.927560072. 
+Time after communication: 2403.929622781
