@@ -95,8 +95,8 @@ int main( int argc, char *argv[] ) {
             if (ret_read == 0) continue;
 
             if (ret_read > 0) {
-                printf("Message from server: %s", msg);
-                break;
+                printf("Message from server: %s\n", msg);
+                //break;
             }
         }
 

@@ -20,7 +20,8 @@
 #include <net/if.h>
 #include <sys/ioctl.h>
 #include <sys/select.h>
-#include <linux/list.h>
+#include <poll.h>
+//#include <linux/list.h>
 
 #define PWD "/home/pi/Documents/CSE522S_19SP/labs/lab1/"
 #define MAX_FILENAME 20
@@ -150,6 +151,7 @@ int main( int argc, char *argv[] ) {
         j++;
         
     }
+    printf("Before while loop: j = %d\n", j);
 
     /* After all those above files are opened,
      * server needs to create a socket monitoring 
@@ -171,7 +173,7 @@ int main( int argc, char *argv[] ) {
     skt_addr.sin_addr.s_addr = INADDR_ANY;
 
     on = 1;
-    setsockopt(skt, SOL_SOCKET, SO,_REUSEADDR, &on, sizeof(on));
+    setsockopt(skt, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
 
     ret_bind = bind(skt, (struct sockaddr *)&skt_addr, sizeof(struct sockaddr_in));
     if (ret_bind < 0) {
@@ -199,6 +201,7 @@ int main( int argc, char *argv[] ) {
     t++; 
 
     while (1) {
+        //printf("while loop\n");
         ret_poll = poll(fds, t, TIMEOUT);
 
         if (ret_poll < 0) {
@@ -210,9 +213,9 @@ int main( int argc, char *argv[] ) {
 
         if (ret_poll > 0) {
             for (m = 0; m < t; m++) {
-
+                //printf("for loop. m = %d, t = %d, j = %d\n", m, t, j);
                 if ( (fds[m].revents & POLLIN) && (m == 0)) { // listening socket
-                    accept_skt = accept(skt, (struct sockaddr_in *)&peer_addr, &peer_addr_size);
+                    accept_skt = accept(skt, (struct sockaddr *)&peer_addr, &peer_addr_size);
 
                     if (accept_skt < 0) {
                         printf("Error: accept() system call failed!\n Reason: %s\n", strerror(errno));
@@ -223,36 +226,40 @@ int main( int argc, char *argv[] ) {
                         fds[t].fd = accept_skt;
                         fds[t].events = POLLIN | POLLOUT;
                         t++;
+                        break;
                     }
 
                 }
 
                 if ( (fds[m].revents & POLLOUT) && (m > 0)) { // communication socket
 
-                    if (m >= j) {
+                    if (m > j) {
+                        printf("m=%d > j=%d\n", m, j);
                         exit(-1);
                     }
 
                     memset(line, 0, 256);
                     while (fgets(line, sizeof(line), outputs[m])) {
                         line[strlen(line) - 1] = '\0';
-
+                        printf("line: %s\n", line);
+                        
                         ret_write = write(fds[m].fd, line, strlen(line));
                         if (ret_write < 0) {
                             printf("Error: write() system call failed! Reason: %s\n", strerror(errno));
                             exit(-1);
                         }
+                        
 
                         memset(line, 0, 256);
 
                     }
 
                     fds[m].events = POLLIN;
-
+                    //printf("for loop. m = %d, t = %d\n", m, t);
                 }
 
                 if ( (fds[m].revents & POLLIN) && (m > 0)) {
-
+                        //
                 }
 
 
@@ -260,6 +267,8 @@ int main( int argc, char *argv[] ) {
 
             }
         }
+
+
     }
 
     ret_fclose = fclose(file);
