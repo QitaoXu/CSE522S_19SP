@@ -224,6 +224,7 @@ int main( int argc, char *argv[] ) {
                         fds[t].fd = accept_skt;
                         fds[t].events = POLLIN | POLLOUT;
                         t++;
+                        break;
                     }
 
                 }
