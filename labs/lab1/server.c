@@ -151,6 +151,7 @@ int main( int argc, char *argv[] ) {
         j++;
         
     }
+    printf("Before while loop: j = %d\n", j);
 
     /* After all those above files are opened,
      * server needs to create a socket monitoring 
