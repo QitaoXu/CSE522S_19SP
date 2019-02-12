@@ -200,7 +200,7 @@ int main( int argc, char *argv[] ) {
     t++; 
 
     while (1) {
-        printf("while loop\n");
+        //printf("while loop\n");
         ret_poll = poll(fds, t, TIMEOUT);
 
         if (ret_poll < 0) {
@@ -212,7 +212,7 @@ int main( int argc, char *argv[] ) {
 
         if (ret_poll > 0) {
             for (m = 0; m < t; m++) {
-                printf("for loop. m = %d, t = %d\n", m, t);
+                // printf("for loop. m = %d, t = %d\n", m, t);
                 if ( (fds[m].revents & POLLIN) && (m == 0)) { // listening socket
                     accept_skt = accept(skt, (struct sockaddr *)&peer_addr, &peer_addr_size);
 
@@ -251,7 +251,7 @@ int main( int argc, char *argv[] ) {
                     }
 
                     fds[m].events = POLLIN;
-
+                    printf("for loop. m = %d, t = %d\n", m, t);
                 }
 
                 if ( (fds[m].revents & POLLIN) && (m > 0)) {
