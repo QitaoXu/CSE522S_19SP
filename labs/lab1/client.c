@@ -95,8 +95,9 @@ int main( int argc, char *argv[] ) {
             if (ret_read == 0) continue;
 
             if (ret_read > 0) {
+                printf("msg[%ld] = %c\n", strlen(msg)-2, msg[strlen(msg)-2]);
                 printf("Message from server: %s\n", msg);
-                memset(msg, 0, strlen(msg));
+                memset(msg, 0, 1024);
                 //break;
             }
         }
