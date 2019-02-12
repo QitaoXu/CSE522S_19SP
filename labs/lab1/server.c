@@ -212,7 +212,7 @@ int main( int argc, char *argv[] ) {
 
         if (ret_poll > 0) {
             for (m = 0; m < t; m++) {
-                printf("for loop. m = %d, t = %d\n", m, t);
+                printf("for loop. m = %d, t = %d, j = %d\n", m, t, j);
                 if ( (fds[m].revents & POLLIN) && (m == 0)) { // listening socket
                     accept_skt = accept(skt, (struct sockaddr *)&peer_addr, &peer_addr_size);
 
@@ -233,7 +233,7 @@ int main( int argc, char *argv[] ) {
                 if ( (fds[m].revents & POLLOUT) && (m > 0)) { // communication socket
 
                     if (m > j) {
-                        printf("m > j\n");
+                        printf("m=%d > j=%d\n", m, j);
                         exit(-1);
                     }
 
