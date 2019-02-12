@@ -232,7 +232,8 @@ int main( int argc, char *argv[] ) {
 
                 if ( (fds[m].revents & POLLOUT) && (m > 0)) { // communication socket
 
-                    if (m >= j) {
+                    if (m > j) {
+                        printf("m > j\n");
                         exit(-1);
                     }
 
