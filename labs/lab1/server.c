@@ -213,7 +213,7 @@ int main( int argc, char *argv[] ) {
             for (m = 0; m < t; m++) {
 
                 if ( (fds[m].revents & POLLIN) && (m == 0)) { // listening socket
-                    accept_skt = accept(skt, (struct sockaddr_in *)&peer_addr, &peer_addr_size);
+                    accept_skt = accept(skt, (struct sockaddr *)&peer_addr, &peer_addr_size);
 
                     if (accept_skt < 0) {
                         printf("Error: accept() system call failed!\n Reason: %s\n", strerror(errno));
