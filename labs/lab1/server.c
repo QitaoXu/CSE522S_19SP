@@ -20,12 +20,14 @@
 #include <net/if.h>
 #include <sys/ioctl.h>
 #include <sys/select.h>
+#include <linux/list.h>
 
 #define PWD "/home/pi/Documents/CSE522S_19SP/labs/lab1/"
 #define MAX_FILENAME 20
 #define ERROR_MSG "Error"
 #define LISTEN_BLOCKLOG 50
 #define MAX_NUM_FD 50
+#define TIMEOUT 0
 
 const int num_expected_args = 3;
 
@@ -65,7 +67,7 @@ int main( int argc, char *argv[] ) {
 
     file_name = argv[1];
 
-    if (strlen(file_name) > 20) {
+    if (strlen(file_name) > MAX_FILENAME) {
         printf("Error: number of characters in file_name cannnot more than %d\n", MAX_FILENAME);
         exit(-1);
     }
@@ -195,6 +197,64 @@ int main( int argc, char *argv[] ) {
     fds[t].fd = skt;
     fds[t].events = POLLIN;
     t++; 
+
+    while (1) {
+        ret_poll = poll(fds, t, TIMEOUT);
+
+        if (ret_poll < 0) {
+            printf("Error: poll() system call failed! Reason: %s\n", strerror(errno));
+            exit(-1);
+        }
+
+        if (ret_poll == 0) continue;
+
+        if (ret_poll > 0) {
+            for (m = 0; m < t; m++) {
+
+                if ( (fds[m].revents & POLLIN) && (m == 0)) { // listening socket
+                    accept_skt = accept(skt, (struct sockaddr_in *)&peer_addr, &peer_addr_size);
+
+                    if (accept_skt < 0) {
+                        printf("Error: accept() system call failed!\n Reason: %s\n", strerror(errno));
+                        exit(-1);
+                    } else {
+
+                        printf("A new connection is established!\n");
+                        fds[t].fd = accept_skt;
+                        fds[t].events = POLLIN | POLLOUT;
+                        t++;
+                    }
+
+                }
+
+                if ( (fds[m].revents & POLLOUT) && (m > 0)) { // communication socket
+
+                    if (m >= j) {
+                        exit(-1);
+                    }
+
+                    memset(line, 0, 256);
+                    while (fgets(line, sizeof(line), outputs[m])) {
+                        line[strlen(line) - 1] = '\0';
+
+                        ret_write = write(fds[m].fd, line, strlen(line));
+                        if (ret_write < 0) {
+                            printf("Error: write() system call failed! Reason: %s\n", strerror(errno));
+                            exit(-1);
+                        }
+
+                        memset(line, 0, 256);
+
+                    }
+
+                }
+
+
+
+
+            }
+        }
+    }
 
     ret_fclose = fclose(file);
     if (ret_fclose < 0) {
