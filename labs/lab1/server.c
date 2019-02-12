@@ -247,6 +247,12 @@ int main( int argc, char *argv[] ) {
 
                     }
 
+                    fds[m].events = POLLIN;
+
+                }
+
+                if ( (fds[m].revents & POLLIN) && (m > 0)) {
+
                 }
 
 
