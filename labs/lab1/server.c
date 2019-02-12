@@ -241,12 +241,14 @@ int main( int argc, char *argv[] ) {
                     memset(line, 0, 256);
                     while (fgets(line, sizeof(line), outputs[m])) {
                         line[strlen(line) - 1] = '\0';
-
+                        printf("line: %s\n", line);
+                        /*
                         ret_write = write(fds[m].fd, line, strlen(line));
                         if (ret_write < 0) {
                             printf("Error: write() system call failed! Reason: %s\n", strerror(errno));
                             exit(-1);
                         }
+                        */
 
                         memset(line, 0, 256);
 
