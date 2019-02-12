@@ -172,7 +172,7 @@ int main( int argc, char *argv[] ) {
     skt_addr.sin_addr.s_addr = INADDR_ANY;
 
     on = 1;
-    setsockopt(skt, SOL_SOCKET, SOL_REUSEADDR, &on, sizeof(on));
+    setsockopt(skt, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
 
     ret_bind = bind(skt, (struct sockaddr *)&skt_addr, sizeof(struct sockaddr_in));
     if (ret_bind < 0) {
