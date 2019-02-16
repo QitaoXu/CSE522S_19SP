@@ -26,7 +26,7 @@
 
 
 #define BUF_SIZE 1024
-#define REGEX "^(\d+)\b(.+)$"
+#define REGEX "([0-9]+)"
 
 const int num_expected_args = 3;
 
@@ -44,7 +44,7 @@ int main( int argc, char *argv[] ) {
 
     regex_t regex;
     int status;
-    regmatch_t pmatch[3];
+    regmatch_t pmatch[2];
     char *line_num;
     char *line_contents;
     int i, j;
@@ -114,36 +114,36 @@ int main( int argc, char *argv[] ) {
             if (ret_read == 0) continue;
 
             if (ret_read > 0) {
-                //printf("msg[%ld] = %c\n", strlen(msg)-2, msg[strlen(msg)-2]);
-                //printf("Message from server: \n%s", msg);
                 token = strtok(msg, s);
 
                 while(token != NULL) {
-                    printf("%s\n", token);
 
-                    status = regexec(&regex, token, strlen(token), pmatch, 0);
+                    status = regexec(&regex, token, 1, pmatch, 0);
+                    printf("pmatch[0] so: %lld, eo: %lld\n", pmatch[0].rm_so, pmatch[0].rm_eo);
+                    
+                    line_num = (char *)malloc(sizeof(char) * (pmatch[0].rm_eo - pmatch[0].rm_so));
+                    line_contents = (char *)malloc(sizeof(char) * (strlen(token) - pmatch[0].rm_eo));
 
-                    line_num = (char *)malloc(sizeof(char) * (pmatch[1].eo - pmatch[1].so));
-                    line_contents = (char *)malloc(sizeof(char) * (pmatch[2].eo - pmatch[2].so));
-
+                    
                     j = 0;
-                    for (i = pmatch[1].so; i < pmatch[1].eo; i++) {
+                    for (i = pmatch[0].rm_so; i < pmatch[0].rm_eo; i++) {
                         line_num[j] = token[i];
                         j++;
                     }
-
+                    
                     j = 0;
-                    for (i = pmatch[2].so; i < pmatch[2].eo; i++) {
+                    for (i = pmatch[0].rm_eo; i < strlen(token); i++) {
                         line_contents[j] = token[i];
                         j++;
                     }
+                    
 
-                    printf("line_num = %s, line_contents = %s\n", line_num, line_contents);
+                    printf("line_num = %s\n", line_num);
+                    printf("line_contents: %s\n", line_contents);
 
                     token = strtok(NULL, s);
                 }
-                memset(msg, 0, 1024);
-                
+                memset(msg, 0, 1024);                
                 
             }
         }
