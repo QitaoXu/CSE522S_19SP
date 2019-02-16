@@ -103,8 +103,8 @@ void preOrder(struct Node * root) {
 
 void destroy(struct Node * root) {
     if (root != NULL) {
-        while(root->left != NULL) destroy(root->left);
-        while(root->right != NULL) destroy(root->right);
+        destroy(root->left);
+        destroy(root->right);
         free(root);
     }
 }
