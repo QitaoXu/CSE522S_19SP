@@ -21,7 +21,7 @@ height( struct Node *N );
 struct Node*
 newNode( int key );
 
-strcut Node*
+struct Node*
 rightrotate( struct Node *y );
 
 struct Node*
