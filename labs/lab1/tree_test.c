@@ -14,5 +14,7 @@ int main() {
 
     preOrder(root);
 
+    destroy(root);
+
     return 0;
 }
