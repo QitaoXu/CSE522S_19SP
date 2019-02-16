@@ -12,5 +12,7 @@ int main() {
     root = insert(root, 50, "50");
     root = insert(root, 60, "60");
 
+    preOrder(root);
+
     return 0;
 }
