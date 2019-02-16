@@ -119,8 +119,8 @@ int main( int argc, char *argv[] ) {
 
                 while(token != NULL) {
 
-                    printf("%s\n", token);
-                    /*
+                    //printf("%s\n", token);
+                    
                     status = regexec(&regex, token, 1, pmatch, 0);
                     printf("pmatch[0] so: %lld, eo: %lld\n", pmatch[0].rm_so, pmatch[0].rm_eo);
                     
@@ -143,7 +143,7 @@ int main( int argc, char *argv[] ) {
 
                     printf("line_num = %s\n", line_num);
                     printf("line_contents: %s\n", line_contents);
-                    */
+                    
                     token = strtok(NULL, s);
                 }
                 memset(msg, 0, 1024);                
