@@ -19,7 +19,7 @@ int
 height( struct Node *N );
 
 struct Node*
-newNode( int key );
+newNode( int key, char *line);
 
 struct Node*
 rightrotate( struct Node *y );
