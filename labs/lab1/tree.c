@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "tree.h"
+#include "tree.c"
 
 int max(int a, int b) {
     return (a > b) ? a : b;
