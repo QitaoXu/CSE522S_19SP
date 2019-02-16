@@ -3,13 +3,37 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-typedef struct node {
-    int num;
-    char *line;
-    struct node* left;
-    struct node* right;
+struct Node
+{
+    int key;
+    char* line;
+    struct Node *left;
+    struct Node *right;
     int height;
-}
+};
 
-void dispose(node *root);
-node* find( int e, node *t);
+int 
+max( int a, int b );
+
+int
+height( struct Node *N );
+
+struct Node*
+newNode( int key );
+
+strcut Node*
+rightrotate( struct Node *y );
+
+struct Node*
+leftRotate( struct Node *x );
+
+int
+getBalance( struct Node *N);
+
+struct Node*
+insert( struct Node * node, int key, char *line);
+
+void 
+preOrder( struct Node *root );
+
+
