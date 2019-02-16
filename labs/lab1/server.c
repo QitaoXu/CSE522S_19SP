@@ -241,7 +241,8 @@ int main( int argc, char *argv[] ) {
 
                     memset(line, 0, 256);
                     while (fgets(line, sizeof(line), outputs[m])) {
-                        //line[strlen(line) - 1] = '|';
+                        line[strlen(line) - 1] = '|';
+                        //char *newLine = (char *)malloc(sizeof(char * strlen(line) + 1));
                         //line[strlen(line)] = '\0';
                         printf("line: %s\n", line);
                         

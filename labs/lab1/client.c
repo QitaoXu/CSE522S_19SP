@@ -39,15 +39,18 @@ int main( int argc, char *argv[] ) {
     char *msg;
     fd_set readfds;
 
-    const char s[2] = "\n";
+    const char s[2] = "|";
     char *token;
 
     regex_t regex;
     int status;
     regmatch_t pmatch[2];
     char *line_num;
+    int line_num_int;
     char *line_contents;
     int i, j;
+
+    struct Node * root = NULL;
 
     if (regcomp(&regex, REGEX, REG_EXTENDED|REG_ICASE) != 0) {
         printf("Error: regcomp failed!\n");
@@ -143,7 +146,12 @@ int main( int argc, char *argv[] ) {
 
                     printf("line_num = %s\n", line_num);
                     printf("line_contents: %s\n", line_contents);
-                    
+                    printf("\n");
+
+                    if (line_contents != NULL) {
+                        line_num_int = atoi(line_num);
+                        root = insert(root, line_num_int, line_contents);
+                    }
                     token = strtok(NULL, s);
                 }
                 memset(msg, 0, 1024);                
