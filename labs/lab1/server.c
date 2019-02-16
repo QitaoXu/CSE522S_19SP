@@ -29,7 +29,7 @@
 #define LISTEN_BLOCKLOG 50
 #define MAX_NUM_FD 50
 #define TIMEOUT 0
-#define DELIMITER "|"
+#define DELIMITER "\n"
 
 const int num_expected_args = 3;
 
@@ -241,7 +241,7 @@ int main( int argc, char *argv[] ) {
 
                     memset(line, 0, 256);
                     while (fgets(line, sizeof(line), outputs[m])) {
-                        printf("strlen(line) - 1: %d\n", strlen(line) - 1);
+                        //printf("strlen(line) - 1: %d\n", strlen(line) - 1);
                         //line[strlen(line) - 1] = '|';
                         //char *newLine = (char *)malloc(sizeof(char * strlen(line) + 1));
                         //line[strlen(line)] = '\0';

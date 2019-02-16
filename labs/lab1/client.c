@@ -39,7 +39,7 @@ int main( int argc, char *argv[] ) {
     char *msg;
     fd_set readfds;
 
-    const char s[2] = "|";
+    const char s[2] = "\n";
     char *token;
 
     regex_t regex;
@@ -124,6 +124,7 @@ int main( int argc, char *argv[] ) {
 
                     //printf("%s\n", token);
                     
+                    /*
                     status = regexec(&regex, token, 1, pmatch, 0);
                     printf("pmatch[0] so: %lld, eo: %lld\n", pmatch[0].rm_so, pmatch[0].rm_eo);
                     
@@ -152,6 +153,7 @@ int main( int argc, char *argv[] ) {
                         line_num_int = atoi(line_num);
                         root = insert(root, line_num_int, line_contents);
                     }
+                    */
                     token = strtok(NULL, s);
                 }
                 memset(msg, 0, 1024);                
