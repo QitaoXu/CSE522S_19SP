@@ -21,8 +21,12 @@
 #include <sys/ioctl.h>
 #include <sys/select.h>
 // #include <linux/list.h>
+#include <regex.h>
+#include "tree.h"
+
 
 #define BUF_SIZE 1024
+#define REGEX "^(\d+)\b(.+)$"
 
 const int num_expected_args = 3;
 
@@ -37,6 +41,18 @@ int main( int argc, char *argv[] ) {
 
     const char s[2] = "\n";
     char *token;
+
+    regex_t regex;
+    int status;
+    regmatch_t pmatch[3];
+    char *line_num;
+    char *line_contents;
+    int i, j;
+
+    if (regcomp(&regex, REGEX, REG_EXTENDED|REG_ICASE) != 0) {
+        printf("Error: regcomp failed!\n");
+        exit(-1);
+    }
 
     if (argc != num_expected_args) {
         printf("Usage: ./client <IP address of server> <port number>\n");
@@ -99,11 +115,30 @@ int main( int argc, char *argv[] ) {
 
             if (ret_read > 0) {
                 //printf("msg[%ld] = %c\n", strlen(msg)-2, msg[strlen(msg)-2]);
-                printf("Message from server: \n%s", msg);
+                //printf("Message from server: \n%s", msg);
                 token = strtok(msg, s);
 
                 while(token != NULL) {
                     printf("%s\n", token);
+
+                    status = regexec(&regex, token, strlen(token), pmatch, 0);
+
+                    line_num = (char *)malloc(sizeof(char) * (pmatch[1].eo - pmatch[1].so));
+                    line_contents = (char *)malloc(sizeof(char) * (pmatch[2].eo - pmatch[2].so));
+
+                    j = 0;
+                    for (i = pmatch[1].so; i < pmatch[1].eo; i++) {
+                        line_num[j] = token[i];
+                        j++;
+                    }
+
+                    j = 0;
+                    for (i = pmatch[2].so; i < pmatch[2].eo; i++) {
+                        line_contents[j] = token[i];
+                        j++;
+                    }
+
+                    printf("line_num = %s, line_contents = %s\n", line_num, line_contents);
 
                     token = strtok(NULL, s);
                 }
