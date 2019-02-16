@@ -13,6 +13,7 @@ int main() {
     root = insert(root, 60, "60");
 
     preOrder(root);
+    inOrder(root);
 
     destroy(root);
 

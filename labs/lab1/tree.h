@@ -101,6 +101,14 @@ void preOrder(struct Node * root) {
     }
 }
 
+void inOrder(struct Node * root) {
+    if (root != NULL) {
+        inOrder(root->left);
+        printf("%d:%s\n", root->key, root->line);
+        inOrder(root->right);
+    }
+}
+
 void destroy(struct Node * root) {
     if (root != NULL) {
         destroy(root->left);
