@@ -35,6 +35,9 @@ int main( int argc, char *argv[] ) {
     char *msg;
     fd_set readfds;
 
+    const char s[2] = "\n";
+    char *token;
+
     if (argc != num_expected_args) {
         printf("Usage: ./client <IP address of server> <port number>\n");
         exit(-1);
@@ -95,10 +98,18 @@ int main( int argc, char *argv[] ) {
             if (ret_read == 0) continue;
 
             if (ret_read > 0) {
-                printf("msg[%ld] = %c\n", strlen(msg)-2, msg[strlen(msg)-2]);
-                printf("Message from server: %s\n", msg);
+                //printf("msg[%ld] = %c\n", strlen(msg)-2, msg[strlen(msg)-2]);
+                printf("Message from server: \n%s", msg);
+                token = strtok(msg, s);
+
+                while(token != NULL) {
+                    printf("%s\n", token);
+
+                    token = strtok(NULL, s);
+                }
                 memset(msg, 0, 1024);
-                //break;
+                
+                
             }
         }
 
