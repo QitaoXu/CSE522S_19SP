@@ -57,9 +57,9 @@ struct Node * insert( struct Node * node, int key, char * line) {
     if (node == NULL) return newNode(key, line);
 
     if (key < node->key)
-        node->left = insert(node->left, key);
+        node->left = insert(node->left, key, line);
     else if (key > node->key)
-        node->right = insert(node->right, key);
+        node->right = insert(node->right, key, line);
     node->height = 1 + max(height(node->left), height(node->right));
 
     int balance = getBalance(node);
