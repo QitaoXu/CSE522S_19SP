@@ -159,7 +159,7 @@ struct Node * insert( struct Node * node, int key, char * line) {
         return rightRotate(node);
     }
 
-    if (balance > -1 && key < node->right->key ) { // right left case
+    if (balance < -1 && key < node->right->key ) { // right left case
         printf("right-left case:\n");
         printf("****************\n\n\n");
         node->right = rightRotate(node->right);
