@@ -30,6 +30,7 @@
 #define BLANK " \n"
 
 const int num_expected_args = 3;
+int printFlag = 0;
 
 int main( int argc, char *argv[] ) {
     
@@ -103,20 +104,19 @@ int main( int argc, char *argv[] ) {
     while (1) {
         
         ret_select = select(skt + 1, &readfds, NULL, NULL, NULL);
+        printf("ret_select = %d\n", ret_select);
 
         if (ret_select < 0) {
             printf("Error: select() system call failed! Reason: %s\n", strerror(errno));
             exit(-1);
         }
-        if (ret_select == 0) continue;
+        if (ret_select == 0) {
+            printf("ret_select == 0\n\n\n");
+            continue;
+        }
 
         if (ret_select > 0) {
-
-            //msg = (char *)malloc(sizeof(char) * BUF_SIZE);
-            // if (msg == NULL) {
-            //     printf("Error: msg malloc failed!\n");
-            //     exit(-1);
-            // }
+            printf("ret_select > 0\n");
             ret_read = read(skt, msg, BUF_SIZE);
 
             if (ret_read < 0) {
@@ -124,10 +124,14 @@ int main( int argc, char *argv[] ) {
                 exit(-1);
             }
 
-            if (ret_read == 0) continue;
+            if (ret_read == 0) {
+                printf("ret_read == 0\n\n\n");
+                continue;
+            }
 
             if (ret_read > 0) {
-                printf("msg = %s\n", msg);
+                printf("ret_read > 0\n");
+                // printf("msg = %s\n", msg);
                 token = strtok(msg, s);
 
                 while(token != NULL) {
@@ -147,48 +151,34 @@ int main( int argc, char *argv[] ) {
                         line_num_int = atoi(line_num);
                         
                         if (strlen(line_contents) > 1) {
-                            new_line_contents = (char *)malloc(sizeof(char) * strlen(line_contents));
+                            new_line_contents = (char *)malloc(sizeof(char) * (strlen(line_contents)+1));
                             for (i = 0; i < (strlen(line_contents) - 1); i++) {
                                 new_line_contents[i] = line_contents[i+1];
                             }
 
-                            new_line_contents[strlen(line_contents)-1] = '\0';
+                            new_line_contents[strlen(line_contents)-1] = '\n';
+                            new_line_contents[strlen(line_contents)] = '\0';
                         }
 
                         if (strlen(line_contents) == 1) {
-                            printf("line_num = %d\n------------------\n\n", line_num_int);
-                            new_line_contents = (char *)malloc(sizeof(char) * 3);
-                            new_line_contents[0] = '@';
-                            new_line_contents[1] = '@';
-                            new_line_contents[2] = '\0';
+                            // printf("line_num = %d\n------------------\n\n", line_num_int);
+                            new_line_contents = (char *)malloc(sizeof(char) * 2);
+                            new_line_contents[0] = '\n';
+                            new_line_contents[1] = '\0';
                         }
-                       
-                        // printf("num: %d, len: %lu(), contents: %s|\n", line_num_int, strlen(new_line_contents), new_line_contents);
-                        if (root == NULL) {
-                            printf("root is NULL\n");
-                            printf("msg = %s\n\n", msg);
-                        }
-                        if (root != NULL) {
-                            printf("root is not NULL\n");
-                            printf("root->key = %d, line_num = %d\n\n", root->key, line_num_int);
-                        }
+
+                        printf("Incoming Node: %d, %s\n*********\n", line_num_int, new_line_contents);
                         root = insert(root, line_num_int, new_line_contents);
-                        // if (root == NULL) {
-                        //     printf("insert failed!\n");
-                        //     exit(-1);
-                        // }
+                        inOrder(root);
+                        printf("\n\n\n");
                         
                     }
 
                     token = strtok(NULL, s);
                 }
-                //inOrder(root);
-                //printf("\n");
-                //memset(msg, 0, strlen(msg)); 
-                //free(msg);               
+                memset(msg, 0, BUF_SIZE);          
                 
             }
-            //free(msg);
         }
 
         FD_ZERO(&readfds);

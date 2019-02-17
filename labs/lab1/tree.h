@@ -103,65 +103,35 @@ int getBalance( struct Node * N ) {
 }
 
 struct Node * insert( struct Node * node, int key, char * line) {
-    struct Node * return_Node = NULL;
     if (node == NULL) {
-        // printf("key = %d\n", key);
-        // return newNode(key, line);
-        return_Node = newNode(key, line);
-        if (return_Node == NULL) {
-            printf("NULL\n");
-            exit(-1);
-        }
-        printf("key = %d, node->key = %d\n", key, return_Node->key);
-        return return_Node;
+        return newNode(key, line);
     }
 
     if (key < node->key) {
-        printf("key = %d, node->key = %d\n\n", key, node->key);
+        // printf("key = %d, node->key = %d\n\n", key, node->key);
         node->left = insert(node->left, key, line);
-        // return_Node = insert(node->left, key, line);
-        // if (return_Node == NULL) {
-        //     printf("NULL\n");
-        //     exit(-1);
-        // }
-        // node->left = return_Node;
     }
     else if (key > node->key){
-        printf("key = %d, node->key = %d\n\n", key, node->key);
         node->right = insert(node->right, key, line);
-        // return_Node = insert(node->right, key, line);
-        // if (return_Node == NULL) {
-        //     printf("NULL\n");
-        //     exit(-1);
-        // }
-        // node->right = return_Node;
     }
     node->height = 1 + max(height(node->left), height(node->right));
 
     int balance = getBalance(node);
 
     if (balance > 1 && key < node->left->key) { // left left case
-        // printf("left-left case:\n");
-        // printf("****************\n\n\n");
         return rightRotate(node);
     }
 
     if (balance < -1 && key > node->right->key ) { // right right case
-        // printf("right-right case:\n");
-        // printf("****************\n\n\n");
         return leftRotate(node);
     }
 
     if (balance > 1 && key > node->left->key ) { // left right case
-        // printf("left-right case:\n");
-        // printf("****************\n\n\n");
         node->left = leftRotate(node->left);
         return rightRotate(node);
     }
 
     if (balance < -1 && key < node->right->key ) { // right left case
-        printf("right-left case:\n");
-        printf("****************\n\n\n");
         node->right = rightRotate(node->right);
         return leftRotate(node);
     }
@@ -171,6 +141,9 @@ struct Node * insert( struct Node * node, int key, char * line) {
 
 void preOrder(struct Node * root) {
     if (root != NULL) {
+        if (root->key > 100) {
+            printf("Strange key: %d\n", root->key);
+        }
         printf("%d:%s\n", root->key, root->line);
         preOrder(root->left);
         preOrder(root->right);
@@ -180,7 +153,7 @@ void preOrder(struct Node * root) {
 void inOrder(struct Node * root) {
     if (root != NULL) {
         inOrder(root->left);
-        printf("%d:%s\n", root->key, root->line);
+        printf("%d:%s", root->key, root->line);
         inOrder(root->right);
     }
 }
