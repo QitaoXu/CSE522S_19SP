@@ -37,7 +37,7 @@ int main( int argc, char *argv[] ) {
     struct sockaddr_in skt_addr;
     char *ip;
     int port_num;
-    char *msg;
+    char msg[BUF_SIZE];
     fd_set readfds;
 
     const char s[2] = "\n";
@@ -168,7 +168,7 @@ int main( int argc, char *argv[] ) {
                 }
                 //inOrder(root);
                 //printf("\n");
-                memset(msg, 0, 1024);                
+                //memset(msg, 0, 1024);                
                 
             }
         }

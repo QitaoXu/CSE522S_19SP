@@ -11,7 +11,7 @@ int main() {
     root = insert(root, 40, "40");
     root = insert(root, 50, "50");
     root = insert(root, 60, " \n");
-    printf("char len, %lu\n", strlen(" \n"));
+    // printf("char len, %lu\n", strlen(" \n"));
     char * test = (char *)malloc(sizeof(char) * 3);
     test[0] = '\n';
     test[1] = '\n';
@@ -23,6 +23,8 @@ int main() {
     inOrder(root);
 
     destroy(root);
+
+    free(test);
 
     return 0;
 }

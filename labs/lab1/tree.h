@@ -23,6 +23,10 @@ int height( struct Node * N) {
 
 struct Node * newNode( int key, char * line ) {
     struct Node * node = (struct Node *)malloc(sizeof(struct Node));
+    if (node == NULL) {
+        printf("node malloc failed!\n");
+        exit(-1);
+    }
     node->key = key;
     node->left = NULL;
     node->right = NULL;
@@ -31,6 +35,8 @@ struct Node * newNode( int key, char * line ) {
         printf("Error: line is NULL\n");
         exit(-1);
     }
+    // node->line = line;
+    
     if (strlen(line) < 1) {
         printf("Error: strlen(line): %lu\n", strlen(line));
         exit(-1);
@@ -95,64 +101,64 @@ int getBalance( struct Node * N ) {
 }
 
 struct Node * insert( struct Node * node, int key, char * line) {
-    struct Node * return_Node = NULL;
+    // struct Node * return_Node = NULL;
     if (node == NULL) {
-        printf("key = %d\n\n\n\n", key);
-        // return newNode(key, line);
-        return_Node = newNode(key, line);
-        if (return_Node == NULL) {
-            printf("NULL\n");
-            exit(-1);
-        }
-        return return_Node;
+        // printf("key = %d\n\n\n\n", key);
+        return newNode(key, line);
+        // return_Node = newNode(key, line);
+        // if (return_Node == NULL) {
+        //     printf("NULL\n");
+        //     exit(-1);
+        // }
+        // return return_Node;
     }
 
     if (key < node->key) {
-        printf("key = %d, node->key = %d\n\n", key, node->key);
-        // node->left = insert(node->left, key, line);
-        return_Node = insert(node->left, key, line);
-        if (return_Node == NULL) {
-            printf("NULL\n");
-            exit(-1);
-        }
-        node->left = return_Node;
+        // printf("key = %d, node->key = %d\n\n", key, node->key);
+        node->left = insert(node->left, key, line);
+        // return_Node = insert(node->left, key, line);
+        // if (return_Node == NULL) {
+        //     printf("NULL\n");
+        //     exit(-1);
+        // }
+        // node->left = return_Node;
     }
     else if (key > node->key){
-        printf("key = %d, node->key = %d\n\n", key, node->key);
-        // node->right = insert(node->right, key, line);
-        return_Node = insert(node->right, key, line);
-        if (return_Node == NULL) {
-            printf("NULL\n");
-            exit(-1);
-        }
-        node->right = return_Node;
+        // printf("key = %d, node->key = %d\n\n", key, node->key);
+        node->right = insert(node->right, key, line);
+        // return_Node = insert(node->right, key, line);
+        // if (return_Node == NULL) {
+        //     printf("NULL\n");
+        //     exit(-1);
+        // }
+        // node->right = return_Node;
     }
     node->height = 1 + max(height(node->left), height(node->right));
 
     int balance = getBalance(node);
 
     if (balance > 1 && key < node->left->key) { // left left case
-        printf("left-left case:\n");
-        printf("****************\n\n\n");
+        // printf("left-left case:\n");
+        // printf("****************\n\n\n");
         return rightRotate(node);
     }
 
     if (balance < -1 && key > node->right->key ) { // right right case
-        printf("right-right case:\n");
-        printf("****************\n\n\n");
+        // printf("right-right case:\n");
+        // printf("****************\n\n\n");
         return leftRotate(node);
     }
 
     if (balance > 1 && key > node->left->key ) { // left right case
-        printf("left-right case:\n");
-        printf("****************\n\n\n");
+        // printf("left-right case:\n");
+        // printf("****************\n\n\n");
         node->left = leftRotate(node->left);
         return rightRotate(node);
     }
 
     if (balance > -1 && key < node->right->key ) { // right left case
-        printf("right-left case:\n");
-        printf("****************\n\n\n");
+        // printf("right-left case:\n");
+        // printf("****************\n\n\n");
         node->right = rightRotate(node->right);
         return leftRotate(node);
     }
