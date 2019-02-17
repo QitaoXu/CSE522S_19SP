@@ -150,8 +150,16 @@ int main( int argc, char *argv[] ) {
                         while(token != NULL) {
 
                             // printf("%s\n", token);
-
+                            
                             line_contents = strchr(token, space);
+                            if (line_contents == NULL) {
+                                // printf("Invalid token: %s\n\n", token);
+                                if ( strncmp(token, SEND_COMPLETE, strlen(SEND_COMPLETE)) == 0 ) {
+                                    read_complete = FINISHED;
+                                    inOrder(root);
+                                    printf("\n\n\n");
+                                }
+                            }
                             if (line_contents != NULL) {
                                 
                                 
@@ -164,6 +172,7 @@ int main( int argc, char *argv[] ) {
                                 line_num_int = atoi(line_num);
                                 
                                 if (strlen(line_contents) > 1) {
+                                    /*
                                     new_line_contents = (char *)malloc(sizeof(char) * (strlen(line_contents) + 1));
                                     for (i = 0; i < (strlen(line_contents) - 1); i++) {
                                         new_line_contents[i] = line_contents[i+1];
@@ -171,16 +180,25 @@ int main( int argc, char *argv[] ) {
 
                                     new_line_contents[strlen(line_contents)-1] = '\n';
                                     new_line_contents[strlen(line_contents)] = '\0';
+                                    */
+                                    new_line_contents = (char *)malloc(sizeof(char) * strlen(token) + 2);
+                                    for (i = 0; i < strlen(token); i++) {
+                                        new_line_contents[i] = token[i];
+                                    }
+                                    new_line_contents[strlen(token)] = '\n';
+                                    new_line_contents[strlen(token) + 1] = '\0';
+                                    // printf("new_line_contents: %s", new_line_contents); 
                                 }
 
                                 if (strlen(line_contents) == 1) {
-                                    // printf("line_num = %d\n------------------\n\n", line_num_int);
+                                    
                                     new_line_contents = (char *)malloc(sizeof(char) * 2);
                                     new_line_contents[0] = '\n';
                                     new_line_contents[1] = '\0';
+                                    
                                 }
 
-                                printf("Incoming Node: %d, %s\n*********\n", line_num_int, new_line_contents);
+                                // printf("Incoming Node: %d, %s\n*********\n", line_num_int, new_line_contents);
                                 root = insert(root, line_num_int, new_line_contents);
                                 
                             }
@@ -199,6 +217,7 @@ int main( int argc, char *argv[] ) {
                     continue;
                 }
                 printf("Ready to send messages back to server!\n\n");
+                sleep(1);
             }
         }
 

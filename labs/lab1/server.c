@@ -256,13 +256,18 @@ int main( int argc, char *argv[] ) {
 
                     }
 
+                    printf("Complete!\n");
                     ret_write = write(fds[m].fd, SEND_COMPLETE, strlen(SEND_COMPLETE));
+                    if (ret_write < 0) {
+                        printf("Error: write() system call failed when sending complete! Reason: %s\n", strerror(errno));
+                        exit(-1);
+                    }
                     fds[m].events = POLLIN;
                     
                 }
 
                 if ( (fds[m].revents & POLLIN) && (m > 0)) {
-                        //
+                        
                 }
 
 
