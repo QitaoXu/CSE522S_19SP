@@ -151,13 +151,13 @@ int main( int argc, char *argv[] ) {
                         line_num_int = atoi(line_num);
                         
                         if (strlen(line_contents) > 1) {
-                            new_line_contents = (char *)malloc(sizeof(char) * (strlen(line_contents)+1));
+                            new_line_contents = (char *)malloc(sizeof(char) * strlen(line_contents));
                             for (i = 0; i < (strlen(line_contents) - 1); i++) {
                                 new_line_contents[i] = line_contents[i+1];
                             }
 
                             new_line_contents[strlen(line_contents)-1] = '\n';
-                            new_line_contents[strlen(line_contents)] = '\0';
+                            //new_line_contents[strlen(line_contents)] = '\0';
                         }
 
                         if (strlen(line_contents) == 1) {
