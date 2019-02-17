@@ -149,9 +149,10 @@ int main( int argc, char *argv[] ) {
                         }
 
                         if (strlen(line_contents) == 1) {
-                            new_line_contents = (char *)malloc(sizeof(char) * 2);
-                            new_line_contents[0] = '\n';
-                            new_line_contents[1] = '\0';
+                            new_line_contents = (char *)malloc(sizeof(char) * 3);
+                            new_line_contents[0] = '@';
+                            new_line_contents[1] = '@';
+                            new_line_contents[2] = '\0';
                         }
                        
                         // printf("num: %d, len: %lu(), contents: %s|\n", line_num_int, strlen(new_line_contents), new_line_contents);
