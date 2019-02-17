@@ -153,6 +153,9 @@ void preOrder(struct Node * root) {
 void inOrder(struct Node * root) {
     if (root != NULL) {
         inOrder(root->left);
+        if (root->key > 100) {
+            printf("Strange key: %d\n", root->key);
+        }
         printf("%d:%s", root->key, root->line);
         inOrder(root->right);
     }
