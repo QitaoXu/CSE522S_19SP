@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 
 struct Node
@@ -25,8 +26,40 @@ struct Node * newNode( int key, char * line ) {
     node->key = key;
     node->left = NULL;
     node->right = NULL;
-    node->line = line;
+    node->line = NULL;
+    if (line == NULL) {
+        printf("Error: line is NULL\n");
+        exit(-1);
+    }
+    if (strlen(line) < 1) {
+        printf("Error: strlen(line): %lu\n", strlen(line));
+        exit(-1);
+    } 
+    if (strlen(line) == 1) {
+        printf("NewNode: line: %ld\n", strlen(line));
+        node->line = (char *)malloc(sizeof(char) * 2);
+        if (node->line == NULL) {
+            printf("malloc failed!\n");
+            exit(-1);
+        }
+        (node->line)[0] = '\n';
+        (node->line)[1] = '\0';
+        
+    }
+    if (strlen(line) > 1) {
+        printf("NewNode: line: %s\n", line);
+        node->line = (char *)malloc(sizeof(char) * strlen(line));
+        if (node->line == NULL) {
+            printf("Error: malloc() failed!\n");
+            exit(-1);
+        }
+
+        strncpy(node->line, line, sizeof(char) * strlen(line));
+        
+    }
+    
     node->height = 1;
+    printf("node->line: %s\n",node->line);
     return node;
 }
 
@@ -62,7 +95,9 @@ int getBalance( struct Node * N ) {
 }
 
 struct Node * insert( struct Node * node, int key, char * line) {
-    if (node == NULL) return newNode(key, line);
+    if (node == NULL) {
+        return newNode(key, line);
+    }
 
     if (key < node->key)
         node->left = insert(node->left, key, line);
@@ -113,6 +148,7 @@ void destroy(struct Node * root) {
     if (root != NULL) {
         destroy(root->left);
         destroy(root->right);
+        free(root->line);
         free(root);
     }
 }

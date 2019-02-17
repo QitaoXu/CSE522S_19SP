@@ -26,7 +26,8 @@
 
 
 #define BUF_SIZE 1024
-#define REGEX "([0-9]+)"
+#define REGEX "^([0-9]+)"
+#define BLANK " \n"
 
 const int num_expected_args = 3;
 
@@ -48,7 +49,9 @@ int main( int argc, char *argv[] ) {
     char *line_num;
     int line_num_int;
     char *line_contents;
+    char *new_line_contents;
     int i, j;
+    const char space = ' ';
 
     struct Node * root = NULL;
 
@@ -122,40 +125,48 @@ int main( int argc, char *argv[] ) {
 
                 while(token != NULL) {
 
-                    //printf("%s\n", token);
-                    
-                    /*
-                    status = regexec(&regex, token, 1, pmatch, 0);
-                    printf("pmatch[0] so: %lld, eo: %lld\n", pmatch[0].rm_so, pmatch[0].rm_eo);
-                    
-                    line_num = (char *)malloc(sizeof(char) * (pmatch[0].rm_eo - pmatch[0].rm_so));
-                    line_contents = (char *)malloc(sizeof(char) * (strlen(token) - pmatch[0].rm_eo));
+                    // printf("%s\n", token);
 
-                    
-                    j = 0;
-                    for (i = pmatch[0].rm_so; i < pmatch[0].rm_eo; i++) {
-                        line_num[j] = token[i];
-                        j++;
-                    }
-                    
-                    j = 0;
-                    for (i = pmatch[0].rm_eo; i < strlen(token); i++) {
-                        line_contents[j] = token[i];
-                        j++;
-                    }
-                    
-
-                    printf("line_num = %s\n", line_num);
-                    printf("line_contents: %s\n", line_contents);
-                    printf("\n");
-
+                    line_contents = strchr(token, space);
                     if (line_contents != NULL) {
+                        
+                        
+                        line_num = (char *)malloc(sizeof(char) * (strlen(token) - strlen(line_contents) + 1));
+                        for (i = 0; i < (strlen(token) - strlen(line_contents)); i++) {
+                            line_num[i] = token[i];
+                        }
+                        
+                        line_num[strlen(token) - strlen(line_contents)] = '\0';
                         line_num_int = atoi(line_num);
-                        root = insert(root, line_num_int, line_contents);
+                        
+                        if (strlen(line_contents) > 1) {
+                            new_line_contents = (char *)malloc(sizeof(char) * strlen(line_contents));
+                            for (i = 0; i < (strlen(line_contents) - 1); i++) {
+                                new_line_contents[i] = line_contents[i+1];
+                            }
+
+                            new_line_contents[strlen(line_contents)-1] = '\0';
+                        }
+
+                        if (strlen(line_contents) == 1) {
+                            new_line_contents = (char *)malloc(sizeof(char) * 2);
+                            new_line_contents[0] = '\n';
+                            new_line_contents[1] = '\0';
+                        }
+                       
+                        // printf("num: %d, len: %lu(), contents: %s|\n", line_num_int, strlen(new_line_contents), new_line_contents);
+                        root = insert(root, line_num_int, new_line_contents);
+                        if (root == NULL) {
+                            printf("insert failed!\n");
+                            exit(-1);
+                        }
+                        
                     }
-                    */
+
                     token = strtok(NULL, s);
                 }
+                //inOrder(root);
+                //printf("\n");
                 memset(msg, 0, 1024);                
                 
             }
