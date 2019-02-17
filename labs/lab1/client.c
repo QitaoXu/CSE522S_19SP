@@ -10,6 +10,7 @@
 #include <netinet/ip.h>
 #include <arpa/inet.h>
 #include <time.h> // for clock_gettime()
+#include <sys/time.h>
 // #include <linux/limits.h>
 #include <sys/stat.h>
 #include <sys/socket.h> // for bind(), socket()
@@ -28,9 +29,12 @@
 #define BUF_SIZE 1024
 #define REGEX "^([0-9]+)"
 #define BLANK " \n"
+#define SEND_COMPLETE "COMPLETE"
+#define UNFINISHED 0
+#define FINISHED 1
 
 const int num_expected_args = 3;
-int printFlag = 0;
+int read_complete = UNFINISHED;
 
 int main( int argc, char *argv[] ) {
     
@@ -39,9 +43,11 @@ int main( int argc, char *argv[] ) {
     char *ip;
     int port_num;
     char msg[BUF_SIZE];
-    // char *msg = malloc(sizeof(char) * BUF_SIZE);
-    // char *msg;
     fd_set readfds;
+    fd_set writefds;
+    struct timeval tv;
+    tv.tv_sec = 2;
+    tv.tv_usec = 0;
 
     const char s[2] = "\n";
     char *token;
@@ -100,11 +106,12 @@ int main( int argc, char *argv[] ) {
 
     FD_ZERO(&readfds);
     FD_SET(skt, &readfds);
+    FD_ZERO(&writefds);
+    // FD_SET(skt, &writefds);
 
     while (1) {
         
-        ret_select = select(skt + 1, &readfds, NULL, NULL, NULL);
-        printf("ret_select = %d\n", ret_select);
+        ret_select = select(skt + 1, &readfds, &writefds, NULL, &tv);
 
         if (ret_select < 0) {
             printf("Error: select() system call failed! Reason: %s\n", strerror(errno));
@@ -117,72 +124,93 @@ int main( int argc, char *argv[] ) {
 
         if (ret_select > 0) {
             printf("ret_select > 0\n");
-            ret_read = read(skt, msg, BUF_SIZE);
+            if (FD_ISSET(skt, &readfds)) {
+                ret_read = read(skt, msg, BUF_SIZE);
 
-            if (ret_read < 0) {
-                printf("Error: read() system call failed! Reason: %s\n", strerror(errno));
-                exit(-1);
-            }
+                if (ret_read < 0) {
+                    printf("Error: read() system call failed! Reason: %s\n", strerror(errno));
+                    exit(-1);
+                }
 
-            if (ret_read == 0) {
-                printf("ret_read == 0\n\n\n");
-                continue;
-            }
+                if (ret_read == 0) {
+                    printf("ret_read == 0\n\n\n");
+                    continue;
+                }
 
-            if (ret_read > 0) {
-                printf("ret_read > 0\n");
-                // printf("msg = %s\n", msg);
-                token = strtok(msg, s);
-
-                while(token != NULL) {
-
-                    // printf("%s\n", token);
-
-                    line_contents = strchr(token, space);
-                    if (line_contents != NULL) {
-                        
-                        
-                        line_num = (char *)malloc(sizeof(char) * (strlen(token) - strlen(line_contents) + 1));
-                        for (i = 0; i < (strlen(token) - strlen(line_contents)); i++) {
-                            line_num[i] = token[i];
-                        }
-                        
-                        line_num[strlen(token) - strlen(line_contents)] = '\0';
-                        line_num_int = atoi(line_num);
-                        
-                        if (strlen(line_contents) > 1) {
-                            new_line_contents = (char *)malloc(sizeof(char) * (strlen(line_contents) + 1));
-                            for (i = 0; i < (strlen(line_contents) - 1); i++) {
-                                new_line_contents[i] = line_contents[i+1];
-                            }
-
-                            new_line_contents[strlen(line_contents)-1] = '\n';
-                            new_line_contents[strlen(line_contents)] = '\0';
-                        }
-
-                        if (strlen(line_contents) == 1) {
-                            // printf("line_num = %d\n------------------\n\n", line_num_int);
-                            new_line_contents = (char *)malloc(sizeof(char) * 2);
-                            new_line_contents[0] = '\n';
-                            new_line_contents[1] = '\0';
-                        }
-
-                        printf("Incoming Node: %d, %s\n*********\n", line_num_int, new_line_contents);
-                        root = insert(root, line_num_int, new_line_contents);
+                if (ret_read > 0) {
+                    printf("ret_read > 0\n");
+                    
+                    if ( strncmp(msg, SEND_COMPLETE, strlen(SEND_COMPLETE)) == 0 ){
+                        read_complete = FINISHED;
                         inOrder(root);
                         printf("\n\n\n");
-                        
-                    }
+                    } else {
+                        token = strtok(msg, s);
 
-                    token = strtok(NULL, s);
+                        while(token != NULL) {
+
+                            // printf("%s\n", token);
+
+                            line_contents = strchr(token, space);
+                            if (line_contents != NULL) {
+                                
+                                
+                                line_num = (char *)malloc(sizeof(char) * (strlen(token) - strlen(line_contents) + 1));
+                                for (i = 0; i < (strlen(token) - strlen(line_contents)); i++) {
+                                    line_num[i] = token[i];
+                                }
+                                
+                                line_num[strlen(token) - strlen(line_contents)] = '\0';
+                                line_num_int = atoi(line_num);
+                                
+                                if (strlen(line_contents) > 1) {
+                                    new_line_contents = (char *)malloc(sizeof(char) * (strlen(line_contents) + 1));
+                                    for (i = 0; i < (strlen(line_contents) - 1); i++) {
+                                        new_line_contents[i] = line_contents[i+1];
+                                    }
+
+                                    new_line_contents[strlen(line_contents)-1] = '\n';
+                                    new_line_contents[strlen(line_contents)] = '\0';
+                                }
+
+                                if (strlen(line_contents) == 1) {
+                                    // printf("line_num = %d\n------------------\n\n", line_num_int);
+                                    new_line_contents = (char *)malloc(sizeof(char) * 2);
+                                    new_line_contents[0] = '\n';
+                                    new_line_contents[1] = '\0';
+                                }
+
+                                printf("Incoming Node: %d, %s\n*********\n", line_num_int, new_line_contents);
+                                root = insert(root, line_num_int, new_line_contents);
+                                
+                            }
+
+                            token = strtok(NULL, s);
+                        }
+                        memset(msg, 0, BUF_SIZE); 
+                    }         
+                    
                 }
-                memset(msg, 0, BUF_SIZE);          
-                
+            }
+
+            if (FD_ISSET(skt, &writefds)) {
+                if (read_complete == 0) {
+                    printf("Still waiting for messages from server!\n\n");
+                    continue;
+                }
+                printf("Ready to send messages back to server!\n\n");
             }
         }
 
         FD_ZERO(&readfds);
-        FD_SET(skt, &readfds);
+        if (read_complete == UNFINISHED) {
+            FD_SET(skt, &readfds);
+        }
+
+        FD_ZERO(&writefds);
+        if (read_complete == FINISHED) {
+            FD_SET(skt, &writefds);
+        }
 
     }
 

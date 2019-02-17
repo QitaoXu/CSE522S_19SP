@@ -30,6 +30,7 @@
 #define MAX_NUM_FD 50
 #define TIMEOUT 0
 #define DELIMITER "\n"
+#define SEND_COMPLETE "COMPLETE"
 
 const int num_expected_args = 3;
 
@@ -241,10 +242,7 @@ int main( int argc, char *argv[] ) {
 
                     memset(line, 0, 256);
                     while (fgets(line, sizeof(line), outputs[m])) {
-                        //printf("strlen(line) - 1: %d\n", strlen(line) - 1);
-                        //line[strlen(line) - 1] = '|';
-                        //char *newLine = (char *)malloc(sizeof(char * strlen(line) + 1));
-                        //line[strlen(line)] = '\0';
+                        
                         printf("line: %s\n", line);
                         
                         ret_write = write(fds[m].fd, line, strlen(line));
@@ -258,8 +256,9 @@ int main( int argc, char *argv[] ) {
 
                     }
 
+                    ret_write = write(fds[m].fd, SEND_COMPLETE, strlen(SEND_COMPLETE));
                     fds[m].events = POLLIN;
-                    //printf("for loop. m = %d, t = %d\n", m, t);
+                    
                 }
 
                 if ( (fds[m].revents & POLLIN) && (m > 0)) {
