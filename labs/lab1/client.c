@@ -38,6 +38,8 @@ int main( int argc, char *argv[] ) {
     char *ip;
     int port_num;
     char msg[BUF_SIZE];
+    // char *msg = malloc(sizeof(char) * BUF_SIZE);
+    // char *msg;
     fd_set readfds;
 
     const char s[2] = "\n";
@@ -110,6 +112,11 @@ int main( int argc, char *argv[] ) {
 
         if (ret_select > 0) {
 
+            //msg = (char *)malloc(sizeof(char) * BUF_SIZE);
+            // if (msg == NULL) {
+            //     printf("Error: msg malloc failed!\n");
+            //     exit(-1);
+            // }
             ret_read = read(skt, msg, BUF_SIZE);
 
             if (ret_read < 0) {
@@ -120,7 +127,7 @@ int main( int argc, char *argv[] ) {
             if (ret_read == 0) continue;
 
             if (ret_read > 0) {
-                // printf("msg = %s\n", msg);
+                printf("msg = %s\n", msg);
                 token = strtok(msg, s);
 
                 while(token != NULL) {
@@ -149,6 +156,7 @@ int main( int argc, char *argv[] ) {
                         }
 
                         if (strlen(line_contents) == 1) {
+                            printf("line_num = %d\n------------------\n\n", line_num_int);
                             new_line_contents = (char *)malloc(sizeof(char) * 3);
                             new_line_contents[0] = '@';
                             new_line_contents[1] = '@';
@@ -156,11 +164,19 @@ int main( int argc, char *argv[] ) {
                         }
                        
                         // printf("num: %d, len: %lu(), contents: %s|\n", line_num_int, strlen(new_line_contents), new_line_contents);
-                        root = insert(root, line_num_int, new_line_contents);
                         if (root == NULL) {
-                            printf("insert failed!\n");
-                            exit(-1);
+                            printf("root is NULL\n");
+                            printf("msg = %s\n\n", msg);
                         }
+                        if (root != NULL) {
+                            printf("root is not NULL\n");
+                            printf("root->key = %d, line_num = %d\n\n", root->key, line_num_int);
+                        }
+                        root = insert(root, line_num_int, new_line_contents);
+                        // if (root == NULL) {
+                        //     printf("insert failed!\n");
+                        //     exit(-1);
+                        // }
                         
                     }
 
@@ -168,9 +184,11 @@ int main( int argc, char *argv[] ) {
                 }
                 //inOrder(root);
                 //printf("\n");
-                //memset(msg, 0, 1024);                
+                //memset(msg, 0, strlen(msg)); 
+                //free(msg);               
                 
             }
+            //free(msg);
         }
 
         FD_ZERO(&readfds);

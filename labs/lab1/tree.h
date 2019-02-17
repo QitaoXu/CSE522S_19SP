@@ -16,7 +16,9 @@ int max(int a, int b) {
 }
 
 int height( struct Node * N) {
-    if (N == NULL) return 0;
+    if (N == NULL) {
+        return 0;
+    }
 
     return N->height;
 }
@@ -101,20 +103,21 @@ int getBalance( struct Node * N ) {
 }
 
 struct Node * insert( struct Node * node, int key, char * line) {
-    // struct Node * return_Node = NULL;
+    struct Node * return_Node = NULL;
     if (node == NULL) {
-        // printf("key = %d\n\n\n\n", key);
-        return newNode(key, line);
-        // return_Node = newNode(key, line);
-        // if (return_Node == NULL) {
-        //     printf("NULL\n");
-        //     exit(-1);
-        // }
-        // return return_Node;
+        // printf("key = %d\n", key);
+        // return newNode(key, line);
+        return_Node = newNode(key, line);
+        if (return_Node == NULL) {
+            printf("NULL\n");
+            exit(-1);
+        }
+        printf("key = %d, node->key = %d\n", key, return_Node->key);
+        return return_Node;
     }
 
     if (key < node->key) {
-        // printf("key = %d, node->key = %d\n\n", key, node->key);
+        printf("key = %d, node->key = %d\n\n", key, node->key);
         node->left = insert(node->left, key, line);
         // return_Node = insert(node->left, key, line);
         // if (return_Node == NULL) {
@@ -124,7 +127,7 @@ struct Node * insert( struct Node * node, int key, char * line) {
         // node->left = return_Node;
     }
     else if (key > node->key){
-        // printf("key = %d, node->key = %d\n\n", key, node->key);
+        printf("key = %d, node->key = %d\n\n", key, node->key);
         node->right = insert(node->right, key, line);
         // return_Node = insert(node->right, key, line);
         // if (return_Node == NULL) {
@@ -157,8 +160,8 @@ struct Node * insert( struct Node * node, int key, char * line) {
     }
 
     if (balance > -1 && key < node->right->key ) { // right left case
-        // printf("right-left case:\n");
-        // printf("****************\n\n\n");
+        printf("right-left case:\n");
+        printf("****************\n\n\n");
         node->right = rightRotate(node->right);
         return leftRotate(node);
     }
