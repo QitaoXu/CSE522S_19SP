@@ -81,7 +81,7 @@ int main( int argc, char *argv[] ) {
 
     struct Node *root = NULL;
     char *token;
-    const char border[2] = "\n"
+    const char border[2] = "\n";
 
     if (argc != num_expected_args) {
         printf("Usage: ./server <file name> <port number>\n");
