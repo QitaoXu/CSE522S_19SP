@@ -21,6 +21,7 @@
 #include <sys/ioctl.h>
 #include <sys/select.h>
 #include <poll.h>
+#include "tree.h"
 //#include <linux/list.h>
 
 #define PWD "/home/pi/Documents/CSE522S_19SP/labs/lab1/"
@@ -31,6 +32,16 @@
 #define TIMEOUT 0
 #define DELIMITER "\n"
 #define SEND_COMPLETE "COMPLETE"
+#define RECIEVE_COMPLETE "COMPLETE"
+
+#define UNFINISHED 0
+#define FINISHED 1
+
+struct tracker{
+    int skt;
+    int is_sent;
+    int is_recieved;
+};
 
 const int num_expected_args = 3;
 
@@ -41,7 +52,8 @@ int main( int argc, char *argv[] ) {
     /* Variables related to files opened
     */
     int port_num, ret_fprintf, ret_fclose;
-    int i = 0, j = 0;
+    int i = 0; // # of lines in *spec file
+    int j = 0; // # of files opened
     char *pwd = "/home/pi/Documents/CSE522S_19SP/labs/lab1/";
     char *file_name;
     char *file_path;
@@ -59,9 +71,23 @@ int main( int argc, char *argv[] ) {
 
     /* Variables realted to multiplexing io
     */
-    int t = 0, m, n, k;
+    int t = 0; // # of monitored fps
+    int m;     // index to iterate active fps being monitored
+    int n = 0; // # of tracker
+    int k;
     int ret_poll;
     struct pollfd fds[MAX_NUM_FD];
+    struct tracker *trackers;
+    char read_buf[256];
+
+    struct Node *root = NULL;
+    char *token;
+    const char border[2] = "\n";
+    char *line_num;
+    int line_num_int;
+    char *line_contents;
+    char *new_line_contents;
+    const char space = ' ';
 
     if (argc != num_expected_args) {
         printf("Usage: ./server <file name> <port number>\n");
@@ -128,6 +154,12 @@ int main( int argc, char *argv[] ) {
         printf("Error: malloc() function failed for outputs! Reason: %s\n", strerror(errno));
         free(file_path);
         exit(-1);      
+    }
+
+    trackers = (struct tracker *)malloc(sizeof(struct tracker) * (i - 1));
+    if (trackers == NULL) {
+        printf("Error: malloc failed for trackers! Reason: %s\n", strerror(errno));
+        exit(-1);
     }
 
     //printf("i = %d\n", i);
@@ -203,7 +235,8 @@ int main( int argc, char *argv[] ) {
     t++; 
 
     while (1) {
-        //printf("while loop\n");
+        //printf("while loop, t = %d\n", t);
+        //sleep(2);
         ret_poll = poll(fds, t, TIMEOUT);
 
         if (ret_poll < 0) {
@@ -211,7 +244,11 @@ int main( int argc, char *argv[] ) {
             exit(-1);
         }
 
-        if (ret_poll == 0) continue;
+        if (ret_poll == 0) {
+            //printf("ret_poll = 0\n");
+            //sleep(2);
+            continue;
+        }
 
         if (ret_poll > 0) {
             for (m = 0; m < t; m++) {
@@ -228,6 +265,10 @@ int main( int argc, char *argv[] ) {
                         fds[t].fd = accept_skt;
                         fds[t].events = POLLIN | POLLOUT;
                         t++;
+                        trackers[n].skt = accept_skt;
+                        trackers[n].is_sent = UNFINISHED;
+                        trackers[n].is_recieved = UNFINISHED;
+                        n++;
                         break;
                     }
 
@@ -262,12 +303,82 @@ int main( int argc, char *argv[] ) {
                         printf("Error: write() system call failed when sending complete! Reason: %s\n", strerror(errno));
                         exit(-1);
                     }
+
                     fds[m].events = POLLIN;
+                    trackers[m - 1].is_sent = FINISHED;
+                    break;
                     
                 }
 
                 if ( (fds[m].revents & POLLIN) && (m > 0)) {
+                    // printf("trackers[m-1] is trackers[%d]\n", m - 1);
+                    ret_read = read(fds[m].fd, read_buf, 256);
+                    if (ret_read < 0) {
+                        printf("Error: read system call for read_buf failed! Reason: %d\n", strerror(errno));
+                        exit(-1);
+                    }
+
+                    if (ret_read == 0) continue;
+                    if (ret_read > 0) {
+                        // printf("Received: %s\n", read_buf);
                         
+                        token = strtok(read_buf, border); 
+                        while(token != NULL) {
+                        
+                            // printf("%s\n", token);
+                            line_contents = strchr(token, space);
+                            if (line_contents == NULL) {
+                                // printf("Invalid token: %s\n\n", token);
+                                if ( strncmp(token, RECIEVE_COMPLETE, strlen(RECIEVE_COMPLETE)) == 0 ) {
+                                    // read_complete = FINISHED;
+                                    inOrder(root);
+                                    printf("\n\n\n");
+                                }
+                            }
+                            if (line_contents != NULL) {
+                                                              
+                                line_num = (char *)malloc(sizeof(char) * (strlen(token) - strlen(line_contents) + 1));
+                                for (i = 0; i < (strlen(token) - strlen(line_contents)); i++) {
+                                    line_num[i] = token[i];
+                                }
+                                
+                                line_num[strlen(token) - strlen(line_contents)] = '\0';
+                                line_num_int = atoi(line_num);
+                                
+                                if (strlen(line_contents) > 1) {
+                                    
+                                    new_line_contents = (char *)malloc(sizeof(char) * (strlen(line_contents) + 1));
+                                    for (i = 0; i < (strlen(line_contents) - 1); i++) {
+                                        new_line_contents[i] = line_contents[i+1];
+                                    }
+
+                                    new_line_contents[strlen(line_contents)-1] = '\n';
+                                    new_line_contents[strlen(line_contents)] = '\0';
+                                    
+                                    
+                                    // printf("new_line_contents: %s", new_line_contents); 
+                                }
+
+                                if (strlen(line_contents) == 1) {
+                                    
+                                    new_line_contents = (char *)malloc(sizeof(char) * 2);
+                                    new_line_contents[0] = '\n';
+                                    new_line_contents[1] = '\0';
+                                    
+                                }
+
+                                // printf("Incoming Node: %d, %s\n*********\n", line_num_int, new_line_contents);
+                                root = insert(root, line_num_int, new_line_contents);
+                                memset(new_line_contents, 0, strlen(new_line_contents));
+                                
+                            }
+                            token = strtok(NULL, border);
+                        }
+
+                        memset(read_buf, 0, 256);
+
+                    }
+                    //sleep(1);
                 }
 
 

@@ -30,15 +30,17 @@
 #define REGEX "^([0-9]+)"
 #define BLANK " \n"
 #define SEND_COMPLETE "COMPLETE"
+#define READY "READY"
 #define UNFINISHED 0
 #define FINISHED 1
 
 const int num_expected_args = 3;
 int read_complete = UNFINISHED;
+int write_complete = UNFINISHED;
 
 int main( int argc, char *argv[] ) {
     
-    int skt, ret_inet_aton, ret_connect, ret_read, ret_select;
+    int skt, ret_inet_aton, ret_connect, ret_read, ret_select, ret_write;
     struct sockaddr_in skt_addr;
     char *ip;
     int port_num;
@@ -118,12 +120,12 @@ int main( int argc, char *argv[] ) {
             exit(-1);
         }
         if (ret_select == 0) {
-            printf("ret_select == 0\n\n\n");
+            // printf("ret_select == 0\n\n\n");
             continue;
         }
 
         if (ret_select > 0) {
-            printf("ret_select > 0\n");
+            // printf("ret_select > 0\n");
             if (FD_ISSET(skt, &readfds)) {
                 ret_read = read(skt, msg, BUF_SIZE);
 
@@ -138,12 +140,12 @@ int main( int argc, char *argv[] ) {
                 }
 
                 if (ret_read > 0) {
-                    printf("ret_read > 0\n");
+                    // printf("ret_read > 0\n");
                     
                     if ( strncmp(msg, SEND_COMPLETE, strlen(SEND_COMPLETE)) == 0 ){
                         read_complete = FINISHED;
-                        inOrder(root);
-                        printf("\n\n\n");
+                        // inOrder(root);
+                        // printf("\n\n\n");
                     } else {
                         token = strtok(msg, s);
 
@@ -192,14 +194,20 @@ int main( int argc, char *argv[] ) {
 
                                 if (strlen(line_contents) == 1) {
                                     
-                                    new_line_contents = (char *)malloc(sizeof(char) * 2);
-                                    new_line_contents[0] = '\n';
-                                    new_line_contents[1] = '\0';
+                                    new_line_contents = (char *)malloc(sizeof(char) * strlen(token) + 2);
+                                    // new_line_contents[0] = '\n';
+                                    // new_line_contents[1] = '\0';
+                                    for (i = 0; i < strlen(token); i++) {
+                                        new_line_contents[i] = token[i];
+                                    }
+                                    new_line_contents[strlen(token)] = '\n';
+                                    new_line_contents[strlen(token) + 1] = '\0';
                                     
                                 }
 
                                 // printf("Incoming Node: %d, %s\n*********\n", line_num_int, new_line_contents);
                                 root = insert(root, line_num_int, new_line_contents);
+                                memset(new_line_contents, 0, strlen(new_line_contents));
                                 
                             }
 
@@ -212,12 +220,22 @@ int main( int argc, char *argv[] ) {
             }
 
             if (FD_ISSET(skt, &writefds)) {
-                if (read_complete == 0) {
+                if (read_complete == UNFINISHED) {
                     printf("Still waiting for messages from server!\n\n");
                     continue;
                 }
-                printf("Ready to send messages back to server!\n\n");
-                sleep(1);
+                if (read_complete == FINISHED) {
+                    if (write_complete == UNFINISHED) {
+                        inOrderSend(root, skt);
+                        ret_write = write(skt, SEND_COMPLETE, strlen(SEND_COMPLETE));
+                        if (ret_write < 0) {
+                            printf("Error: write() system call when writing complete failed! Reason: %s\n", strerror(errno));
+                            exit(-1);
+                        }
+                        write_complete = FINISHED;
+                    }
+                }
+
             }
         }
 
