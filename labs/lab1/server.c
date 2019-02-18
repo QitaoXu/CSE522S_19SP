@@ -249,9 +249,9 @@ int main( int argc, char *argv[] ) {
                         fds[t].fd = accept_skt;
                         fds[t].events = POLLIN | POLLOUT;
                         t++;
-                        tracker[n].skt = accept_skt;
-                        tracker[n].is_sent = UNFINISHED;
-                        tracker[n].is_recieved = UNFINISHED;
+                        trackers[n].skt = accept_skt;
+                        trackers[n].is_sent = UNFINISHED;
+                        trackers[n].is_recieved = UNFINISHED;
                         n++;
                         break;
                     }
@@ -295,6 +295,7 @@ int main( int argc, char *argv[] ) {
 
                 if ( (fds[m].revents & POLLIN) && (m > 0)) {
                     printf("trackers[m-1] is trackers[%d]\n", m - 1);
+                    sleep(4);
                 }
 
 
