@@ -21,6 +21,7 @@
 #include <sys/ioctl.h>
 #include <sys/select.h>
 #include <poll.h>
+#include "tree.h"
 //#include <linux/list.h>
 
 #define PWD "/home/pi/Documents/CSE522S_19SP/labs/lab1/"
@@ -32,6 +33,15 @@
 #define DELIMITER "\n"
 #define SEND_COMPLETE "COMPLETE"
 
+#define UNFINISHED 0
+#define FINISHED 1
+
+struct tracker{
+    int skt;
+    int is_sent;
+    int is_recieved;
+};
+
 const int num_expected_args = 3;
 
 char* getIPAddress(char *inetfr_name);
@@ -41,7 +51,8 @@ int main( int argc, char *argv[] ) {
     /* Variables related to files opened
     */
     int port_num, ret_fprintf, ret_fclose;
-    int i = 0, j = 0;
+    int i = 0; // # of lines in *spec file
+    int j = 0; // # of files opened
     char *pwd = "/home/pi/Documents/CSE522S_19SP/labs/lab1/";
     char *file_name;
     char *file_path;
@@ -59,9 +70,13 @@ int main( int argc, char *argv[] ) {
 
     /* Variables realted to multiplexing io
     */
-    int t = 0, m, n, k;
+    int t = 0; // # of monitored fps
+    int m;     // index to iterate active fps being monitored
+    int n = 0; // # of tracker
+    int k;
     int ret_poll;
     struct pollfd fds[MAX_NUM_FD];
+    struct tracker *trackers;
 
     if (argc != num_expected_args) {
         printf("Usage: ./server <file name> <port number>\n");
@@ -128,6 +143,12 @@ int main( int argc, char *argv[] ) {
         printf("Error: malloc() function failed for outputs! Reason: %s\n", strerror(errno));
         free(file_path);
         exit(-1);      
+    }
+
+    trackers = (struct tracker *)malloc(sizeof(struct tracker) * (i - 1));
+    if (trackers == NULL) {
+        printf("Error: malloc failed for trackers! Reason: %s\n", strerror(errno));
+        exit(-1);
     }
 
     //printf("i = %d\n", i);
@@ -228,6 +249,10 @@ int main( int argc, char *argv[] ) {
                         fds[t].fd = accept_skt;
                         fds[t].events = POLLIN | POLLOUT;
                         t++;
+                        tracker[n].skt = accept_skt;
+                        tracker[n].is_sent = UNFINISHED;
+                        tracker[n].is_recieved = UNFINISHED;
+                        n++;
                         break;
                     }
 
@@ -262,12 +287,14 @@ int main( int argc, char *argv[] ) {
                         printf("Error: write() system call failed when sending complete! Reason: %s\n", strerror(errno));
                         exit(-1);
                     }
+
                     fds[m].events = POLLIN;
+                    trackers[m - 1].is_sent = FINISHED;
                     
                 }
 
                 if ( (fds[m].revents & POLLIN) && (m > 0)) {
-                        
+                    printf("trackers[m-1] is trackers[%d]\n", m - 1);
                 }
 
 
