@@ -290,6 +290,7 @@ int main( int argc, char *argv[] ) {
 
                     fds[m].events = POLLIN;
                     trackers[m - 1].is_sent = FINISHED;
+                    break;
                     
                 }
 
