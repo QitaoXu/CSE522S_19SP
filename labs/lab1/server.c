@@ -87,6 +87,7 @@ int main( int argc, char *argv[] ) {
     int line_num_int;
     char *line_contents;
     char *new_line_contents;
+    const char space = ' ';
 
     if (argc != num_expected_args) {
         printf("Usage: ./server <file name> <port number>\n");
