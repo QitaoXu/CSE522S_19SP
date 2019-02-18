@@ -176,7 +176,7 @@ void destroy(struct Node * root) {
 void inOrderSend(struct Node * root, int skt) {
     int ret_write;
     if (root != NULL) {
-        inOrder(root->left);
+        inOrderSend(root->left, skt);
         if (root->key > 100) {
             printf("Strange key: %d\n", root->key);
         }
@@ -186,6 +186,6 @@ void inOrderSend(struct Node * root, int skt) {
             exit(-1);
         }
         
-        inOrder(root->right);
+        inOrderSend(root->right, skt);
     }
 }
