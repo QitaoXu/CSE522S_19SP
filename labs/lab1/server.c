@@ -224,7 +224,8 @@ int main( int argc, char *argv[] ) {
     t++; 
 
     while (1) {
-        //printf("while loop\n");
+        printf("while loop\n");
+        sleep(2);
         ret_poll = poll(fds, t, TIMEOUT);
 
         if (ret_poll < 0) {
@@ -232,7 +233,11 @@ int main( int argc, char *argv[] ) {
             exit(-1);
         }
 
-        if (ret_poll == 0) continue;
+        if (ret_poll == 0) {
+            printf("ret_poll = 0\n");
+            sleep(2);
+            continue;
+        }
 
         if (ret_poll > 0) {
             for (m = 0; m < t; m++) {
