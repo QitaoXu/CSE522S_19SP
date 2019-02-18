@@ -295,7 +295,7 @@ int main( int argc, char *argv[] ) {
 
                 if ( (fds[m].revents & POLLIN) && (m > 0)) {
                     printf("trackers[m-1] is trackers[%d]\n", m - 1);
-                    sleep(4);
+                    sleep(2);
                 }
 
 
