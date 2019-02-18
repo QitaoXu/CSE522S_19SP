@@ -180,7 +180,7 @@ void inOrderSend(struct Node * root, int skt) {
         if (root->key > 100) {
             printf("Strange key: %d\n", root->key);
         }
-        /*
+        
         if ( strlen(root->line) > 1 && (root->line)[strlen(root->line) - 1] != '\n') {
             // printf("Strange line: %s\n\n\n", root->line);
             for(i = (strlen(root->line) - 1); i > 0; i--) {
@@ -190,7 +190,7 @@ void inOrderSend(struct Node * root, int skt) {
                 }
             }
         }
-        */
+        
         // printf("%s", root->line);
         ret_write = write(skt, root->line, strlen(root->line));
         if (ret_write < 0) {

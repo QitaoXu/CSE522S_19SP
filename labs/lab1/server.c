@@ -79,6 +79,9 @@ int main( int argc, char *argv[] ) {
     struct tracker *trackers;
     char read_buf[256];
 
+    struct Node *root = NULL;
+    char *token;
+
     if (argc != num_expected_args) {
         printf("Usage: ./server <file name> <port number>\n");
         exit(-1);
@@ -311,7 +314,9 @@ int main( int argc, char *argv[] ) {
                     if (ret_read == 0) continue;
                     if (ret_read > 0) {
                         printf("Received: %s\n", read_buf);
-                        
+                        memset(read_buf, 0, 256);
+                        // token = strtok(read_buf, );
+
                     }
                     //sleep(1);
                 }
