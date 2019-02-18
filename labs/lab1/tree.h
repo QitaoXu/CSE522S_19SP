@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
+#include <errno.h>
 
 struct Node
 {
@@ -172,12 +174,17 @@ void destroy(struct Node * root) {
 }
 
 void inOrderSend(struct Node * root, int skt) {
+    int ret_write;
     if (root != NULL) {
         inOrder(root->left);
         if (root->key > 100) {
             printf("Strange key: %d\n", root->key);
         }
-        write(skt, root->line, strlen(root->line));
+        ret_write = write(skt, root->line, strlen(root->line));
+        if (ret_write < 0) {
+            printf("Error: write system call when sending failed! Reason: %s\n", strerror(errno));
+            exit(-1);
+        }
         
         inOrder(root->right);
     }

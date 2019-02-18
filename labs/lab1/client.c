@@ -213,18 +213,20 @@ int main( int argc, char *argv[] ) {
             }
 
             if (FD_ISSET(skt, &writefds)) {
-                if (read_complete == 0) {
+                if (read_complete == UNFINISHED) {
                     printf("Still waiting for messages from server!\n\n");
                     continue;
                 }
-                printf("Ready to send messages back to server!\n\n");
-                sleep(1);
+                // printf("Ready to send messages back to server!\n\n");
+                // sleep(1);
                 // ret_write = write(skt, READY, strlen(READY));
                 // if (ret_write < 0) {
                 //     printf("Error: write() system call failed! Reason: %s\n", strerror(errno));
                 //     exit(-1);
                 // }
-                inOrderSend(root, skt);
+                if (read_complete == FINISHED) {
+                    inOrderSend(root, skt);
+                }
 
             }
         }

@@ -301,13 +301,17 @@ int main( int argc, char *argv[] ) {
                 }
 
                 if ( (fds[m].revents & POLLIN) && (m > 0)) {
-                    printf("trackers[m-1] is trackers[%d]\n", m - 1);
+                    // printf("trackers[m-1] is trackers[%d]\n", m - 1);
                     ret_read = read(fds[m].fd, read_buf, 256);
                     if (ret_read < 0) {
                         printf("Error: read system call for read_buf failed! Reason: %d\n", strerror(errno));
                         exit(-1);
                     }
-                    printf("Received: %s\n", read_buf);
+
+                    if (ret_read == 0) continue;
+                    if (ret_read > 0) {
+                        printf("Received: %s\n", read_buf);
+                    }
                     //sleep(1);
                 }
 
