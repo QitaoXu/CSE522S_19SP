@@ -81,6 +81,7 @@ int main( int argc, char *argv[] ) {
 
     struct Node *root = NULL;
     char *token;
+    const char border[2] = "\n"
 
     if (argc != num_expected_args) {
         printf("Usage: ./server <file name> <port number>\n");
@@ -314,8 +315,15 @@ int main( int argc, char *argv[] ) {
                     if (ret_read == 0) continue;
                     if (ret_read > 0) {
                         printf("Received: %s\n", read_buf);
+                        
+                        token = strtok(read_buf, border); 
+                        while(token != NULL) {
+                        
+                            printf("%s\n", token);
+                            token = strtok(NULL, s);
+                        }
+
                         memset(read_buf, 0, 256);
-                        // token = strtok(read_buf, );
 
                     }
                     //sleep(1);
