@@ -194,9 +194,14 @@ int main( int argc, char *argv[] ) {
 
                                 if (strlen(line_contents) == 1) {
                                     
-                                    new_line_contents = (char *)malloc(sizeof(char) * strlen(line_contents));
-                                    new_line_contents[0] = '\n';
-                                    new_line_contents[1] = '\0';
+                                    new_line_contents = (char *)malloc(sizeof(char) * strlen(token) + 2);
+                                    // new_line_contents[0] = '\n';
+                                    // new_line_contents[1] = '\0';
+                                    for (i = 0; i < strlen(token); i++) {
+                                        new_line_contents[i] = token[i];
+                                    }
+                                    new_line_contents[strlen(token)] = '\n';
+                                    new_line_contents[strlen(token) + 1] = '\0';
                                     
                                 }
 
