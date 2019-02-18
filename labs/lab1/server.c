@@ -77,6 +77,7 @@ int main( int argc, char *argv[] ) {
     int ret_poll;
     struct pollfd fds[MAX_NUM_FD];
     struct tracker *trackers;
+    char read_buf[256];
 
     if (argc != num_expected_args) {
         printf("Usage: ./server <file name> <port number>\n");
@@ -301,7 +302,13 @@ int main( int argc, char *argv[] ) {
 
                 if ( (fds[m].revents & POLLIN) && (m > 0)) {
                     printf("trackers[m-1] is trackers[%d]\n", m - 1);
-                    //sleep(2);
+                    ret_read = read(fds[m].fd, read_buf, 256);
+                    if (ret_read < 0) {
+                        printf("Error: read system call for read_buf failed! Reason: %d\n", strerror(errno));
+                        exit(-1);
+                    }
+                    printf("Received: %s\n", read_buf);
+                    sleep(1);
                 }
 
 

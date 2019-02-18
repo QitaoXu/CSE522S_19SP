@@ -30,6 +30,7 @@
 #define REGEX "^([0-9]+)"
 #define BLANK " \n"
 #define SEND_COMPLETE "COMPLETE"
+#define READY "READY"
 #define UNFINISHED 0
 #define FINISHED 1
 
@@ -38,7 +39,7 @@ int read_complete = UNFINISHED;
 
 int main( int argc, char *argv[] ) {
     
-    int skt, ret_inet_aton, ret_connect, ret_read, ret_select;
+    int skt, ret_inet_aton, ret_connect, ret_read, ret_select, ret_write;
     struct sockaddr_in skt_addr;
     char *ip;
     int port_num;
@@ -218,6 +219,12 @@ int main( int argc, char *argv[] ) {
                 }
                 printf("Ready to send messages back to server!\n\n");
                 sleep(1);
+                ret_write = write(skt, READY, strlen(READY));
+                if (ret_write < 0) {
+                    printf("Error: write() system call failed! Reason: %s\n", strerror(errno));
+                    exit(-1);
+                }
+
             }
         }
 
