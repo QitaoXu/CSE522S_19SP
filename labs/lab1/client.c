@@ -227,6 +227,11 @@ int main( int argc, char *argv[] ) {
                 if (read_complete == FINISHED) {
                     if (write_complete == UNFINISHED) {
                         inOrderSend(root, skt);
+                        ret_write = write(skt, SEND_COMPLETE, strlen(SEND_COMPLETE));
+                        if (ret_write < 0) {
+                            printf("Error: write() system call when writing complete failed! Reason: %s\n", strerror(errno));
+                            exit(-1);
+                        }
                         write_complete = FINISHED;
                     }
                 }

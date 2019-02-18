@@ -32,6 +32,7 @@
 #define TIMEOUT 0
 #define DELIMITER "\n"
 #define SEND_COMPLETE "COMPLETE"
+#define RECIEVE_COMPLETE "COMPLETE"
 
 #define UNFINISHED 0
 #define FINISHED 1
@@ -82,6 +83,10 @@ int main( int argc, char *argv[] ) {
     struct Node *root = NULL;
     char *token;
     const char border[2] = "\n";
+    char *line_num;
+    int line_num_int;
+    char *line_contents;
+    char *new_line_contents;
 
     if (argc != num_expected_args) {
         printf("Usage: ./server <file name> <port number>\n");
@@ -314,12 +319,58 @@ int main( int argc, char *argv[] ) {
 
                     if (ret_read == 0) continue;
                     if (ret_read > 0) {
-                        printf("Received: %s\n", read_buf);
+                        // printf("Received: %s\n", read_buf);
                         
                         token = strtok(read_buf, border); 
                         while(token != NULL) {
                         
-                            printf("%s\n", token);
+                            // printf("%s\n", token);
+                            line_contents = strchr(token, space);
+                            if (line_contents == NULL) {
+                                // printf("Invalid token: %s\n\n", token);
+                                if ( strncmp(token, RECIEVE_COMPLETE, strlen(RECIEVE_COMPLETE)) == 0 ) {
+                                    // read_complete = FINISHED;
+                                    inOrder(root);
+                                    printf("\n\n\n");
+                                }
+                            }
+                            if (line_contents != NULL) {
+                                                              
+                                line_num = (char *)malloc(sizeof(char) * (strlen(token) - strlen(line_contents) + 1));
+                                for (i = 0; i < (strlen(token) - strlen(line_contents)); i++) {
+                                    line_num[i] = token[i];
+                                }
+                                
+                                line_num[strlen(token) - strlen(line_contents)] = '\0';
+                                line_num_int = atoi(line_num);
+                                
+                                if (strlen(line_contents) > 1) {
+                                    
+                                    new_line_contents = (char *)malloc(sizeof(char) * (strlen(line_contents) + 1));
+                                    for (i = 0; i < (strlen(line_contents) - 1); i++) {
+                                        new_line_contents[i] = line_contents[i+1];
+                                    }
+
+                                    new_line_contents[strlen(line_contents)-1] = '\n';
+                                    new_line_contents[strlen(line_contents)] = '\0';
+                                    
+                                    
+                                    // printf("new_line_contents: %s", new_line_contents); 
+                                }
+
+                                if (strlen(line_contents) == 1) {
+                                    
+                                    new_line_contents = (char *)malloc(sizeof(char) * 2);
+                                    new_line_contents[0] = '\n';
+                                    new_line_contents[1] = '\0';
+                                    
+                                }
+
+                                // printf("Incoming Node: %d, %s\n*********\n", line_num_int, new_line_contents);
+                                root = insert(root, line_num_int, new_line_contents);
+                                memset(new_line_contents, 0, strlen(new_line_contents));
+                                
+                            }
                             token = strtok(NULL, border);
                         }
 
