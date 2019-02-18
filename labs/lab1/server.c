@@ -320,7 +320,7 @@ int main( int argc, char *argv[] ) {
                         while(token != NULL) {
                         
                             printf("%s\n", token);
-                            token = strtok(NULL, s);
+                            token = strtok(NULL, border);
                         }
 
                         memset(read_buf, 0, 256);
