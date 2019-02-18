@@ -224,8 +224,8 @@ int main( int argc, char *argv[] ) {
     t++; 
 
     while (1) {
-        printf("while loop\n");
-        sleep(2);
+        //printf("while loop, t = %d\n", t);
+        //sleep(2);
         ret_poll = poll(fds, t, TIMEOUT);
 
         if (ret_poll < 0) {
@@ -234,8 +234,8 @@ int main( int argc, char *argv[] ) {
         }
 
         if (ret_poll == 0) {
-            printf("ret_poll = 0\n");
-            sleep(2);
+            //printf("ret_poll = 0\n");
+            //sleep(2);
             continue;
         }
 
@@ -301,7 +301,7 @@ int main( int argc, char *argv[] ) {
 
                 if ( (fds[m].revents & POLLIN) && (m > 0)) {
                     printf("trackers[m-1] is trackers[%d]\n", m - 1);
-                    sleep(2);
+                    //sleep(2);
                 }
 
 
