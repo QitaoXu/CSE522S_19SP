@@ -308,7 +308,7 @@ int main( int argc, char *argv[] ) {
                         exit(-1);
                     }
                     printf("Received: %s\n", read_buf);
-                    sleep(1);
+                    //sleep(1);
                 }
 
 

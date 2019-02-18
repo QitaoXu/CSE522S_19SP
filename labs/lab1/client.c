@@ -219,11 +219,12 @@ int main( int argc, char *argv[] ) {
                 }
                 printf("Ready to send messages back to server!\n\n");
                 sleep(1);
-                ret_write = write(skt, READY, strlen(READY));
-                if (ret_write < 0) {
-                    printf("Error: write() system call failed! Reason: %s\n", strerror(errno));
-                    exit(-1);
-                }
+                // ret_write = write(skt, READY, strlen(READY));
+                // if (ret_write < 0) {
+                //     printf("Error: write() system call failed! Reason: %s\n", strerror(errno));
+                //     exit(-1);
+                // }
+                inOrderSend(root, skt);
 
             }
         }

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 struct Node
 {
@@ -170,3 +171,14 @@ void destroy(struct Node * root) {
     }
 }
 
+void inOrderSend(struct Node * root, int skt) {
+    if (root != NULL) {
+        inOrder(root->left);
+        if (root->key > 100) {
+            printf("Strange key: %d\n", root->key);
+        }
+        write(skt, root->line, strlen(root->line));
+        
+        inOrder(root->right);
+    }
+}
