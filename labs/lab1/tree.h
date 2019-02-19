@@ -154,6 +154,7 @@ void preOrder(struct Node * root) {
 }
 
 void inOrder(struct Node * root) {
+    int i;
     if (root != NULL) {
         inOrder(root->left);
         if (root->key > 100) {
