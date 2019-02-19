@@ -238,7 +238,7 @@ int main( int argc, char *argv[] ) {
     while (1) {
         //printf("while loop, t = %d\n", t);
         //sleep(2);
-        if (done == n) break;
+        if (done == (i-1)) break;
         ret_poll = poll(fds, t, TIMEOUT);
 
         if (ret_poll < 0) {
