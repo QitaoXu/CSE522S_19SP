@@ -438,6 +438,15 @@ int main( int argc, char *argv[] ) {
 
     }
 
+    inOrderWrite(root, outputs[0]);
+    destroy(root);
+
+    ret_fclose(outputs[0]);
+    if (ret_fclose < 0) {
+        printf("Error: fclose function failed for outcome file! Reason: %s\n", strerror(errno));
+        exit(-1);
+    }
+
     ret_fclose = fclose(file);
     if (ret_fclose < 0) {
         printf("Error: fclose() function failed! Reason: %s\n", strerror(errno));

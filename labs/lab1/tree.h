@@ -211,3 +211,31 @@ void inOrderSend(struct Node * root, int skt) {
         inOrderSend(root->right, skt);
     }
 }
+
+void inOrderWrite(struct Node * root, FILE *fp) {
+    int ret_fprintf, i;
+    if (root != NULL) {
+        inOrderWrite(root->left, fp);
+        if (root->key > 100) {
+            printf("Strange key: %d\n", root->key);
+        }
+        
+        if ( strlen(root->line) > 1 && (root->line)[strlen(root->line) - 1] != '\n') {
+            // printf("Strange line: %s\n\n\n", root->line);
+            for(i = (strlen(root->line) - 1); i > 0; i--) {
+                if((root->line)[i] == '\n') {
+                    (root->line)[i + 1] = '\0';
+                    break;
+                }
+            }
+        }
+        
+        ret_fprintf = fprintf(fp, root->line);
+        if (ret_fprintf < 0) {
+            printf("Error: fprintf function failed! Reason: %s\n", strerror(errno));
+            exit(-1);
+        }
+        
+        inOrderWrite(root->right, fp);
+    }
+}
