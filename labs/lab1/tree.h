@@ -230,7 +230,7 @@ void inOrderWrite(struct Node * root, FILE *fp) {
             }
         }
         
-        ret_fprintf = fprintf(fp, root->line);
+        ret_fprintf = fprintf(fp, "%s", root->line);
         if (ret_fprintf < 0) {
             printf("Error: fprintf function failed! Reason: %s\n", strerror(errno));
             exit(-1);
