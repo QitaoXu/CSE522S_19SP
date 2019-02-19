@@ -24,8 +24,8 @@
 #include "tree.h"
 //#include <linux/list.h>
 
-#define PWD "/home/pi/Documents/CSE522S_19SP/labs/lab1/"
-// #define PWD "./"
+// #define PWD "/home/pi/Documents/CSE522S_19SP/labs/lab1/"
+#define PWD "./"
 #define MAX_FILENAME 20
 #define ERROR_MSG "Error"
 #define LISTEN_BLOCKLOG 50
@@ -55,7 +55,8 @@ int main( int argc, char *argv[] ) {
     int port_num, ret_fprintf, ret_fclose;
     int i = 0; // # of lines in *spec file
     int j = 0; // # of files opened
-    char *pwd = "/home/pi/Documents/CSE522S_19SP/labs/lab1/";
+    // char *pwd = "/home/pi/Documents/CSE522S_19SP/labs/lab1/";
+    char *pwd = "./";
     char *file_name;
     char *file_path;
     char line[256];
