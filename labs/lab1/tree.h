@@ -169,6 +169,11 @@ void inOrder(struct Node * root) {
                 }
             }
         }
+
+        if ( strlen(root->line) > 1 && (root->line)[strlen(root->line) - 2] == '\n' && (root->line)[strlen(root->line) - 1] == '\n') {
+            (root->line)[strlen(root->line) - 1] = '\0';
+        }
+        
         printf("%d:\n%s", root->key, root->line);
         inOrder(root->right);
     }
