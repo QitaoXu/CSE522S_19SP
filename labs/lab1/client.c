@@ -233,6 +233,7 @@ int main( int argc, char *argv[] ) {
                             exit(-1);
                         }
                         write_complete = FINISHED;
+                        break;
                     }
                 }
 
@@ -252,7 +253,7 @@ int main( int argc, char *argv[] ) {
     }
 
 
-
+    destroy(root);
 
     return 0;
 }

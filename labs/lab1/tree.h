@@ -183,7 +183,7 @@ void destroy(struct Node * root) {
     if (root != NULL) {
         destroy(root->left);
         destroy(root->right);
-        free(root->line);
+        // free(root->line);
         free(root);
     }
 }
