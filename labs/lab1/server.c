@@ -75,6 +75,7 @@ int main( int argc, char *argv[] ) {
     int m;     // index to iterate active fps being monitored
     int n = 0; // # of tracker
     int k;
+    int done = 0;
     int ret_poll;
     struct pollfd fds[MAX_NUM_FD];
     struct tracker *trackers;
@@ -237,6 +238,7 @@ int main( int argc, char *argv[] ) {
     while (1) {
         //printf("while loop, t = %d\n", t);
         //sleep(2);
+        if (done == n) break;
         ret_poll = poll(fds, t, TIMEOUT);
 
         if (ret_poll < 0) {
@@ -253,14 +255,35 @@ int main( int argc, char *argv[] ) {
         if (ret_poll > 0) {
             for (m = 0; m < t; m++) {
                 //printf("for loop. m = %d, t = %d, j = %d\n", m, t, j);
+                // if (fds[m].fd == -1) continue;
                 if ( (fds[m].revents & POLLIN) && (m == 0)) { // listening socket
+                    /* If the server has established connections with as many 
+                     * clients as there are fragments files, it should stop waiting 
+                     * for connections
+                    */
+                    if (n == (i - 1)) {
+                        /*
+                         *    ret_close = close(fds[0].fd);
+                         *    if (ret_close < 0) {
+                         *        printf("Error: close system call for listening socket failed! Reason: %s\n", strerror(errno));
+                         *        exit(-1);
+                         *     }
+                         */
+                        ret_close = close(fds[0].fd);
+                        if (ret_close < 0) {
+                            printf("Error: close system call for listening socket failed! Reason: %s\n", strerror(errno));
+                            exit(-1);
+                        }
+                        fds[0].events = 0;
+                        continue;
+                    }
                     accept_skt = accept(skt, (struct sockaddr *)&peer_addr, &peer_addr_size);
 
                     if (accept_skt < 0) {
                         printf("Error: accept() system call failed!\n Reason: %s\n", strerror(errno));
                         exit(-1);
                     } else {
-
+                        
                         printf("A new connection is established!\n");
                         fds[t].fd = accept_skt;
                         fds[t].events = POLLIN | POLLOUT;
@@ -303,14 +326,25 @@ int main( int argc, char *argv[] ) {
                         printf("Error: write() system call failed when sending complete! Reason: %s\n", strerror(errno));
                         exit(-1);
                     }
-
+                    /*
+                     * When sending out a specific fragment to a client,
+                     * 1. Stop waiting for write events on the socket to that client,
+                     * 2. Set this socket's tracker's is_sent field to FINISHED
+                     * 3. Close corresponding fragment file
+                    */
                     fds[m].events = POLLIN;
                     trackers[m - 1].is_sent = FINISHED;
+                    ret_fclose = fclose(outputs[m]);
+                    if (ret_fclose < 0) {
+                        printf("Error: flclose[%d] failed! Reason: %s\n", m, strerror(errno));
+                        exit(-1);
+                    }
                     break;
                     
                 }
 
-                if ( (fds[m].revents & POLLIN) && (m > 0)) {
+                if ( (fds[m].revents & POLLIN) && (m > 0)) { // communication socket
+
                     // printf("trackers[m-1] is trackers[%d]\n", m - 1);
                     ret_read = read(fds[m].fd, read_buf, 256);
                     if (ret_read < 0) {
@@ -331,8 +365,21 @@ int main( int argc, char *argv[] ) {
                                 // printf("Invalid token: %s\n\n", token);
                                 if ( strncmp(token, RECIEVE_COMPLETE, strlen(RECIEVE_COMPLETE)) == 0 ) {
                                     // read_complete = FINISHED;
+                                    done++;
                                     inOrder(root);
                                     printf("\n\n\n");
+                                    /* If the server has read back all the data from a client,
+                                     * it should 
+                                     * 1. close the socket and
+                                     * 2. stop waiting for read events on that socket
+                                     */
+                                    trackers[m-1].is_recieved = FINISHED;
+                                    ret_close = close(fds[m].fd);
+                                    if (ret_close < 0) {
+                                        printf("Error: close system call for fds[%d].fd failed. Reason: %s\n", m, strerror(errno));
+                                        exit(-1);
+                                    }
+                                    fds[m].events = 0;
                                 }
                             }
                             if (line_contents != NULL) {
@@ -381,9 +428,6 @@ int main( int argc, char *argv[] ) {
                     //sleep(1);
                 }
 
-
-
-
             }
         }
 
@@ -406,6 +450,7 @@ int main( int argc, char *argv[] ) {
         exit(-1);
     }
 
+    /*
     for (j = 0; j < i; j ++) {
 
         ret_fclose = fclose(outputs[j]);
@@ -418,6 +463,7 @@ int main( int argc, char *argv[] ) {
 
 
     }
+    */
 
     free(file_path); 
     free(outputs);
