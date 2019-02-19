@@ -478,8 +478,8 @@ int main( int argc, char *argv[] ) {
     }
     */
 
-    // free(file_path); 
-    // free(outputs);
+    free(file_path); 
+    free(outputs);
 
     return 0;
 }
