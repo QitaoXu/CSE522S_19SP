@@ -76,6 +76,7 @@ int main( int argc, char *argv[] ) {
     int n = 0; // # of tracker
     int k;
     int done = 0;
+    int isDone = 0;
     int ret_poll;
     struct pollfd fds[MAX_NUM_FD];
     struct tracker *trackers;
@@ -145,6 +146,7 @@ int main( int argc, char *argv[] ) {
 
         printf("%s", line);
         i++;
+        isDone++;
     }
 
     memset(line, 0, 256);
@@ -238,7 +240,7 @@ int main( int argc, char *argv[] ) {
     while (1) {
         //printf("while loop, t = %d\n", t);
         //sleep(2);
-        if (done == (i-1)) break;
+        if (done == (isDone - 1)) break;
         ret_poll = poll(fds, t, TIMEOUT);
 
         if (ret_poll < 0) {
@@ -256,6 +258,7 @@ int main( int argc, char *argv[] ) {
             for (m = 0; m < t; m++) {
                 //printf("for loop. m = %d, t = %d, j = %d\n", m, t, j);
                 // if (fds[m].fd == -1) continue;
+                if (done == (isDone -1)) break;
                 if ( (fds[m].revents & POLLIN) && (m == 0)) { // listening socket
                     /* If the server has established connections with as many 
                      * clients as there are fragments files, it should stop waiting 
@@ -380,6 +383,7 @@ int main( int argc, char *argv[] ) {
                                         exit(-1);
                                     }
                                     fds[m].events = 0;
+                                    if (done == (isDone - 1) ) break;
                                 }
                             }
                             if (line_contents != NULL) {
