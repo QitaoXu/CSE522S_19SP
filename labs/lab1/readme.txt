@@ -53,7 +53,16 @@
 
 <Client Design>
     1. command argument handler 
+        Check number of command line arguments for each run and if this number does not equals to 3,
+        client program will print a message such that 
+        "Usage: ./client <IP address of server> <port number>\n" 
+        to tell users how to run client program correctly.
+
     2. data structure to store and sort coming messages: AVL tree
+        Taking advantage of select system call to monitor POLLIN events on socket connecting to
+        server, client program repeatedly read messages when data is available from server after 
+        connection, put line by line to AVL tree until it recieves COMPLTET. Then it will continue 
+        to send messages in order back to server and exit.
 </Client Design>
 
 <Build Instructions>
