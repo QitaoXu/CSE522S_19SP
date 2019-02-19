@@ -439,7 +439,7 @@ int main( int argc, char *argv[] ) {
     }
 
     inOrderWrite(root, outputs[0]);
-    destroy(root);
+    // destroy(root);
 
     ret_fclose = fclose(outputs[0]);
     if (ret_fclose < 0) {

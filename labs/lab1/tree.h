@@ -229,6 +229,10 @@ void inOrderWrite(struct Node * root, FILE *fp) {
                 }
             }
         }
+
+        if ( strlen(root->line) > 1 && (root->line)[strlen(root->line) - 2] == '\n' && (root->line)[strlen(root->line) - 1] == '\n') {
+            (root->line)[strlen(root->line) - 1] = '\0';
+        }
         
         ret_fprintf = fprintf(fp, "%s", root->line);
         if (ret_fprintf < 0) {
