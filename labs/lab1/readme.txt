@@ -66,9 +66,34 @@
 </Client Design>
 
 <Build Instructions>
+    1. Make sure that all files in the same directory on 
+       your raspberry pi.
+    2. Open a command line and walk into directory holding
+       all files.
+    3. In the command line, issue "./compile.sh"
+    4. Start server program, issue "./server jabberwocky 2000"
+    5. If you want to run client program on the same machine 
+       as server program, please issue "./local_run.sh"
+    6. If you want to run client program on another machine,
+       please run "./compile.sh" on that machine first, and
+       according to the ip address printed out by server program,
+       change the ip address in remote_run.sh, 
+       and run "./remote_run.sh"
 </Build Instructions>
 
 <Testing and Evaluation>
+    Case 1: Run server and client program on the same machine
+            with jabberwocky
+        Bugs: 1. It can work but there is one more newline in 
+                line 15(line number starts from 0).
+              2. Sometimes the output file cannot be opened with
+                GUI directly but can be openned by vim. And there
+                is a line ending with "^K". But sometimes it only
+                triggers bug1.
+    Case 2: Run server program on different machines with
+            jabberwocky
+        Bugs: 1. It can work but there is one more newline in 
+                line 15(line number starts from 0).
 </Testing and Evaluation>
 
 <Development Effort>
