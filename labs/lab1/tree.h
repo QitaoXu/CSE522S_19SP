@@ -1,3 +1,13 @@
+/*
+ * Discliamer: We implemented AVL tree interface according to 
+ * what we learnt on website: geeksforgeeks.
+ * Here is link: https://www.geeksforgeeks.org/avl-tree-set-1-insertion/
+ * We changed part of Node field and add functions including inOrder, 
+ * postOrder, inOrderSend, inOrderWrite and destroy to finish 522S lab 1.
+ *
+ */
+
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
