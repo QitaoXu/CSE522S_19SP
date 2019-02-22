@@ -12,8 +12,8 @@
 
 #define DES_SOCKET_PATH "/home/pi/Socket"
 #define PAYLOAD "Trick or treat!\n"
-#define IP_ADDRESS "128.252.167.161"
-//#define IP_ADDRESS "172.16.3.106"
+// #define IP_ADDRESS "128.252.167.161"
+#define IP_ADDRESS "172.27.38.135"
 //#define IP_ADDRESS "127.0.0.1"
 #define PORT_NUM 2000
 
