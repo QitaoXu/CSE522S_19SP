@@ -10,7 +10,12 @@
 #ifndef MODONE_H
 #define MODONE_H
 
-stuc
+struct task{
+	
+	struct subtask{
+
+	};
+};
 int8_t max8(int8_t num1, int8_t num2);
 
 #endif /* MODONE_H */
