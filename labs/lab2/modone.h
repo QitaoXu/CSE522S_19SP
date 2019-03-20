@@ -9,13 +9,59 @@
 
 #ifndef MODONE_H
 #define MODONE_H
+#include <linux/hrtimer.h>
+#include <linux/ktime.h>
+#include <linux/list.h>
+typedef struct {
+		unsigned long execution_time;/*execution time of subtask millisecond*/
+		int index; /*index of subtask within the task struct*/
+		struct task *parent; /*parent task of subtask*/
+		struct hrtimer timer; /* timer for the subtask*/
+		struct ktime_t last_release_time; /*initialized to 0, record the last time the subtask was released*/
+		int loop_count; /*init to 0 or Z+, */
+		struct ktime_t cumul_exec_time;/* sum up the execution times of that subtask and all of its predecessors within the same task*/
+		float utilization; /*divide its execution time by its task's period.*/
+		struct subtask *next; /* next subtask within parent task struct*/
+		struct subtask *prev; /* previous subtask within parent task struct*/
+		int core; /* on which core of your Raspberry Pi 3 each subtask should run, set core to -1 if no aviable core to run*/
+		bool flag_sched; /*if the subtask is temporarily not available, */
+		unsigned long relative_ddl; /*task period* subtask's execution time/task's execution time*/
+		int priority; /*priority of subtask on the core*/
+		struct list_head list;/*list head of the core on which the subtask is assigned */
+} subtask;
 
-struct task{
-	unsigned long period; /*period of task*/
-	struct subtask{
-		unsigned long subperiod;/*period of subtask*/
-	};
+typedef struct{
+
+	unsigned long period; /*period of task second*/
+	struct subtask *subtasks; /* subtasks within the task struct */
+	int num;/* number of subtask */
+	int index; /* index of task */
+	int starting_index;/* starting index of subtask */
+	struct ktime_t execution_time; /*execution time of all subtask*/
+
+} task;
+
+typedef struct{
+	int core_index; /*cpu core index */
+	struct subtask *subtask; /*subtask that is put on the specific cpu core*/
+	struct list_head core_list;
+
+} cpu_core;
+
+struct fox red_fox = {
+    .tail_length = 40,
+    .weight = 6,
+    .list = LIST_HEAD_INIT(red_fox.list),
 };
-int8_t max8(int8_t num1, int8_t num2);
+
+// static INIT_LIST_HEAD(&core_list0);
+// static INIT_LIST_HEAD(&core_list1);
+// static INIT_LIST_HEAD(&core_list2);
+// static INIT_LIST_HEAD(&core_list3);
+
+
+
+
+
 
 #endif /* MODONE_H */

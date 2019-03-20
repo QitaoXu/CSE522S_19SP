@@ -5,7 +5,7 @@
 #include <linux/hrtimer.h>
 #include <linux/ktime.h>
 #include <linux/sched.h> 
-
+#include <linux/list.h>
 
 // static unsigned long period_sec= 1;
 // static unsigned long period_nsec=0;
@@ -13,6 +13,7 @@
 // static int threadtwo=1;
 // static int threadthr=1;
 // static int threadfr=1;
+static struct cpu_core cores[4];
 static char *mode="calibrate";
 static char *runMode="run";
 static char *calibrateMode="calibrate";
@@ -33,25 +34,28 @@ static char *calibrateMode="calibrate";
 
 module_param(mode, charp,0);
 MODULE_PARM_DESC(mode, "This is the mode of running.");
-/* static function for kernel thread*/
-// static int thread_fn(void * data){
-// 	int i=0;
+/* subtask function */
+static int subtask_fn(subtask * sub){
+	int current=0;
 
-// 	while (!kthread_should_stop()){ 
-// 		set_current_state(TASK_INTERRUPTIBLE);
-//   		schedule();
-// 		i = 0;
-// 		printk(KERN_INFO "data is %x",(int)data);
-//   		while(i<(int) data){
-//   			ktime_get();
-//   			i+=1;
-//   		}
-//   		printk(KERN_INFO "In thread1");
-// 	}
+	while (current!=sub->count){ 
+		ktime_get();
+		current+=1;
+	}
 	
-// 	return 0;
-// }
-
+	return 0;
+}
+/* calibrate function*/
+static int calibrate_fn(int core_num){
+	struct subtask *sub=cores[core_num].subtask;
+	list_for_each_entry(sub, &fox_list, list) {
+		set_current_state(TASK_INTERRUPTIBLE);
+  		schedule();
+  		sub=sub->next;
+	}
+	
+	return 
+}
 static bool checkMode(char * s1){
 	char *runMode="run";
 	if (sysfs_streq(runMode, s1)){
@@ -84,6 +88,7 @@ static bool checkMode(char * s1){
 
 static int simple_init (void) {
 	// int ret;
+	ktime_get();
 	if(checkMode(mode)){
 		mode=runMode;
 		printk(KERN_INFO "Current mode is run mode");
