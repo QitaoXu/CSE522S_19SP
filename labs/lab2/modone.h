@@ -11,9 +11,9 @@
 #define MODONE_H
 
 struct task{
-	
+	unsigned long period; /*period of task*/
 	struct subtask{
-
+		unsigned long subperiod;/*period of subtask*/
 	};
 };
 int8_t max8(int8_t num1, int8_t num2);
