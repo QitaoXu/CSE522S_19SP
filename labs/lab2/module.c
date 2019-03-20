@@ -47,7 +47,7 @@ static int subtask_fn(subtask * sub){
 }
 /* calibrate function*/
 static int calibrate_fn(int core_num){
-	struct subtask *sub=cores[core_num].subtask;
+	struct subtask *sub = cores[core_num].subtask;
 	list_for_each_entry(sub, &fox_list, list) {
 		set_current_state(TASK_INTERRUPTIBLE);
   		schedule();

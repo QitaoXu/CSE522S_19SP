@@ -43,21 +43,44 @@ typedef struct{
 
 typedef struct{
 	int core_index; /*cpu core index */
-	struct subtask *subtask; /*subtask that is put on the specific cpu core*/
+	// struct subtask *subtask; /*subtask that is put on the specific cpu core*/
 	struct list_head core_list;
 
 } cpu_core;
 
-struct fox red_fox = {
-    .tail_length = 40,
-    .weight = 6,
-    .list = LIST_HEAD_INIT(red_fox.list),
-};
+cpu_core cores[4]
 
-// static INIT_LIST_HEAD(&core_list0);
-// static INIT_LIST_HEAD(&core_list1);
-// static INIT_LIST_HEAD(&core_list2);
-// static INIT_LIST_HEAD(&core_list3);
+cpu_core cpu_core0 = {
+	.core_index = 0
+	.core_list = LIST_HEAD_INIT(cpu_core0.core_list)
+
+}
+
+cores[0] = cpu_core0
+
+cpu_core cpu_core1 = {
+	.core_index = 1
+	.core_list = LIST_HEAD_INIT(cpu_core1.core_list)
+
+}
+
+cores[1] = cpu_core1
+
+cpu_core cpu_core2 = {
+	.core_index = 2
+	.core_list = LIST_HEAD_INIT(cpu_core2.core_list)
+
+}
+
+cores[2] = cpu_core2
+
+cpu_core cpu_core3 = {
+	.core_index = 3
+	.core_list = LIST_HEAD_INIT(cpu_core3.core_list)
+
+}
+
+cores[3] = cpu_core3
 
 
 
