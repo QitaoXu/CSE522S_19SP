@@ -9,6 +9,7 @@
 
 #ifndef MODONE_H
 #define MODONE_H
+#include <linux/sched.h> 
 #include <linux/hrtimer.h>
 #include <linux/ktime.h>
 #include <linux/list.h>
@@ -16,7 +17,7 @@ typedef struct {
 		unsigned long execution_time;/*execution time of subtask millisecond*/
 		int index; /*index of subtask within the task struct*/
 		struct task *parent; /*parent task of subtask*/
-		struct hrtimer timer; /* timer for the subtask*/
+		struct hrtimer hr_timer; /* timer for the subtask*/
 		struct ktime_t last_release_time; /*initialized to 0, record the last time the subtask was released*/
 		int loop_count; /*init to 0 or Z+, */
 		struct ktime_t cumul_exec_time;/* sum up the execution times of that subtask and all of its predecessors within the same task*/
@@ -26,7 +27,7 @@ typedef struct {
 		int core; /* on which core of your Raspberry Pi 3 each subtask should run, set core to -1 if no aviable core to run*/
 		bool flag_sched; /*if the subtask is temporarily not available, */
 		unsigned long relative_ddl; /*task period* subtask's execution time/task's execution time*/
-		int priority; /*priority of subtask on the core*/
+		struct sched_param *param /*priority of subtask on the core*/
 		struct list_head list;/*list head of the core on which the subtask is assigned */
 } subtask;
 
