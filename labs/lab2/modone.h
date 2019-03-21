@@ -17,6 +17,7 @@ typedef struct {
 		unsigned long execution_time;/*execution time of subtask millisecond*/
 		int index; /*index of subtask within the task struct*/
 		struct task *parent; /*parent task of subtask*/
+		struct task_struct *sub_thread; /*pointer to the task_struct*/
 		struct hrtimer hr_timer; /* timer for the subtask*/
 		struct ktime_t last_release_time; /*initialized to 0, record the last time the subtask was released*/
 		int loop_count; /*init to 0 or Z+, */
