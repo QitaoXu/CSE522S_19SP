@@ -7,11 +7,11 @@
 #include <linux/sched.h> 
 #include <linux/list.h>
 #include <linux/delay.h>
-
+#include "modone.h"
 static task_struct *subtask[subtaskNum];
 //todo give subtaskNum in header file
 static int coreNum=4;
-static struct cpu_core cores[4];
+//static struct cpu_core cores[4];
 static char *mode="calibrate";
 static char *runMode="run";
 static char *calibrateMode="calibrate";
@@ -168,7 +168,7 @@ static int simple_init (void) {
 	struct task_struct *subtaskHead[taskNum];
 	subtask sub;
 	ktime_get();
-	char name[7]="thread";
+	//char name[7]="thread";
 	if(checkMode(mode)){
 		mode=runMode;
 		printk(KERN_INFO "Current mode is run mode");
@@ -227,6 +227,7 @@ static int simple_init (void) {
 static void simple_exit (void) {
 	int ret;
 	int i=0;
+	subtask sub;
 	while(i<subtaskNum){
 		sub=subtasks_array[i];
 		hrtimer_cancel(&(sub->hr_timer));
