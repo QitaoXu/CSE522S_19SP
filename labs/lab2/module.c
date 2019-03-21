@@ -17,7 +17,7 @@ static struct cpu_core cores[4];
 static char *mode="calibrate";
 static char *runMode="run";
 static char *calibrateMode="calibrate";
-// int indicator = 0;
+// // int indicator = 0;
 // static struct hrtimer hr_timer;
 // static ktime_t interval;
 // static struct task_struct *thread1, *thread2, *thread3, *thread4;
@@ -45,6 +45,27 @@ static int subtask_fn(subtask * sub){
 	
 	return 0;
 }
+/*timer expiration*/
+static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart )
+{
+	ktime_t currtime;
+	wake_up_process(thread1);
+	
+	if(indicator==2 || indicator==4) {
+		wake_up_process(thread2);
+	}
+	if(indicator==4||indicator==0) {
+   	wake_up_process(thread3);
+   	if(indicator==4){
+   		indicator=0;
+   	}
+   }
+   indicator++;
+  	currtime  = ktime_get();
+  	hrtimer_forward(timer_for_restart, currtime , interval);
+	// set_pin_value(PIO_G,9,(cnt++ & 1)); //Toggle LED 
+	return HRTIMER_RESTART;
+}
 /* calibrate function*/
 static int calibrate_fn(int core_num){
 	
@@ -52,9 +73,25 @@ static int calibrate_fn(int core_num){
 	list_for_each_entry(sub, &list, cores[core_num].core_list) {
 		set_current_state(TASK_INTERRUPTIBLE);
   		schedule();
-  		sub=sub->next;
+  		sched_setparam(pid_t pid, sub->param);
+
 	}
 	
+	return 
+}
+/* run function*/
+static int run_fn(subtask *sub){
+	hrtimer_init(&sub->hr_timer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
+	hr_timer.function=&timer_callback;
+	while (!kthread_should_stop()){ 
+		set_current_state(TASK_INTERRUPTIBLE);
+  		schedule();
+		sub->last_release_time=ktime_get();
+		subtask_fn(sub);
+  		if(sub->prev==NULL){
+  			sub->hr_timer=sub->last_release_time+sub->parent->period
+  		}
+	}
 	return 
 }
 static bool checkMode(char * s1){
@@ -97,7 +134,9 @@ static int simple_init (void) {
 		mode=calibrateMode;
 		printk(KERN_INFO "Current mode is calibrate mode.");
 	}
-
+	if (mode==runMode){
+		run_fn()
+	}
 	// char name1[8]="thread1";
 	// char name2[8]="thread2";
  //   char name3[8]="thread3";

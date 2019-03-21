@@ -27,14 +27,17 @@ typedef struct {
 		int core; /* on which core of your Raspberry Pi 3 each subtask should run, set core to -1 if no aviable core to run*/
 		bool flag_sched; /*if the subtask is temporarily not available, */
 		unsigned long relative_ddl; /*task period* subtask's execution time/task's execution time*/
+
 		struct sched_param *param /*priority of subtask on the core*/
-		struct list_head list;/*list head of the core on which the subtask is assigned */
+		struct list_head core_list;/*list head of the core on which the subtask is assigned */
+		struct list_head task_list;
 } subtask;
 
 typedef struct{
 
 	unsigned long period; /*period of task second*/
-	struct subtask *subtasks; /* subtasks within the task struct */
+	// struct subtask *subtasks; /* subtasks within the task struct */
+	list_head task_list;
 	int num;/* number of subtask */
 	int index; /* index of task */
 	int starting_index;/* starting index of subtask */
@@ -82,6 +85,58 @@ cpu_core cpu_core3 = {
 }
 
 cores[3] = cpu_core3
+
+
+task tasks[4]
+task task0 = {
+	.period = 1 
+	.task_list = LIST_HEAD_INIT(task0.task_list)
+	.num = 2
+	.index = 0
+	.starting_index = 0 
+	.execution_time = ktime_set(0, 0)
+}
+
+tasks[0] = task0
+
+task task1 = {
+	.period = 1 
+	.task_list = LIST_HEAD_INIT(task1.task_list)
+	.num = 2
+	.index = 1
+	.starting_index = 2
+	.execution_time = ktime_set(0, 0)
+}
+
+tasks[1] = task1 
+
+task task2 = {
+	.period = 1 
+	.task_list = LIST_HEAD_INIT(task0.task_list)
+	.num = 2
+	.index = 2
+	.starting_index = 4
+	.execution_time = ktime_set(0, 0)
+}
+
+tasks[2] = task2
+
+task task3 = {
+	.period = 1 
+	.task_list = LIST_HEAD_INIT(task0.task_list)
+	.num = 2
+	.index = 3
+	.starting_index = 6
+	.execution_time = ktime_set(0, 0)
+}
+
+tasks[3] = task3
+
+subtask subtasks_array[8]
+
+
+
+subtask[0]
 
 
 
