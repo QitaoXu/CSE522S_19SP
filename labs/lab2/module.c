@@ -123,33 +123,25 @@ static bool checkMode(char * s1){
 	}
 	return false;
 }
-/*timer expiration*/
-// static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart )
-// {
-// 	ktime_t currtime;
-// 	wake_up_process(thread1);
-// 	wake_up_process(thread4);
-// 	if(indicator==2 || indicator==4) {
-// 		wake_up_process(thread2);
-// 	}
-// 	if(indicator==4||indicator==0) {
-//    	wake_up_process(thread3);
-//    	if(indicator==4){
-//    		indicator=0;
-//    	}
-//    }
-//    indicator++;
-//   	currtime  = ktime_get();
-//   	hrtimer_forward(timer_for_restart, currtime , interval);
-// 	// set_pin_value(PIO_G,9,(cnt++ & 1)); //Toggle LED 
-// 	return HRTIMER_RESTART;
-// }
+/*get total subtask num*/
+static int subtaskNum(){
+	return ;
+}
+/*get total task num*/
+static int taskNum(){
+	return ;
+}
 /* init function - logs that initialization happened, returns success */
 
 static int simple_init (void) {
 	// int ret;
 	int i=0;
+	int j=0;
+	struct task_struct *task;
+	struct task_struct **subtaskHead = kmalloc(GFP_KERNEL, );
+	subtask sub;
 	ktime_get();
+	char name[7]="thread";
 	if(checkMode(mode)){
 		mode=runMode;
 		printk(KERN_INFO "Current mode is run mode");
@@ -158,7 +150,21 @@ static int simple_init (void) {
 		printk(KERN_INFO "Current mode is calibrate mode.");
 	}
 	if (mode==runMode){
-		run_fn();
+		while(j<subtaskNum()){
+			sub=getSubtask(j);
+			task=kthread_create(subtask_fn,void *,name);
+			kthread_bind(task,sub->core);
+			sched_setscheduler(task, SCHED_FIFO,&(sub->param));
+			run_fn(sub);
+			if(sub->index==0){
+				subtaskHead.append(sub);
+			}
+			j++
+		}
+		wake_up_process(subtaskHead[i]);
+
+		
+
 	}else{
 		while (i<coreNum){
 			calibrate_fn(i);

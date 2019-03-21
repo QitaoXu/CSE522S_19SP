@@ -29,7 +29,7 @@ typedef struct {
 		bool flag_sched; /*if the subtask is temporarily not available, */
 		unsigned long relative_ddl; /*task period* subtask's execution time/task's execution time*/
 
-		struct sched_param *param /*priority of subtask on the core*/
+		struct sched_param param; /*priority of subtask on the core*/
 		struct list_head core_list;/*list head of the core on which the subtask is assigned */
 		struct list_head task_list;
 } subtask;
