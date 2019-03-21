@@ -49,45 +49,50 @@ typedef struct{
 
 } task;
 
-struct cpu_core{
+typedef struct{
 	int core_index; /*cpu core index */
 	// struct subtask *subtask; /*subtask that is put on the specific cpu core*/
 	struct list_head core_list;
 
+}cpu_core;
+
+struct cores{
+	struct cpu_core core[4];
 };
-struct cpu_core cores[4];
 // cpu_core cores[4];
 
-struct cpu_core cores[0] = {
+cpu_core cores0= {
 	.core_index = 0,
-	.core_list = LIST_HEAD_INIT(cores[0].core_list),
+	.core_list = LIST_HEAD_INIT(cores0.core_list),
 
 };
 
 // cores[0] = cpu_core0;
 
-cpu_core cores[1] = {
+cpu_core cores1 = {
 	.core_index = 1,
-	.core_list = LIST_HEAD_INIT(cores[1].core_list),
+	.core_list = LIST_HEAD_INIT(cores0.core_list),
 
 };
 
 // cores[1] = cpu_core1;
 
-cpu_core cpu_core2 = {
+cpu_core cores2 = {
 	.core_index = 2,
-	.core_list = LIST_HEAD_INIT(cpu_core2.core_list),
+	.core_list = LIST_HEAD_INIT(cores2.core_list),
 
 };
 
 // cores[2] = cpu_core2;
 
-cpu_core cpu_core3 = {
+cpu_core cores3 = {
 	.core_index = 3,
-	.core_list = LIST_HEAD_INIT(cpu_core3.core_list),
+	.core_list = LIST_HEAD_INIT(cores3.core_list),
 
 };
-
+struct cores={
+	.cores[0]=cores0;
+}
 // cores[3] = cpu_core3;
 // cpu_core cores[4]={cpu_core0,cpu}
 

@@ -16,22 +16,31 @@ static char *mode="calibrate";
 static char *runMode="run";
 static char *calibrateMode="calibrate";
 
-static task_struct * calibrate_kthreads[4];
+static struct task_struct * calibrate_kthreads[coreNum];
 // for initilaization of 4 calibrate kthreads,
 // later, their priority will be modified in 
 // calibrate function according to subtask
-static staruct sched_param calibrate_param;
-calibrate_param.priority = 1;
+static struct sched_param calibrate_param;
+calibrate_param.sched_priority = 1;
 
 
 
 module_param(mode, charp,0);
 MODULE_PARM_DESC(mode, "This is the mode of running.");
+/* subtask lookup function */
+static subtask subtask_lookup_fn(struct hrtimer * timer) {
+	subtask sub;
+	void * timer_addr = (void *)timer;
+
+	void * subtask_addr = timer_addr - sizeof(struct task_struct *) - sizeof(struct task *) - sizeof(int) - sizeof(unsigned long);
+	sub= *((struct subtask *)subtask_addr);
+	return sub; 
+}
 /* subtask function */
 static int subtask_fn(subtask * sub){
 	int current=0;
-
-	while (current!=sub->count){ 
+	int count=sub->loop_count;
+	while (current!=count){ 
 		ktime_get();
 		current+=1;
 	}
@@ -41,18 +50,12 @@ static int subtask_fn(subtask * sub){
 /*timer expiration*/
 static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart )
 {
-	subtask sub = subtask_lookup_fn(timer_for_restart);
+	subtask sub;
+	sub = subtask_lookup_fn(timer_for_restart);
 
-	wake_up_process(sub->sub_thread);
+	wake_up_process(sub.sub_thread);
   	
 	return HRTIMER_RESTART;
-}
-/* subtask lookup function */
-static int subtask_lookup_fn(struct hrtimer * timer) {
-	void * timer_addr = (void *)timer;
-
-	void * subtask_addr = timer_addr - sizeof(struct task_struct *) - sizeof(struct task *) - sizeof(int) - sizeof(unsigned long);
-	return (struct subtask *)subtask_addr; 
 }
 
 /* calibrate function*/
@@ -105,18 +108,21 @@ static int calibrate_fn(void * data){
 		
 	}
 	
-	return 0
+	return 0;
 
 	
 }
 
 /* run function*/
 static int run_fn(subtask *sub){
-	hrtimer_init(&sub->hr_timer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
-	hr_timer.function=&timer_callback;
+	struct hrtimer subhrtimer;
 	ktime_t kt;
 	ktime_t expectNext;
 	ktime_t parentPeriod;
+	subhrtimer=sub->hr_timer;
+	hrtimer_init(&subhrtimer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
+	subhrtimer.function=&timer_callback;
+	
 	parentPeriod=ktime_set(sub->parent->period,0);
 	while (!kthread_should_stop()){ 
 		set_current_state(TASK_INTERRUPTIBLE);
