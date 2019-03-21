@@ -7,30 +7,14 @@
 #include <linux/sched.h> 
 #include <linux/list.h>
 
-// static unsigned long period_sec= 1;
-// static unsigned long period_nsec=0;
-// static int threadone=2;
-// static int threadtwo=1;
-// static int threadthr=1;
-// static int threadfr=1;
+static task_struct *subtask[subtaskNum];
+//todo give subtaskNum in header file
 static int coreNum=4;
 static struct cpu_core cores[4];
 static char *mode="calibrate";
 static char *runMode="run";
 static char *calibrateMode="calibrate";
-// // int indicator = 0;
-// static struct hrtimer hr_timer;
-// static ktime_t interval;
-// static struct task_struct *thread1, *thread2, *thread3, *thread4;
 
-// struct sched_param{
-// 	int sched_priority;
-// };
-// module_param(period_sec,ulong, 0);
-// module_param(period_nsec, ulong, 0);
-// module_param(threadone,int, 0);
-// module_param(threadtwo,int, 0);
-// module_param(threadthr,int, 0);
 
 
 module_param(mode, charp,0);
@@ -49,7 +33,6 @@ static int subtask_fn(subtask * sub){
 /*timer expiration*/
 static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart )
 {
-	// ktime_t currtime;
 	subtask sub=lookup_sub(timer_for_restart);
 
 	wake_up_process(sub->sub_thread);
@@ -77,7 +60,6 @@ static int calibrate_fn(int core_num){
 }
 
 /* run function*/
-//to do to fix
 static int run_fn(subtask *sub){
 	hrtimer_init(&sub->hr_timer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
 	hr_timer.function=&timer_callback;
@@ -116,6 +98,7 @@ static int run_fn(subtask *sub){
 	}
 	return 
 }
+/*check if run mode*/
 static bool checkMode(char * s1){
 	char *runMode="run";
 	if (sysfs_streq(runMode, s1)){
@@ -134,10 +117,9 @@ static int taskNum(){
 /* init function - logs that initialization happened, returns success */
 
 static int simple_init (void) {
-	// int ret;
+
 	int i=0;
 	int j=0;
-	struct task_struct *task;
 	struct task_struct **subtaskHead = kmalloc(GFP_KERNEL, );
 	subtask sub;
 	ktime_get();
@@ -152,12 +134,12 @@ static int simple_init (void) {
 	if (mode==runMode){
 		while(j<subtaskNum()){
 			sub=getSubtask(j);
-			task=kthread_create(subtask_fn,void *,name);
-			kthread_bind(task,sub->core);
-			sched_setscheduler(task, SCHED_FIFO,&(sub->param));
+			subtask[j]=kthread_create(subtask_fn,void *,name);
+			kthread_bind(subtask[j],sub->core);
+			sched_setscheduler(subtask[j], SCHED_FIFO,&(sub->param));
 			run_fn(sub);
 			if(sub->index==0){
-				subtaskHead.append(sub);
+				subtaskHead.append(task[j]);
 			}
 			j++
 		}
@@ -171,66 +153,23 @@ static int simple_init (void) {
 			i+=1;
 		}
 	}
-	// char name1[8]="thread1";
-	// char name2[8]="thread2";
- //   char name3[8]="thread3";
- //   char name4[8]="thread4";
-	// struct sched_param param1= { . sched_priority=25};
-	// struct sched_param param2= { . sched_priority=20};
- //   struct sched_param param3= { . sched_priority=15};
-	// int work_load1, work_load2, work_load3,work4;
-	// work_load1 = threadone*1000000;
-	// work_load2 = threadtwo*1000000;
-	// work_load3 = threadthr*1000000;
-	// work4=threadfr *1000000;
-	// interval=ktime_set(period_sec,period_nsec);
-	// hrtimer_init(&hr_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-	// hr_timer.function=&timer_callback;
-	// thread1=kthread_create(thread_fn,(void*)work_load1,name1);
-	// thread2=kthread_create(thread_fn,(void*)work_load2,name2);
-	// thread3=kthread_create(thread_fn,(void*)work_load3,name3);
-	// thread4=kthread_create(thread_fn,(void*)work4,name4);
-	// kthread_bind(thread1, 1);
- //    kthread_bind(thread2, 1);
- //    kthread_bind(thread3, 1);
- //    kthread_bind(thread4, 2);
-	// ret=sched_setscheduler(thread1, SCHED_FIFO, &param1);
-	// if(ret==-1){
- //  		printk(KERN_ALERT "sched_setscheduler failed for 1");
-	// 	return 1;  
-	// }
-	// ret=sched_setscheduler(thread2, SCHED_FIFO, &param2);
-	// if(ret==-1){
- //  		printk(KERN_ALERT "sched_setscheduler failed for 2");
-	// 	return 1;  
-	// }
-	// ret=sched_setscheduler(thread3, SCHED_FIFO, &param3);
-	// if(ret==-1){
- //  		printk(KERN_ALERT "sched_setscheduler failed for 3");
-	// 	return 1;  
-	// }
-	// ret=sched_setscheduler(thread4, SCHED_FIFO, &param1);
-	// if(ret==-1){
- //  		printk(KERN_ALERT "sched_setscheduler failed for 4");
-	// 	return 1;  
-	// }
-	// wake_up_process(thread1);
- //   wake_up_process(thread2);
- //   wake_up_process(thread3);
- //   wake_up_process(thread4);
-	// hrtimer_start(&hr_timer,interval, HRTIMER_MODE_REL);
-
     printk(KERN_ALERT "simple module initialized\n");
     return 0;
 }
 
 /* exit function - logs that the module is being removed */
 static void simple_exit (void) {
-	// int ret;
-	// hrtimer_cancel(&hr_timer);
- // 	ret = kthread_stop(thread1);
- // 	if(!ret)
- //  		printk(KERN_INFO "Thread stopped");
+	int ret;
+	int i=0;
+	while(i<subtaskNum()){
+		sub=getSubtask(i);
+		hrtimer_cancel(&(sub->hr_timer));
+		ret = kthread_stop(subtask[i]);
+ 		if(!ret)
+  			printk(KERN_INFO "Thread %d stopped",i);
+	}
+	free(subtaskHead);
+	//todo need to fix subtaskHead as a static variable
     printk(KERN_ALERT "simple module is being unloaded\n");
 }
 
