@@ -106,21 +106,14 @@ static bool checkMode(char * s1){
 	}
 	return false;
 }
-/*get total subtask num*/
-static int subtaskNum(){
-	return ;
-}
-/*get total task num*/
-static int taskNum(){
-	return ;
-}
+
 /* init function - logs that initialization happened, returns success */
 
 static int simple_init (void) {
 
 	int i=0;
 	int j=0;
-	struct task_struct **subtaskHead = kmalloc(GFP_KERNEL, );
+	struct task_struct *subtaskHead[taskNum];
 	subtask sub;
 	ktime_get();
 	char name[7]="thread";
@@ -132,14 +125,14 @@ static int simple_init (void) {
 		printk(KERN_INFO "Current mode is calibrate mode.");
 	}
 	if (mode==runMode){
-		while(j<subtaskNum()){
+		while(j<subtaskNum){
 			sub=getSubtask(j);
-			subtask[j]=kthread_create(subtask_fn,void *,name);
-			kthread_bind(subtask[j],sub->core);
-			sched_setscheduler(subtask[j], SCHED_FIFO,&(sub->param));
+			subtasks_array[j].sub_thread=kthread_create(subtask_fn,void *,name);
+			kthread_bind(subtasks_array[j].sub_thread,sub->core);
+			sched_setscheduler(subtasks_array[j].sub_thread, SCHED_FIFO,&(sub->param));
 			run_fn(sub);
 			if(sub->index==0){
-				subtaskHead.append(task[j]);
+				subtaskHead[sub->parent->index]=subtasks_array[j].sub_thread;
 			}
 			j++
 		}
@@ -161,14 +154,13 @@ static int simple_init (void) {
 static void simple_exit (void) {
 	int ret;
 	int i=0;
-	while(i<subtaskNum()){
-		sub=getSubtask(i);
+	while(i<subtaskNum){
+		sub=subtasks_array[i];
 		hrtimer_cancel(&(sub->hr_timer));
-		ret = kthread_stop(subtask[i]);
+		ret = kthread_stop(subtasks_array[i].sub_thread);
  		if(!ret)
   			printk(KERN_INFO "Thread %d stopped",i);
 	}
-	free(subtaskHead);
 	//todo need to fix subtaskHead as a static variable
     printk(KERN_ALERT "simple module is being unloaded\n");
 }

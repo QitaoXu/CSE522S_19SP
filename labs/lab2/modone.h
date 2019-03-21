@@ -9,6 +9,8 @@
 
 #ifndef MODONE_H
 #define MODONE_H
+#define subtaskNum 8
+#define taskNum 4
 #include <linux/sched.h> 
 #include <linux/hrtimer.h>
 #include <linux/ktime.h>
