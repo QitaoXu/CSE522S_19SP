@@ -49,12 +49,11 @@ static int subtask_fn(subtask * sub){
 /*timer expiration*/
 static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart )
 {
-	ktime_t currtime;
+	// ktime_t currtime;
 	subtask sub=lookup_sub(timer_for_restart);
-	
+
 	wake_up_process(sub->sub_thread);
-  	currtime  = ktime_get();
-  	hrtimer_forward(timer_for_restart, currtime , interval);
+  	
 	return HRTIMER_RESTART;
 }
 /*subtask lookup function*/
@@ -83,24 +82,28 @@ static int run_fn(subtask *sub){
 	hrtimer_init(&sub->hr_timer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
 	hr_timer.function=&timer_callback;
 	ktime_t kt;
+	ktime_t expectNext;
+	ktime_t parentPeriod;
+	parentPeriod=ktime_set(sub->parent->period,0);
 	while (!kthread_should_stop()){ 
 		set_current_state(TASK_INTERRUPTIBLE);
   		schedule();
 		sub->last_release_time=ktime_get();
 		subtask_fn(sub);
   		if(sub->prev==NULL){
+  			kt=ktime_get();
   			//if its subtask is the first one in its task it should then calculate (as an absolute time) one task period later
   			// than the value stored in its last release time and schedule its own timer to wake up at that time
-  			sub->hr_timer=sub->last_release_time+sub->parent->period;
-  		}
+  			hrtimer_forward(sub->hr_timer, kt, ktime_sub(ktime_add(parentPeriod,sub->last_release_time),kt));
+  		} 
   		if(sub->next!=NULL){
   			kt=ktime_get();
   			// if the time it obtained is less than the sum of the task period 
   			//and its successor's last release time, it should schedule its successor's 
   			//timer to wake up one task period after its successor's last release time -- otherwise
-
-  			if (kt<(sub->next->last_release_time+sub->parent->period)){
-  				sub->next->hr_timer=sub->next->last_release_time+sub->parent->period;
+  			expectNext=ktime_add(sub->next->last_release_time,parentPeriod);
+  			if (kt<expectNext){
+  				hrtimer_forward(sub->next->hr_timer, kt, ktime_sub(expectNext,kt));
   			}
 
   			//if the time it obtained is greater than or equal to the sum of the task period 
