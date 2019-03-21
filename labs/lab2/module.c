@@ -13,6 +13,7 @@
 // static int threadtwo=1;
 // static int threadthr=1;
 // static int threadfr=1;
+static int coreNum=4;
 static struct cpu_core cores[4];
 static char *mode="calibrate";
 static char *runMode="run";
@@ -66,6 +67,11 @@ static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart )
 	// set_pin_value(PIO_G,9,(cnt++ & 1)); //Toggle LED 
 	return HRTIMER_RESTART;
 }
+/*subtask lookup function*/
+static int lookup_sub(struct hrtimer *hr_timer){
+	
+	return 
+}
 /* calibrate function*/
 static int calibrate_fn(int core_num){
 	
@@ -79,17 +85,38 @@ static int calibrate_fn(int core_num){
 	
 	return 
 }
+
 /* run function*/
 static int run_fn(subtask *sub){
 	hrtimer_init(&sub->hr_timer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
 	hr_timer.function=&timer_callback;
+	ktime_t kt;
 	while (!kthread_should_stop()){ 
 		set_current_state(TASK_INTERRUPTIBLE);
   		schedule();
 		sub->last_release_time=ktime_get();
 		subtask_fn(sub);
   		if(sub->prev==NULL){
+  			//if its subtask is the first one in its task it should then calculate (as an absolute time) one task period later
+  			// than the value stored in its last release time and schedule its own timer to wake up at that time
   			sub->hr_timer=sub->last_release_time+sub->parent->period
+  		}
+  		if(sub->next!=NULL){
+  			kt=ktime_get();
+  			// if the time it obtained is less than the sum of the task period 
+  			//and its successor's last release time, it should schedule its successor's 
+  			//timer to wake up one task period after its successor's last release time -- otherwise
+
+  			if (kt<(sub->next->last_release_time+sub->parent->period)){
+  				sub->next->hr_timer=sub->next->last_release_time+sub->parent->period;
+  			}
+
+  			//if the time it obtained is greater than or equal to the sum of the task period 
+  			//and its successor's last release time it should immediately call wake_up_process() 
+  			//to wake up its successor subtask's kernel thread.
+  			else{
+  				wake_up_process(sub->next->sub_thread);
+  			}
   		}
 	}
 	return 
@@ -126,6 +153,7 @@ static bool checkMode(char * s1){
 
 static int simple_init (void) {
 	// int ret;
+	int i=0;
 	ktime_get();
 	if(checkMode(mode)){
 		mode=runMode;
@@ -135,7 +163,12 @@ static int simple_init (void) {
 		printk(KERN_INFO "Current mode is calibrate mode.");
 	}
 	if (mode==runMode){
-		run_fn()
+		run_fn();
+	}else{
+		while (i<coreNum){
+			calibrate_fn(i);
+			i+=1;
+		}
 	}
 	// char name1[8]="thread1";
 	// char name2[8]="thread2";
