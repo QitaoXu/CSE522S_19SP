@@ -6,6 +6,7 @@
 #include <linux/ktime.h>
 #include <linux/sched.h> 
 #include <linux/list.h>
+#include <linux/delay.h>
 
 static task_struct *subtask[subtaskNum];
 //todo give subtaskNum in header file
@@ -14,6 +15,13 @@ static struct cpu_core cores[4];
 static char *mode="calibrate";
 static char *runMode="run";
 static char *calibrateMode="calibrate";
+
+static task_struct * calibrate_kthreads[4];
+// for initilaization of 4 calibrate kthreads,
+// later, their priority will be modified in 
+// calibrate function according to subtask
+static staruct sched_param calibrate_param;
+calibrate_param.priority = 1;
 
 
 
@@ -33,30 +41,73 @@ static int subtask_fn(subtask * sub){
 /*timer expiration*/
 static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart )
 {
-	subtask sub=lookup_sub(timer_for_restart);
+	subtask sub = subtask_lookup_fn(timer_for_restart);
 
 	wake_up_process(sub->sub_thread);
   	
 	return HRTIMER_RESTART;
 }
-/*subtask lookup function*/
-static subtask lookup_sub(struct hrtimer *hr_timer){
-	subtask sub;
+/* subtask lookup function */
+static int subtask_lookup_fn(struct hrtimer * timer) {
+	void * timer_addr = (void *)timer;
 
-	return subtask;
+	void * subtask_addr = timer_addr - sizeof(struct task_struct *) - sizeof(struct task *) - sizeof(int) - sizeof(unsigned long);
+	return (struct subtask *)subtask_addr; 
 }
-/* calibrate function*/
-static int calibrate_fn(int core_num){
-	
-	struct subtask *sub;
-	list_for_each_entry(sub, &list, cores[core_num].core_list) {
-		set_current_state(TASK_INTERRUPTIBLE);
-  		schedule();
-  		sched_setparam(pid_t pid, sub->param);
 
+/* calibrate function*/
+static int calibrate_fn(void * data){
+
+	int *core_num = (int*)data;
+	// struct sched_param param;
+	int last_loop_count;
+	ktime_t before;
+	ktime_t after;
+	ktime_t diff;
+	ktime_t exe_time;
+	
+	set_current_state(TASK_INTERRUPTIBLE);
+	schedule();
+
+	struct subtask *sub;
+
+	list_for_each_entry(sub, &core_list, cores[*core_num].core_list) {
+
+		sub->param.sched_priority = sub->priority;
+		sched_setscheduler(current->pid, SCHED_FIFO, &param);
+
+		while (sub->loop_count > 0) {
+
+			// time stamp before subtask_fn
+
+			last_loop_count = sub->loop_count;
+
+			before = ktime_get();
+
+			subtask_fn(sub);
+
+			// time stamp after subtask_fn
+			after = ktime_get();
+
+			diff = ktime(after, before);
+
+			exe_time = ktime_set(0, sub->execution_time * 1000000 );
+
+			if (ktime_compare(diff, exe_time) == 1) {
+				sub->loop_count = sub->loop_count - 1;
+			}
+
+			if (last_loop_count == sub->loop_count) {
+				break;
+			}
+		}
+
+		
 	}
 	
-	return 
+	return 0
+
+	
 }
 
 /* run function*/
@@ -113,6 +164,7 @@ static int simple_init (void) {
 
 	int i=0;
 	int j=0;
+	int kthread_index = 0;
 	struct task_struct *subtaskHead[taskNum];
 	subtask sub;
 	ktime_get();
@@ -123,6 +175,27 @@ static int simple_init (void) {
 	}else{
 		mode=calibrateMode;
 		printk(KERN_INFO "Current mode is calibrate mode.");
+		for (kthread_index = 0; kthread_index < 4; kthread_index++) {
+
+			calibrate_kthreads[kthread_index] = kthread_create(calibrate_fn, (void *)&kthread_index, sprintf("calibrate%d", kthread_index));
+			kthread_bind(calibrate_kthreads[kthread_index], kthread_index);
+			ret = sched_setscheduler(calibrate_kthreads[kthread_index]->pid, SCHED_FIFO, &calibrate_param);
+
+			if (ret < 0) {
+				printk(KERN_INFO, "sched_setscheduler failed!\n");
+				return -1;
+			}
+
+			// a timer for 100ms
+			mdelay(100);
+
+			for (kthread_index = 0; kthread_index < 4; kthread_index++) {
+				wake_up_process(calibrate_kthreads[kthread_index]);
+			}
+
+		}
+
+
 	}
 	if (mode==runMode){
 		while(j<subtaskNum){
