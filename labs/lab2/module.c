@@ -50,27 +50,18 @@ static int subtask_fn(subtask * sub){
 static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart )
 {
 	ktime_t currtime;
-	wake_up_process(thread1);
+	subtask sub=lookup_sub(timer_for_restart);
 	
-	if(indicator==2 || indicator==4) {
-		wake_up_process(thread2);
-	}
-	if(indicator==4||indicator==0) {
-   	wake_up_process(thread3);
-   	if(indicator==4){
-   		indicator=0;
-   	}
-   }
-   indicator++;
+	wake_up_process(sub->sub_thread);
   	currtime  = ktime_get();
   	hrtimer_forward(timer_for_restart, currtime , interval);
-	// set_pin_value(PIO_G,9,(cnt++ & 1)); //Toggle LED 
 	return HRTIMER_RESTART;
 }
 /*subtask lookup function*/
-static int lookup_sub(struct hrtimer *hr_timer){
-	
-	return 
+static subtask lookup_sub(struct hrtimer *hr_timer){
+	subtask sub;
+
+	return subtask;
 }
 /* calibrate function*/
 static int calibrate_fn(int core_num){
@@ -87,6 +78,7 @@ static int calibrate_fn(int core_num){
 }
 
 /* run function*/
+//to do to fix
 static int run_fn(subtask *sub){
 	hrtimer_init(&sub->hr_timer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
 	hr_timer.function=&timer_callback;
@@ -99,7 +91,7 @@ static int run_fn(subtask *sub){
   		if(sub->prev==NULL){
   			//if its subtask is the first one in its task it should then calculate (as an absolute time) one task period later
   			// than the value stored in its last release time and schedule its own timer to wake up at that time
-  			sub->hr_timer=sub->last_release_time+sub->parent->period
+  			sub->hr_timer=sub->last_release_time+sub->parent->period;
   		}
   		if(sub->next!=NULL){
   			kt=ktime_get();
