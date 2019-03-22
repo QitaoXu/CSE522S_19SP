@@ -50,7 +50,7 @@ struct Subtask {
 	struct task_struct *sub_thread; /*pointer to the task_struct*/
 	struct hrtimer hr_timer; /* timer for the subtask*/
 
-	bool flag_sched; /*if the subtask is temporarily not available, */
+	bool flag; /*if the subtask is temporarily not available, */
 	int relative_ddl; /*task period* subtask's execution time/task's execution time*/
 	int sched_priori;  /*priority of subtask on the core*/
 };

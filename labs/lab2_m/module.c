@@ -11,10 +11,9 @@
 #include "global-config.h"
 
 /* subtask lookup function */
-static Subtask subtask_lookup_fn(struct hrtimer * timer) {
-	Subtask sub;
-	//TODO container
-	return sub; 
+static subtask subtask_lookup_fn(struct hrtimer * timer) {
+ 	Subtask * sub = container_of(timer, Subtask, hr_timer);
+ 	return sub; 
 }
 
 /* subtask function */
@@ -109,8 +108,8 @@ static int init_run_subtask_fn(void * data){
 static int simple_init (void) {
 	int i, j, ret;
 	Core c;
-	sched_param calibrate_param = {.sched_priority=1};;
-	sched_param schedule_param = {.sched_priority=1};;
+	struct sched_param calibrate_param = {.sched_priority=1};
+	struct sched_param schedule_param = {.sched_priority=1};
 	parse_module_param();
 	if(mode == RUN){
 		init_global_data_run();
