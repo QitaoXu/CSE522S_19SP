@@ -67,9 +67,9 @@ typedef struct Core Core;
 
 //Module Input
 enum mode { RUN = 1, CALIBRATE };
-static char * mode_input = "calibrate";
+char * mode_input = "calibrate";
 module_param(mode_input, charp, 0);
-static void parse_module_param() {
+void parse_module_param() {
 	if (sysfs_streq(mode_input, "run")) {
 		mode = RUN;
 	} else {
@@ -79,7 +79,7 @@ static void parse_module_param() {
 
 //Make Thread Name
 char thread_name_base[256] = "thread";
-static char* get_thread_name_s(char *str, int num){
+char* get_thread_name_s(char *str, int num){
     char c;
     int len = strlen(str);
    	int digit;
