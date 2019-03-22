@@ -15,10 +15,10 @@
 #include <linux/ktime.h>
 #include <linux/list.h>
 #include <linux/sort.h>
-enum Mode { RUN = 1, CALIBRATE };
-enum Mode mode = CALIBRATE;
-char * mode_input = "calibrate";
-module_param(mode_input, charp, 0);
+enum mode_input { RUN = 1, CALIBRATE };
+enum Mode mode_input = CALIBRATE;
+char * mode = "calibrate";
+module_param(mode, charp, 0);
 
 void parse_module_param(void);
 char* get_thread_name_s(char *str, int num);
@@ -74,10 +74,10 @@ typedef struct Core Core;
 
 //Module Input
 void parse_module_param() {
-	if (sysfs_streq(mode_input, "run")) {
-		mode = RUN;
+	if (sysfs_streq(mode, "run")) {
+		mode_input = RUN;
 	} else {
-		mode = CALIBRATE;
+		mode_input = CALIBRATE;
 	} 
 } 
 
