@@ -16,7 +16,7 @@
 #include <linux/list.h>
 
 //calibrate
-static struct sched_param calibrate_param;
+struct sched_param calibrate_param;
 
 //customized structures
 struct Task{
