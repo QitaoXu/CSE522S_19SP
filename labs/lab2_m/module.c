@@ -109,7 +109,8 @@ static int simple_init (void) {
 	int i, j, ret;
 	Core c;
 	parse_module_param();
-	struct sched_param calibrate_param schedule_param;
+	struct sched_param calibrate_param;
+	struct sched_param schedule_param;
 	if(mode == RUN){
 		init_global_data_run();
 		printk(KERN_INFO "Current mode is run mode.");
@@ -119,13 +120,13 @@ static int simple_init (void) {
 			schedule_param = { .sched_priority=subtasks[i].sched_priori };
 			ret = sched_setscheduler(subtasks[i].sub_thread, SCHED_FIFO, &schedule_param);
 			if (ret < 0) {
-				printk(KERN_INFO, "sched_setscheduler failed!");
+				printk(KERN_INFO "sched_setscheduler failed!");
 				return -1;
 			}
 		}
 		mdelay(100);
 		for(i=0; i<num_subtask; i++){
-			if(subtasks[i].index==0){
+			if(subtasks[i].idx_in_task==0){
 				wake_up_process(subtasks[i].sub_thread);
 			}
 		}
@@ -136,7 +137,7 @@ static int simple_init (void) {
 
 		for (i = 0; i < num_core; i++) {
 			c = cores[j];
-			calibrate_kthreads[i] = kthread_create(calibrate_fn, (void *)(&subtasks[i]), sprintf("calibrate%d", i));
+			calibrate_kthreads[i] = kthread_create(calibrate_fn, (void *)(&subtasks[i]), get_thread_name_s(thread_name_base, i));
 			kthread_bind(calibrate_kthreads[i], i);
 			calibrate_param = { .sched_priority=1 }
 			ret = sched_setscheduler(calibrate_kthreads[i], SCHED_FIFO, &calibrate_param);
