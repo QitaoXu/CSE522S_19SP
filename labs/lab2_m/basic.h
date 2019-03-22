@@ -15,6 +15,10 @@
 #include <linux/ktime.h>
 #include <linux/list.h>
 
+enum mode { RUN = 1, CALIBRATE };
+char * mode_input = "calibrate";
+module_param(mode_input, charp, 0);
+
 void parse_module_param(void);
 char* get_thread_name_s(char *str, int num);
 
@@ -64,9 +68,6 @@ typedef struct Core Core;
 
 
 //Module Input
-enum mode { RUN = 1, CALIBRATE };
-char * mode_input = "calibrate";
-module_param(mode_input, charp, 0);
 void parse_module_param() {
 	if (sysfs_streq(mode_input, "run")) {
 		mode = RUN;
