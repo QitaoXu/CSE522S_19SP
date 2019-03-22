@@ -5,7 +5,6 @@
 #include <linux/hrtimer.h>
 #include <linux/ktime.h>
 #include <linux/sched.h> 
-#include <linux/list.h>
 #include <linux/delay.h>
 
 #include "basic.h"
@@ -82,13 +81,13 @@ static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart ) 
 /* calibrate function*/
 static int calibrate_fn(void * data){
 	Subtask* sub;
-	int last_loop_count;
+	int last_loop_count, i;
 	ktime_t before, after, diff, exe_time;
 	
 	set_current_state(TASK_INTERRUPTIBLE);
 	schedule();
 
-	list_for_each_entry(sub, &core_subtask_list, cores[((Subtask*)data)->core].core_subtask_list) {
+	for (i=0; i<cores[((Subtask*)data)->core].subtask_list; i++) {
 		sub->schedule_param.sched_priority = sub->priority;
 		sched_setscheduler(current->pid, SCHED_FIFO, &(sub->schedule_param));
 		while (sub->loop_count > 0) {
@@ -125,25 +124,25 @@ static int init_run_subtask_fn(void * data){
 		sub->last_release_time = ktime_get();
 		subtask_fn(sub);
 
-  		if(sub->prev==NULL){
+  		if(sub->idx_in_task==0){
   			current_time = ktime_get();
   			/*	if its subtask is the first one in its task it should then calculate (as an absolute time) one task period later
   			    than the value stored in its last release time and schedule its own timer to wake up at that time */
   			hrtimer_forward(&(sub->hr_timer), current_time, ktime_sub(ktime_add(sub->parent->period, sub->last_release_time), current_time));
   		} 
-  		if(sub->next!=NULL){
+  		if((sub->idx_in_task)<(sub->parent->num)){
   			current_time = ktime_get();
   			/*	if the time it obtained is less than the sum of the task period 
   				and its successor's last release time, it should schedule its successor's 
   				timer to wake up one task period after its successor's last release time -- otherwise */
-  			expect_next = ktime_add(sub->next->last_release_time, sub->parent->period);
+  			expect_next = ktime_add(sub->parent->subtask_list[sub->idx_in_task+1]->last_release_time, sub->parent->period);
   			if (current_time < expect_next){
-  				hrtimer_forward(&(sub->next->hr_timer), current_time, ktime_sub(expect_next, current_time));
+  				hrtimer_forward(&(sub->parent->subtask_list[sub->idx_in_task+1]->hr_timer), current_time, ktime_sub(expect_next, current_time));
   			} else {
   			/*	if the time it obtained is greater than or equal to the sum of the task period 
   				and its successor's last release time it should immediately call wake_up_process() 
   				to wake up its successor subtask's kernel thread. */
-  				wake_up_process(sub->next->sub_thread);
+  				wake_up_process(sub->parent->subtask_list[sub->idx_in_task+1]->sub_thread);
   			}
   		}
 	}

@@ -22,15 +22,16 @@ struct sched_param* calibrate_param;
 struct Task{
 	ktime_t period; /*period of task second*/
 	// struct subtask *subtasks; /* subtasks within the task struct */
-	struct list_head task_subtask_list;
 	int num;/* number of subtask */
 	int index; /* index of task */
 	int starting_index;/* starting index of subtask */
 	ktime_t execution_time; /*execution time of all subtask*/
+	struct Subtask* subtask_list;
 };
 
 struct Subtask {
-	int index; /*index of subtask within the task struct*/
+	int idx_in_task; /*index of subtask within the task*/
+	int idx_in_core; /*index of subtask within the core*/
 	int core; /* on which core of your Raspberry Pi 3 each subtask should run, set core to -1 if no aviable core to run*/
 	struct Task *parent; /*parent task of subtask*/
 	int loop_count; /*init to 0 or Z+, */
@@ -43,20 +44,16 @@ struct Subtask {
 
 	struct task_struct *sub_thread; /*pointer to the task_struct*/
 	struct hrtimer hr_timer; /* timer for the subtask*/
-	struct subtask *next; /* next subtask within parent task struct*/
-	struct subtask *prev; /* previous subtask within parent task struct*/
 
 	bool flag_sched; /*if the subtask is temporarily not available, */
 	ktime_t relative_ddl; /*task period* subtask's execution time/task's execution time*/
 	struct sched_param* schedule_param; /*priority of subtask on the core*/
-	struct list_head core_subtask_list;/*list head of the core on which the subtask is assigned */
-	struct list_head task_subtask_list;
 };
 
 struct Core{
 	int core_index; /*cpu core index */
 	// struct subtask *subtask; /*subtask that is put on the specific cpu core*/
-	struct list_head core_subtask_list;
+	struct Subtask* subtask_list;
 };
 
 //Forward Declaration

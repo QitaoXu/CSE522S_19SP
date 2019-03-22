@@ -13,6 +13,42 @@
 #define num_core 4
 #define num_task 4
 
+#define task_index0 0
+#define task_index1 1
+#define task_index2 2
+#define task_index3 3
+
+#define subtask_index0 0
+#define subtask_index1 1
+#define subtask_index2 2
+#define subtask_index3 3
+
+#define subtask_count0 4
+#define subtask_count1 3
+#define subtask_count2 2
+#define subtask_count3 2
+
+#define task_period1 2000
+#define task_period2 2000
+#define task_period3 2000
+#define task_period4 2000
+
+#define loop_count 5000
+#define exec_time_0_0 10
+#define exec_time_0_1 10
+#define exec_time_0_2 10
+#define exec_time_0_3 10
+
+#define exec_time_1_0 10
+#define exec_time_1_1 10
+#define exec_time_1_2 10
+
+#define exec_time_2_0 10
+#define exec_time_2_1 10
+
+#define exec_time_3_0 10
+#define exec_time_3_1 10
+
 Core cores[num_core];
 Task tasks[num_task];
 Subtask subtasks[num_subtask];
