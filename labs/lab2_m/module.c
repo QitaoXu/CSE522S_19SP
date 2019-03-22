@@ -9,6 +9,8 @@
 
 #include "basic.h"
 #include "global-config.h"
+struct sched_param calibrate_param;
+struct sched_param schedule_param;
 
 /* subtask lookup function */
 static Subtask subtask_lookup_fn(struct hrtimer * timer) {
@@ -109,8 +111,6 @@ static int simple_init (void) {
 	int i, j, ret;
 	Core c;
 	parse_module_param();
-	struct sched_param calibrate_param;
-	struct sched_param schedule_param;
 	if(mode == RUN){
 		init_global_data_run();
 		printk(KERN_INFO "Current mode is run mode.");
