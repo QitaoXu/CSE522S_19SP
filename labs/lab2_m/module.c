@@ -10,9 +10,6 @@
 #include "basic.h"
 #include "global-config.h"
 
-struct sched_param schedule_param = { .sched_priority=1 };
-struct sched_param calibrate_param = { .sched_priority=1 };
-
 /* subtask lookup function */
 static Subtask subtask_lookup_fn(struct hrtimer * timer) {
 	Subtask sub;
@@ -43,14 +40,11 @@ static int calibrate_fn(void * data){
 	int last_loop_count, i;
 	ktime_t before, after, diff, exe_time;
 	Core c = cores[((Subtask*)data)->core];
-	
+
 	set_current_state(TASK_INTERRUPTIBLE);
 	schedule();
 
 	for (i=0; i<c.num; i++) {
-		schedule_param = { .sched_priority=c.subtask_list[i]->sched_priori};
-		sched_setscheduler(current->pid, SCHED_FIFO, &schedule_param);
-
 		while (c.subtask_list[i]->work_load_loop_count > 0) {
 			// time stamp before subtask_fn
 			last_loop_count = c.subtask_list[i]->work_load_loop_count;
@@ -112,7 +106,10 @@ static int init_run_subtask_fn(void * data){
 
 /* init function - logs that initialization happened, returns success */
 static int simple_init (void) {
-	int i, ret;
+	int i, j, ret;
+	Core c;
+	struct sched_param schedule_param = { .sched_priority=1 };
+	struct sched_param calibrate_param = { .sched_priority=1 };
 	parse_module_param();
 
 	if(mode == RUN){
@@ -138,13 +135,19 @@ static int simple_init (void) {
 	} else {
 		init_global_data_calibrate();
 		printk(KERN_INFO "Current mode is calibrate mode.");
+
 		for (i = 0; i < num_core; i++) {
+			c = cores[j];
 			calibrate_kthreads[i] = kthread_create(calibrate_fn, (void *)(&subtasks[i]), sprintf("calibrate%d", i));
 			kthread_bind(calibrate_kthreads[i], i);
 			ret = sched_setscheduler(calibrate_kthreads[i]->pid, SCHED_FIFO, &calibrate_param);
 			if (ret < 0) {
 				printk(KERN_INFO, "sched_setscheduler failed!");
 				return -1;
+			}
+			for (i=0; i<c.num; j++) {
+				schedule_param = { .sched_priority=c.subtask_list[j]->sched_priori};
+				sched_setscheduler(c.subtask_list[j]->sub_thread->pid, SCHED_FIFO, &schedule_param);
 			}
 		}
 		mdelay(100);
