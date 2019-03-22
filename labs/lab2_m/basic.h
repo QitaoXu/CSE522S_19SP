@@ -34,7 +34,7 @@ struct Subtask {
 	int idx_in_core; /*index of subtask within the core*/
 	int core; /* on which core of your Raspberry Pi 3 each subtask should run, set core to -1 if no aviable core to run*/
 	struct Task *parent; /*parent task of subtask*/
-	int loop_count; /*init to 0 or Z+, */
+	int work_load_loop_count; /*init to 0 or Z+, */
 
 	ktime_t last_release_time; /*initialized to 0, record the last time the subtask was released*/
 	ktime_t cumul_exec_time;/* sum up the execution times of that subtask and all of its predecessors within the same task*/

@@ -78,7 +78,7 @@ void init_global_data_run() {
 		subtasks[i].idx_in_task = i%num_task;
 		subtasks[i].parent = &(tasks[i/num_task]);
 		subtasks[i].core = i/num_task;
-		subtasks[i].loop_count = 1000;
+		subtasks[i].work_load_loop_count = loop_count;
 	}
 /* 	for initilaization of 4 calibrate kthreads,
    	later, their priority will be modified in 

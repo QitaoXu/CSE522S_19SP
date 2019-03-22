@@ -63,7 +63,7 @@ static subtask subtask_lookup_fn(struct hrtimer * timer) {
 /* subtask function */
 static int subtask_fn(subtask * sub) {
 	int current = 0;
-	while (current!=sub->loop_count){ 
+	while (current!=sub->work_load_loop_count){ 
 		ktime_get();
 		current+=1;
 	}	
@@ -90,23 +90,23 @@ static int calibrate_fn(void * data){
 	for (i=0; i<c.num; i++) {
 		c.subtask_list[i]->schedule_param.sched_priority = c.subtask_list[i]->priority;
 		sched_setscheduler(current->pid, SCHED_FIFO, &(c.subtask_list[i]->schedule_param));
-		while (c.subtask_list[i]->loop_count > 0) {
+		while (c.subtask_list[i]->work_load_loop_count > 0) {
 			// time stamp before subtask_fn
-			last_loop_count = c.subtask_list[i]->loop_count;
+			last_loop_count = c.subtask_list[i]->work_load_loop_count;
 			before = ktime_get();
 			subtask_fn(c.subtask_list[i]);
 			// time stamp after subtask_fn
 			after = ktime_get();
 			diff = ktime(after, before);
 			if (ktime_compare(diff, c.subtask_list[i]->execution_time) == 1) {
-				c.subtask_list[i]->loop_count = c.subtask_list[i]->loop_count - 1;
+				c.subtask_list[i]->work_load_loop_count = c.subtask_list[i]->work_load_loop_count - 1;
 			}
-			if (last_loop_count == c.subtask_list[i]->loop_count) {
+			if (last_loop_count == c.subtask_list[i]->work_load_loop_count) {
 				break;
 			}
 		}
 	}
-	//TODO: record loop_count for each subtask
+	//TODO: record work_load_loop_count for each subtask
 	return 0;
 }
 
