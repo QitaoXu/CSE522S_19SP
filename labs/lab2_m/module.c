@@ -10,47 +10,6 @@
 #include "basic.h"
 #include "global-config.h"
 
-void parse_module_param() {
-	if (sysfs_streq(mode_input, "run")) {
-		mode = RUN;
-	} else {
-		mode = CALIBRATE;
-	} 
-} 
-
-char* get_thread_name_s(char *str, int num){
-    char c;
-    int len = strlen(str);
-   	int digit;
-   	int i;
-   	int j=0;
-   	int base=10;
-   	int cop=num;
-   	int length=1;
-   	int square=1;
-   	while(cop>=base){
-   		cop/=base;
-   		length+=1;
-   	}
-   	i=length;
-   	while(i>0){
-   		j=0;
-   		square=1;
-		while(j<(i-1)){
-			square*=base;
-			j+=1;
-			
-		}
-		digit=num/(square)%base;
-   		c=digit+'0';
-   		str[len]=c;
-   		i-=1;
-   		len+=1;
-   	}
-    str[len+1] = '\0';
-	return str;
-}
-
 /* subtask lookup function */
 static subtask subtask_lookup_fn(struct hrtimer * timer) {
 	subtask sub;
