@@ -75,7 +75,7 @@ void init_global_data_run() {
 		tasks[i].execution_time = ktime_set(0, 0);
 	}
 	for (i=0; i<num_subtask; i++) {
-		subtasks[i].index = i%num_task;
+		subtasks[i].idx_in_task = i%num_task;
 		subtasks[i].parent = tasks[i/num_task];
 		subtasks[i].core = i/num_task;
 		subtasks[i].loop_count = 1000;
