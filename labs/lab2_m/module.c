@@ -11,7 +11,7 @@
 #include "global-config.h"
 
 /* subtask lookup function */
-static Subtask subtask_lookup_fn(struct hrtimer * timer) {
+static Subtask * subtask_lookup_fn(struct hrtimer * timer) {
  	Subtask * sub = container_of(timer, Subtask, hr_timer);
  	return sub; 
 }
@@ -28,9 +28,9 @@ static int subtask_fn(Subtask * sub) {
 
 /*timer expiration*/
 static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart ) {
-	Subtask sub;
+	Subtask * sub;
 	sub = subtask_lookup_fn(timer_for_restart);
-	wake_up_process(sub.sub_thread);
+	wake_up_process(sub->sub_thread);
 	return HRTIMER_RESTART;
 }
 
