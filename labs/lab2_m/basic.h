@@ -10,7 +10,7 @@
 #ifndef BASIC_H
 #define BASIC_H
 
-#include <sched.h> 
+#include <linux/sched.h> 
 #include <linux/hrtimer.h>
 #include <linux/ktime.h>
 #include <linux/list.h>
@@ -52,7 +52,7 @@ struct Subtask {
 
 	bool flag_sched; /*if the subtask is temporarily not available, */
 	int relative_ddl; /*task period* subtask's execution time/task's execution time*/
-	struct sched_param schedule_param; /*priority of subtask on the core*/
+	int sched_priori;  /*priority of subtask on the core*/
 };
 
 struct Core{

@@ -118,7 +118,8 @@ static int simple_init (void) {
 		for(i=0; i<num_subtask; i++){
 			subtasks[i].sub_thread = kthread_create(init_run_subtask_fn, (void *)(&subtasks[i]), get_thread_name_s(thread_name_base, i));
 			kthread_bind(subtasks[i].sub_thread, subtasks[i].core);
-			ret = sched_setscheduler(subtasks[i].sub_thread->pid, SCHED_FIFO, &(subtasks[i].schedule_param));
+			struct sched_param calibrate_param = { . sched_priority=subtasks[i].sched_priori };
+			ret = sched_setscheduler(subtasks[i].sub_thread->pid, SCHED_FIFO, &schedule_param);
 			if (ret < 0) {
 				printk(KERN_INFO, "sched_setscheduler failed!");
 				return -1;
