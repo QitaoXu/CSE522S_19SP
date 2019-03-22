@@ -120,15 +120,15 @@ static int simple_init (void) {
 
 	init_global_data();
 	parse_module_param();
-	
+
 	if(mode == RUN){
 		printk(KERN_INFO "Current mode is run mode.");
 		for(i=0; i<num_subtask; i++){
 			subtasks[i].sub_thread = kthread_create(init_run_subtask, NULL, name);
-			kthread_bind(subtasks[i].sub_thread, subtasks[i]->core);
-			sched_setscheduler(subtasks[i].sub_thread, SCHED_FIFO, &(subtasks[i]->schedule_param));
-			if(subtasks[i]->index==0){
-				subtask_head[subtasks[i]->parent->index]=subtasks[j].sub_thread;
+			kthread_bind(subtasks[i].sub_thread, subtasks[i].core);
+			sched_setscheduler(subtasks[i].sub_thread, SCHED_FIFO, subtasks[i].schedule_param);
+			if(subtasks[i].index==0){
+				subtask_head[subtasks[i].parent->index]=subtasks[j].sub_thread;
 			}
 		}
 		for (i=0; i<num_task; i++) {

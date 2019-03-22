@@ -15,7 +15,8 @@
 #include <linux/ktime.h>
 #include <linux/list.h>
 
-enum mode { RUN = 1, CALIBRATE };
+//calibrate
+static struct sched_param calibrate_param;
 
 //customized structures
 struct Subtask {
@@ -61,6 +62,7 @@ typedef struct Core Core;
 
 
 //Module Input
+enum mode { RUN = 1, CALIBRATE };
 static char * mode_input = "calibrate";
 module_param(mode_input, charp, 0);
 static void parse_module_param() {
@@ -70,11 +72,5 @@ static void parse_module_param() {
 		mode = CALIBRATE;
 	} 
 } 
-
-//Kthread Structures
-static struct task_struct *subtask_kthreads[num_subtask];
-static struct task_struct *calibrate_kthreads[num_core];
-static struct task_struct *subtask_head[num_task];
-static struct sched_param calibrate_param;
 
 #endif /* BASIC_H */
