@@ -9,8 +9,6 @@
 
 #include "basic.h"
 #include "global-config.h"
-struct sched_param calibrate_param;
-struct sched_param schedule_param;
 
 /* subtask lookup function */
 static Subtask subtask_lookup_fn(struct hrtimer * timer) {
@@ -110,6 +108,8 @@ static int init_run_subtask_fn(void * data){
 static int simple_init (void) {
 	int i, j, ret;
 	Core c;
+	struct sched_param calibrate_param = {.sched_priority=1};;
+	struct sched_param schedule_param = {.sched_priority=1};;
 	parse_module_param();
 	if(mode == RUN){
 		init_global_data_run();
@@ -142,7 +142,7 @@ static int simple_init (void) {
 			calibrate_param.sched_priority = 1;
 			ret = sched_setscheduler(calibrate_kthreads[i], SCHED_FIFO, &calibrate_param);
 			if (ret < 0) {
-				printk(KERN_INFO, "sched_setscheduler failed!");
+				printk(KERN_INFO "sched_setscheduler failed!");
 				return -1;
 			}
 			for (i=0; i<c.num; j++) {
