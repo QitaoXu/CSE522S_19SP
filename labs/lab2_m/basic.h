@@ -24,7 +24,7 @@ struct Subtask {
 		int index; /*index of subtask within the task struct*/
 		Task *parent; /*parent task of subtask*/
 		struct task_struct *sub_thread; /*pointer to the task_struct*/
-		struct hrtimer hr_timer; /* timer for the subtask*/
+		struct hrtimer *hr_timer; /* timer for the subtask*/
 		struct ktime_t *last_release_time; /*initialized to 0, record the last time the subtask was released*/
 		int loop_count; /*init to 0 or Z+, */
 		struct ktime_t *cumul_exec_time;/* sum up the execution times of that subtask and all of its predecessors within the same task*/

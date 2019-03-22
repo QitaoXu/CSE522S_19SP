@@ -40,7 +40,7 @@ static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart ) 
 
 /* calibrate function*/
 static int calibrate_fn(void * data){
-	int *core_num = (int*)data;
+	int *core_num = (int*) data;
 	int last_loop_count;
 	ktime_t before;
 	ktime_t after;
@@ -124,11 +124,11 @@ static int simple_init (void) {
 	if(mode == RUN){
 		printk(KERN_INFO "Current mode is run mode.");
 		for(i=0; i<num_subtask; i++){
-			subtasks[i].sub_thread = kthread_create(init_run_subtask, NULL, name);
-			kthread_bind(subtasks[i].sub_thread, subtasks[i].core);
-			sched_setscheduler(subtasks[i].sub_thread, SCHED_FIFO, subtasks[i].schedule_param);
-			if(subtasks[i].index==0){
-				subtask_head[subtasks[i].parent->index]=subtasks[j].sub_thread;
+			subtasks[i]->sub_thread = kthread_create(init_run_subtask, NULL, name);
+			kthread_bind(subtasks[i]->sub_thread, subtasks[i]->core);
+			sched_setscheduler(subtasks[i]->sub_thread, SCHED_FIFO, subtasks[i]->schedule_param);
+			if(subtasks[i]->index==0){
+				subtask_head[subtasks[i]->parent->index]=subtasks[j]->sub_thread;
 			}
 		}
 		for (i=0; i<num_task; i++) {
@@ -160,8 +160,8 @@ static int simple_init (void) {
 static void simple_exit (void) {
 	int ret, i;
 	for(i=0; i<num_subtask; i++){
-		hrtimer_cancel(&(subtasks[i]->hr_timer));
-		ret = kthread_stop(subtasks[i].sub_thread);
+		hrtimer_cancel(subtasks[i]->hr_timer);
+		ret = kthread_stop(subtasks[i]->sub_thread);
  		if(!ret) {
   			printk(KERN_INFO "Thread %d stopped",i);
  		}

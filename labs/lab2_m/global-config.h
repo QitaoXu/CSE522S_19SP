@@ -13,33 +13,29 @@
 #define num_core 4
 #define num_task 4
 
-Core cores[num_core];
-Task tasks[num_task];
-Subtask subtasks[num_subtask];
-struct task_struct *subtask_kthreads[num_subtask];
-struct task_struct *calibrate_kthreads[num_core];
-struct task_struct *subtask_head[num_task];
+Core * cores[num_core];
+Task * tasks[num_task];
+Subtask * subtasks[num_subtask];
+struct task_struct * subtask_kthreads[num_subtask];
+struct task_struct * calibrate_kthreads[num_core];
+struct task_struct * subtask_head[num_task];
 
 void init_global_data() {
 	int i;
 	for (i=0; i<num_core; i++) {
-		cores[i] = {
-			.core_index = i,
-			.core_list = LIST_HEAD_INIT(cores[i].core_list),
-		};
+		cores[i]->core_index = i;
+		LIST_HEAD_INIT(cores[i]->core_list);
 	}
 	for (i=0; i<num_task; i++) {
-		task tasks[i] = {
-			.period = 1 ,
-			.task_list = LIST_HEAD_INIT(task1.task_list),
-			.num = 2,
-			.index = i,
-			.starting_index = 2*i,
-			.execution_time = ktime_set(0, 0),
-		};
+		tasks[i]->period = 1;
+		LIST_HEAD_INIT(tasks[i]->task_list),
+		tasks[i]->num = 2;
+		tasks[i]->index = i;
+		tasks[i]->starting_index = 2*i;
+		tasks[i]->execution_time = ktime_set(0, 0);
 	}
 /* 	for initilaization of 4 calibrate kthreads,
    	later, their priority will be modified in 
    	calibrate function according to subtask */
-	&(calibrate_param.sched_priority) = 1;
+	calibrate_param.sched_priority = 1;
 }
