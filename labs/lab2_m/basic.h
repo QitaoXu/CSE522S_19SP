@@ -39,14 +39,14 @@ struct Subtask {
 	bool flag_sched; /*if the subtask is temporarily not available, */
 	struct ktime_t relative_ddl; /*task period* subtask's execution time/task's execution time*/
 	struct sched_param schedule_param; /*priority of subtask on the core*/
-	struct list_head core_list;/*list head of the core on which the subtask is assigned */
-	struct list_head task_list;
+	struct list_head core_subtask_list;/*list head of the core on which the subtask is assigned */
+	struct list_head task_subtask_list;
 };
 
 struct Task{
 	struct ktime_t period; /*period of task second*/
 	// struct subtask *subtasks; /* subtasks within the task struct */
-	struct list_head task_list;
+	struct list_head task_subtask_list;
 	int num;/* number of subtask */
 	int index; /* index of task */
 	int starting_index;/* starting index of subtask */
@@ -56,7 +56,7 @@ struct Task{
 struct Core{
 	int core_index; /*cpu core index */
 	// struct subtask *subtask; /*subtask that is put on the specific cpu core*/
-	struct list_head core_list;
+	struct list_head core_subtask_list;
 };
 
 //Forward Declaration

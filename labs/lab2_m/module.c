@@ -47,7 +47,7 @@ static int calibrate_fn(void * data){
 	set_current_state(TASK_INTERRUPTIBLE);
 	schedule();
 
-	list_for_each_entry(sub, &core_list, cores[((Subtask*)data)->core].core_list) {
+	list_for_each_entry(sub, &core_subtask_list, cores[((Subtask*)data)->core].core_subtask_list) {
 		sub->schedule_param.sched_priority = sub->priority;
 		sched_setscheduler(current->pid, SCHED_FIFO, &(sub->schedule_param));
 		while (sub->loop_count > 0) {
