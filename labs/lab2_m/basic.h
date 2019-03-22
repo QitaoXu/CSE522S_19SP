@@ -19,6 +19,16 @@
 static struct sched_param calibrate_param;
 
 //customized structures
+struct Task{
+	struct ktime_t period; /*period of task second*/
+	// struct subtask *subtasks; /* subtasks within the task struct */
+	struct list_head task_subtask_list;
+	int num;/* number of subtask */
+	int index; /* index of task */
+	int starting_index;/* starting index of subtask */
+	struct ktime_t execution_time; /*execution time of all subtask*/
+};
+
 struct Subtask {
 	int index; /*index of subtask within the task struct*/
 	int core; /* on which core of your Raspberry Pi 3 each subtask should run, set core to -1 if no aviable core to run*/
@@ -41,16 +51,6 @@ struct Subtask {
 	struct sched_param schedule_param; /*priority of subtask on the core*/
 	struct list_head core_subtask_list;/*list head of the core on which the subtask is assigned */
 	struct list_head task_subtask_list;
-};
-
-struct Task{
-	struct ktime_t period; /*period of task second*/
-	// struct subtask *subtasks; /* subtasks within the task struct */
-	struct list_head task_subtask_list;
-	int num;/* number of subtask */
-	int index; /* index of task */
-	int starting_index;/* starting index of subtask */
-	struct ktime_t execution_time; /*execution time of all subtask*/
 };
 
 struct Core{
