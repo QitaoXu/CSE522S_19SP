@@ -19,10 +19,10 @@ static Subtask subtask_lookup_fn(struct hrtimer * timer) {
 
 /* subtask function */
 static int subtask_fn(Subtask * sub) {
-	int current = 0;
-	while (current!=sub->work_load_loop_count){ 
+	int current_time = 0;
+	while (current_time!=sub->work_load_loop_count){ 
 		ktime_get();
-		current+=1;
+		current_time+=1;
 	}	
 	return 0;
 }
