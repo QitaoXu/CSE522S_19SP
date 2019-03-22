@@ -13,7 +13,7 @@
 /* subtask lookup function */
 static Subtask subtask_lookup_fn(struct hrtimer * timer) {
 	Subtask sub;
-	//todo container
+	//TODO container
 	return sub; 
 }
 
@@ -62,6 +62,7 @@ static int calibrate_fn(void * data){
 		}
 	}
 	//TODO: record work_load_loop_count for each subtask
+	//TODO
 	return 0;
 }
 
@@ -108,8 +109,8 @@ static int init_run_subtask_fn(void * data){
 static int simple_init (void) {
 	int i, j, ret;
 	Core c;
-	struct sched_param calibrate_param = {.sched_priority=1};;
-	struct sched_param schedule_param = {.sched_priority=1};;
+	sched_param calibrate_param = {.sched_priority=1};;
+	sched_param schedule_param = {.sched_priority=1};;
 	parse_module_param();
 	if(mode == RUN){
 		init_global_data_run();
@@ -169,7 +170,7 @@ static void simple_exit (void) {
   			printk(KERN_INFO "Thread %d stopped",i);
  		}
 	}
-    printk(KERN_ALERT "simple module is being unloaded\n");
+    printk(KERN_ALERT "simple module is being unloaded");
 }
 
 module_init (simple_init);
