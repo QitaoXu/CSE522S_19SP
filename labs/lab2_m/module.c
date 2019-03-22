@@ -117,7 +117,7 @@ static int simple_init (void) {
 		for(i=0; i<num_subtask; i++){
 			subtasks[i].sub_thread = kthread_create(init_run_subtask_fn, (void *)(&subtasks[i]), get_thread_name_s(thread_name_base, i));
 			kthread_bind(subtasks[i].sub_thread, subtasks[i].core);
-			schedule_param = { .sched_priority=subtasks[i].sched_priori };
+			schedule_param.sched_priority = subtasks[i].sched_priori;
 			ret = sched_setscheduler(subtasks[i].sub_thread, SCHED_FIFO, &schedule_param);
 			if (ret < 0) {
 				printk(KERN_INFO "sched_setscheduler failed!");
@@ -139,14 +139,14 @@ static int simple_init (void) {
 			c = cores[j];
 			calibrate_kthreads[i] = kthread_create(calibrate_fn, (void *)(&subtasks[i]), get_thread_name_s(thread_name_base, i));
 			kthread_bind(calibrate_kthreads[i], i);
-			calibrate_param = { .sched_priority=1 }
+			calibrate_param.sched_priority = 1;
 			ret = sched_setscheduler(calibrate_kthreads[i], SCHED_FIFO, &calibrate_param);
 			if (ret < 0) {
 				printk(KERN_INFO, "sched_setscheduler failed!");
 				return -1;
 			}
 			for (i=0; i<c.num; j++) {
-				schedule_param = { .sched_priority=c.subtask_list[j]->sched_priori};
+				schedule_param.sched_priority = c.subtask_list[j]->sched_priori;
 				sched_setscheduler(c.subtask_list[j]->sub_thread, SCHED_FIFO, &schedule_param);
 			}
 		}
