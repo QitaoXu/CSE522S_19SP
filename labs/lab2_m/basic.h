@@ -15,7 +15,8 @@
 #include <linux/ktime.h>
 #include <linux/list.h>
 
-enum mode { RUN = 1, CALIBRATE };
+enum Mode { RUN = 1, CALIBRATE };
+enum Mode mode = CALIBRATE;
 char * mode_input = "calibrate";
 module_param(mode_input, charp, 0);
 
