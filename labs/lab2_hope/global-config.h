@@ -409,8 +409,7 @@ void init_spec_vars() {
   tasks[2].subtask_list[1].kthread_id = 2;  
   tasks[3].subtask_list[0].kthread_id = 3;  
   tasks[3].subtask_list[1].kthread_id = 3;  
-
-
+  //for task<->subtask
   tasks[0].subtask_list[0].parent = &(tasks[0]);
   tasks[0].subtask_list[1].parent = &(tasks[0]);
   tasks[0].subtask_list[2].parent = &(tasks[0]); 
