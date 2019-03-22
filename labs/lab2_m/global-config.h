@@ -64,11 +64,11 @@ void init_global_data_run() {
 	int i;
 	for (i=0; i<num_core; i++) {
 		cores[i].core_index = i;
-		LIST_HEAD_INIT(cores[i].core_subtask_list);
+		//LIST_HEAD_INIT(cores[i].core_subtask_list);
 	}
 	for (i=0; i<num_task; i++) {
 		tasks[i].period = 1;
-		LIST_HEAD_INIT(tasks[i].task_subtask_list),
+		//LIST_HEAD_INIT(tasks[i].task_subtask_list),
 		tasks[i].num = 2;
 		tasks[i].index = i;
 		tasks[i].starting_index = 2*i;
@@ -90,7 +90,7 @@ void init_global_data_calibrate() {
 	int i;
 	for (i=0; i<num_core; i++) {
 		cores[i].core_index = i;
-		LIST_HEAD_INIT(cores[i].core_subtask_list);
+		//LIST_HEAD_INIT(cores[i].core_subtask_list);
 	}
 
 }

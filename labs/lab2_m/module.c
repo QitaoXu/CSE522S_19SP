@@ -80,28 +80,28 @@ static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart ) 
 
 /* calibrate function*/
 static int calibrate_fn(void * data){
-	Subtask* sub;
 	int last_loop_count, i;
 	ktime_t before, after, diff, exe_time;
+	Core c = cores[((Subtask*)data)->core];
 	
 	set_current_state(TASK_INTERRUPTIBLE);
 	schedule();
 
-	for (i=0; i<cores[((Subtask*)data)->core].subtask_list; i++) {
-		sub->schedule_param.sched_priority = sub->priority;
-		sched_setscheduler(current->pid, SCHED_FIFO, &(sub->schedule_param));
-		while (sub->loop_count > 0) {
+	for (i=0; i<c.num; i++) {
+		c.subtask_list[i]->schedule_param.sched_priority = c.subtask_list[i]->priority;
+		sched_setscheduler(current->pid, SCHED_FIFO, &(c.subtask_list[i]->schedule_param));
+		while (c.subtask_list[i]->loop_count > 0) {
 			// time stamp before subtask_fn
-			last_loop_count = sub->loop_count;
+			last_loop_count = c.subtask_list[i]->loop_count;
 			before = ktime_get();
-			subtask_fn(sub);
+			subtask_fn(c.subtask_list[i]);
 			// time stamp after subtask_fn
 			after = ktime_get();
 			diff = ktime(after, before);
-			if (ktime_compare(diff, sub->execution_time) == 1) {
-				sub->loop_count = sub->loop_count - 1;
+			if (ktime_compare(diff, c.subtask_list[i]->execution_time) == 1) {
+				c.subtask_list[i]->loop_count = c.subtask_list[i]->loop_count - 1;
 			}
-			if (last_loop_count == sub->loop_count) {
+			if (last_loop_count == c.subtask_list[i]->loop_count) {
 				break;
 			}
 		}

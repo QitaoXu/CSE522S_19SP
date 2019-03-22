@@ -52,6 +52,7 @@ struct Subtask {
 
 struct Core{
 	int core_index; /*cpu core index */
+	int num;/* number of subtask */
 	// struct subtask *subtask; /*subtask that is put on the specific cpu core*/
 	struct Subtask* subtask_list;
 };
