@@ -10,8 +10,8 @@
 #include "basic.h"
 #include "global-config.h"
 
-struct sched_param schedule_param = = { .sched_priority=1};
-struct sched_param calibrate_param = { .sched_priority=1};
+struct sched_param schedule_param = { .sched_priority=1 };
+struct sched_param calibrate_param = { .sched_priority=1 };
 
 /* subtask lookup function */
 static Subtask subtask_lookup_fn(struct hrtimer * timer) {
