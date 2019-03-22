@@ -11,9 +11,6 @@
 #include "basic.h"
 #include "global-config.h"
 
-void init_global_data_run();
-void init_global_data_calibrate();
-
 void parse_module_param() {
 	if (sysfs_streq(mode_input, "run")) {
 		mode = RUN;

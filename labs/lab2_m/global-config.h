@@ -20,6 +20,9 @@ Subtask subtasks[num_subtask];
 struct task_struct * subtask_kthreads[num_subtask];
 struct task_struct * calibrate_kthreads[num_core];
 
+void init_global_data_run(void);
+void init_global_data_calibrate(void);
+
 void init_global_data_run() {
 	//TODO
 	int i;
