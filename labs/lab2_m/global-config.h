@@ -16,9 +16,9 @@
 Core cores[num_core];
 Task tasks[num_task];
 Subtask subtasks[num_subtask];
-static struct task_struct *subtask_kthreads[num_subtask];
-static struct task_struct *calibrate_kthreads[num_core];
-static struct task_struct *subtask_head[num_task];
+struct task_struct *subtask_kthreads[num_subtask];
+struct task_struct *calibrate_kthreads[num_core];
+struct task_struct *subtask_head[num_task];
 
 void init_global_data() {
 	int i;
