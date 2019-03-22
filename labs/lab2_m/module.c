@@ -11,11 +11,9 @@
 #include "global-config.h"
 
 /* subtask lookup function */
-static subtask subtask_lookup_fn(struct hrtimer * timer) {
+static Subtask subtask_lookup_fn(struct hrtimer * timer) {
 	subtask sub;
-	void * timer_addr = (void *)timer;
-	void * subtask_addr = timer_addr - sizeof(struct task_struct *) - sizeof(struct task *) - sizeof(int) - sizeof(unsigned long);
-	sub= *((struct subtask *)subtask_addr);
+	//todo container
 	return sub; 
 }
 
