@@ -19,6 +19,7 @@ enum Mode { RUN = 1, CALIBRATE };
 enum Mode mode = CALIBRATE;
 char * mode_input = "calibrate";
 module_param(mode_input, charp, 0);
+struct sched_param param;
 
 void parse_module_param(void);
 char* get_thread_name_s(char *str, int num);
