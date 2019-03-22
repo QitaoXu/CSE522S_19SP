@@ -15,7 +15,7 @@
 #include <linux/ktime.h>
 #include <linux/list.h>
 #include <linux/sort.h>
-enum mode_input { RUN = 1, CALIBRATE };
+enum Mode { RUN = 1, CALIBRATE };
 enum Mode mode_input = CALIBRATE;
 char * mode = "calibrate";
 module_param(mode, charp, 0);

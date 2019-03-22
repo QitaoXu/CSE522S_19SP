@@ -189,7 +189,7 @@ static int simple_init (void) {
 	init_global_data_calibrate();
 	initALL();
 	parse_module_param();
-	if(mode == RUN){
+	if(mode_input == RUN){
 		init_global_data_run();
 		printk(KERN_INFO "Current mode is run mode.");
 		for(i=0; i<num_subtask; i++){
