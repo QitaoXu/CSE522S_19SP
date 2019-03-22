@@ -25,7 +25,7 @@ char* get_thread_name_s(char *str, int num);
 
 //customized structures
 struct Task{
-	int period; /*period of task msecond*/
+	int period; /*period of task second*/
 	// struct subtask *subtasks; /* subtasks within the task struct */
 	int num;/* number of subtask */
 	int index; /* index of task */
@@ -50,7 +50,7 @@ struct Subtask {
 	struct task_struct *sub_thread; /*pointer to the task_struct*/
 	struct hrtimer hr_timer; /* timer for the subtask*/
 
-	bool flag; /*if the subtask is temporarily not available, */
+	int flag; /*if the subtask is temporarily not available, */
 	int relative_ddl; /*task period* subtask's execution time/task's execution time*/
 	int sched_priori;  /*priority of subtask on the core*/
 };

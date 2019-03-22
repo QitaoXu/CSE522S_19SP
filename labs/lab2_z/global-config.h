@@ -48,7 +48,8 @@
 
 #define exec_time_3_0 10
 #define exec_time_3_1 10
-
+#define HIGHEST_PRIORITY 99
+#define DEFAULT_PRIORITY 1
 Core cores[num_core];
 Task tasks[num_task];
 Subtask subtasks[num_subtask];

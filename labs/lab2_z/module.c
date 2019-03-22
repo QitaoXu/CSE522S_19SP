@@ -6,10 +6,86 @@
 #include <linux/ktime.h>
 #include <linux/sched.h> 
 #include <linux/delay.h>
-
+#include <linux/sort.h>
+#include <linux/slab.h>
 #include "basic.h"
 #include "global-config.h"
 struct sched_param param;
+/*sort utilization from highest to lowest*/
+static int util_sort(const void* l, const void* r){
+	Subtask* sub1=(Subtask*)(l);
+	Subtask* sub2=(Subtask*)(r);
+	if(sub1->utilization>sub2->utilization) return -1;
+	else if(sub1->utilization<sub2->utilization) return 1;
+	else return 0;
+}
+/*sort relative ddl from earliest to latest, so get priority from highest to lowest*/
+static int ddl_sort(const void* l, const void* r){
+	Subtask* sub1=(Subtask*)(l);
+	Subtask* sub2=(Subtask*)(r);
+	if(sub1->relative_ddl<sub2->relative_ddl) return -1;
+	else if(sub1->relative_ddl>sub2->relative_ddl) return 1;
+	else return 0;
+}
+void initALL(void){
+	int i,j;
+	int index=0;
+	Task taskNow;
+	Subtask subtaskNow;
+	int cpuLoad[num_core]={0,0,0,0};
+	int cpuCount[num_core]={0,0,0,0};
+	ktime_t total_exec_time;
+	for (i=0;i<num_task;i++){
+		taskNow=tasks[i];
+		total_exec_time=0;
+		for (j=0;j<taskNow.num;j++){
+			subtaskNow= *(taskNow.subtask_list[j]);
+			total_exec_time=total_exec_time+subtaskNow.execution_time;
+			subtaskNow.cumul_exec_time=total_exec_time;
+			subtaskNow.hr_timer=*((struct hrtimer*) kmalloc(sizeof(struct hrtimer),GFP_KERNEL));
+			subtasks[index]=subtaskNow;
+			index+=1;
+		}
+		tasks[i].execution_time=total_exec_time;
+		for (j=0;j<tasks[i].num;j++){
+			taskNow.subtask_list[j]->relative_ddl=(taskNow.period)*(taskNow.subtask_list[j]->cumul_exec_time)/tasks[i].execution_time;
+		}
+	}
+	//todo: sort subtask based on utilization from largest to smallest
+	sort((void*)subtasks,num_subtask,sizeof(struct subtask*),&util_sort,NULL);
+	for (i=0;i<num_subtask;i++){
+		for(j=0;j<num_core;j++){
+			if(cpuLoad[j]+subtasks[i].utilization<100){
+				cpuLoad[j]+=subtasks[i].utilization;
+				subtasks[i].core=j;
+				cores[j].subtask_list[cpuCount[j]]=&(subtasks[i]);
+				cpuCount[j]+=1;
+				subtasks[i].flag=1;
+				break;
+			}
+		}
+		//if the subtask can't fit into any core, assign it to core 3 and mark it as being not assumed to be schedulable.. 
+		if(subtasks[i].core<0){
+			cpuLoad[3]+=subtasks[i].utilization;
+			subtasks[i].core=3;
+			cpuCount[3]+=1;
+			subtasks[i].flag=0;
+		}
+
+	}
+	for (i=0;i<num_core;i++){
+
+
+		cores[i].num=cpuCount[i];
+		//todo: sort subtask based on relative ddl from earliest to latest
+		sort((void*)(cores[i].subtask_list),cpuCount[i],sizeof(struct subtask*),&ddl_sort,NULL);
+
+		for(j=0;j<cpuCount[i];j++){
+			subtaskNow=*(cores[i].subtask_list[j]);
+			subtaskNow.sched_priori=HIGHEST_PRIORITY-(j*2+10);
+		}
+	}
+}
 
 /* subtask lookup function */
 static Subtask * subtask_lookup_fn(struct hrtimer * timer) {
@@ -84,14 +160,15 @@ static int init_run_subtask_fn(void * data){
   			current_time = ktime_get();
   			/*	if its subtask is the first one in its task it should then calculate (as an absolute time) one task period later
   			    than the value stored in its last release time and schedule its own timer to wake up at that time */
-  			hrtimer_forward(&(sub->hr_timer), current_time, ktime_sub(ktime_add(ktime_set(0, sub->parent->period*1000000), sub->last_release_time), current_time));
+  			hrtimer_forward(&(sub->hr_timer), current_time, ktime_sub(ktime_add(ktime_set(sub->parent->period, 0), sub->last_release_time), current_time));
   		} 
   		if((sub->idx_in_task)<(sub->parent->num)){
   			current_time = ktime_get();
+  			//TODO: 
   			/*	if the time it obtained is less than the sum of the task period 
   				and its successor's last release time, it should schedule its successor's 
   				timer to wake up one task period after its successor's last release time -- otherwise */
-  			expect_next = ktime_add(sub->parent->subtask_list[sub->idx_in_task+1]->last_release_time, sub->parent->period);
+  			expect_next = ktime_add(sub->parent->subtask_list[sub->idx_in_task+1]->last_release_time, ktime_set(sub->parent->period,0));
   			if (current_time < expect_next){
   				hrtimer_forward(&(sub->parent->subtask_list[sub->idx_in_task+1]->hr_timer), current_time, ktime_sub(expect_next, current_time));
   			} else {
@@ -109,6 +186,7 @@ static int init_run_subtask_fn(void * data){
 static int simple_init (void) {
 	int i, j, ret;
 	Core c;
+	initALL();
 	parse_module_param();
 	if(mode == RUN){
 		init_global_data_run();
