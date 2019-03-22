@@ -76,7 +76,7 @@ void init_global_data_run() {
 	}
 	for (i=0; i<num_subtask; i++) {
 		subtasks[i].idx_in_task = i%num_task;
-		subtasks[i].parent = tasks[i/num_task];
+		subtasks[i].parent = &(tasks[i/num_task]);
 		subtasks[i].core = i/num_task;
 		subtasks[i].loop_count = 1000;
 	}
