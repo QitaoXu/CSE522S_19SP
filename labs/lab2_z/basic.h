@@ -62,6 +62,10 @@ struct Core{
 	struct Subtask** subtask_list;
 };
 
+struct sched_param{
+	int sched_priority;
+};
+
 //Forward Declaration
 typedef struct Subtask Subtask;
 typedef struct Task Task;
