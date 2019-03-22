@@ -102,9 +102,9 @@ void init_global_data_calibrate() {
    tasks[i].starting_index = 0;
    tasks[i].subtask_list = (Subtask **)kmalloc(GFP_KERNEL, sizeof(Subtask *) * tasks[i].num);
    
-   // for (j = 0; j < subtask_count0; j ++) {
-   //  tasks[i].subtask_list[j] = (Subtask *)kmalloc(GFP_KERNEL, sizeof(Subtask *));
-   // }
+   for (j = 0; j < subtask_count0; j ++) {
+    	tasks[i].subtask_list[j] = (Subtask *)kmalloc(GFP_KERNEL, sizeof(Subtask));
+   }
 
    for (j = 0; j < subtask_count0; j ++) {
    	  	printk(KERN_INFO "init subtask i");
