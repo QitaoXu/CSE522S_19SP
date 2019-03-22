@@ -37,7 +37,9 @@ void init_global_data() {
 	}
 	for (i=0; i<num_subtask; i++) {
 		subtasks[i].index = i%num_task;
-		
+		subtasks[i].parent = tasks[i/num_task];
+		subtasks[i].core = i/num_task;
+		subtasks[i].loop_count = 1000;
 	}
 /* 	for initilaization of 4 calibrate kthreads,
    	later, their priority will be modified in 

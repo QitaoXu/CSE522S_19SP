@@ -20,18 +20,22 @@ static struct sched_param calibrate_param;
 
 //customized structures
 struct Subtask {
-		unsigned long execution_time;/*execution time of subtask millisecond*/
 		int index; /*index of subtask within the task struct*/
+		int core; /* on which core of your Raspberry Pi 3 each subtask should run, set core to -1 if no aviable core to run*/
 		Task *parent; /*parent task of subtask*/
+		int loop_count; /*init to 0 or Z+, */
+
+		struct ktime_t last_release_time; /*initialized to 0, record the last time the subtask was released*/
+		struct ktime_t cumul_exec_time;/* sum up the execution times of that subtask and all of its predecessors within the same task*/
+
+		float utilization; /*divide its execution time by its task's period.*/
+		unsigned long execution_time;/*execution time of subtask millisecond*/
+
 		struct task_struct *sub_thread; /*pointer to the task_struct*/
 		struct hrtimer hr_timer; /* timer for the subtask*/
-		struct ktime_t last_release_time; /*initialized to 0, record the last time the subtask was released*/
-		int loop_count; /*init to 0 or Z+, */
-		struct ktime_t cumul_exec_time;/* sum up the execution times of that subtask and all of its predecessors within the same task*/
-		float utilization; /*divide its execution time by its task's period.*/
 		struct subtask *next; /* next subtask within parent task struct*/
 		struct subtask *prev; /* previous subtask within parent task struct*/
-		int core; /* on which core of your Raspberry Pi 3 each subtask should run, set core to -1 if no aviable core to run*/
+	
 		bool flag_sched; /*if the subtask is temporarily not available, */
 		unsigned long relative_ddl; /*task period* subtask's execution time/task's execution time*/
 		struct sched_param schedule_param; /*priority of subtask on the core*/
