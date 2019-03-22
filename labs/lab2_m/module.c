@@ -11,7 +11,7 @@
 #include "global-config.h"
 
 /* subtask lookup function */
-static subtask subtask_lookup_fn(struct hrtimer * timer) {
+static Subtask subtask_lookup_fn(struct hrtimer * timer) {
  	Subtask * sub = container_of(timer, Subtask, hr_timer);
  	return sub; 
 }
