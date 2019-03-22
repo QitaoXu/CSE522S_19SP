@@ -40,11 +40,13 @@ void initALL(void){
 		total_exec_time=0;
 		for (j=0;j<taskNow.num;j++){
 			  	printk(KERN_INFO "initALL subtask i");
-			subtaskNow= *(taskNow.subtask_list[j]);
+			subtaskNow= taskNow.subtask_list[j];
 			total_exec_time=total_exec_time+subtaskNow.execution_time;
 			subtaskNow.cumul_exec_time=total_exec_time;
 			subtaskNow.hr_timer=*((struct hrtimer*) kmalloc(sizeof(struct hrtimer),GFP_KERNEL));
+			subtaskNow.utilization=subtaskNow.execution_time*100/taskNow.period;
 			subtasks[index]=subtaskNow;
+
 			index+=1;
 		}
 		tasks[i].execution_time=total_exec_time;
