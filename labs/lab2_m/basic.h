@@ -52,7 +52,7 @@ struct Subtask {
 
 	bool flag_sched; /*if the subtask is temporarily not available, */
 	int relative_ddl; /*task period* subtask's execution time/task's execution time*/
-	struct sched_param* schedule_param; /*priority of subtask on the core*/
+	struct sched_param schedule_param; /*priority of subtask on the core*/
 };
 
 struct Core{
