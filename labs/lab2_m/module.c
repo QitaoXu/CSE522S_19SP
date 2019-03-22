@@ -12,13 +12,13 @@
 
 /* subtask lookup function */
 static Subtask subtask_lookup_fn(struct hrtimer * timer) {
-	subtask sub;
+	Subtask sub;
 	//todo container
 	return sub; 
 }
 
 /* subtask function */
-static int subtask_fn(subtask * sub) {
+static int subtask_fn(Subtask * sub) {
 	int current = 0;
 	while (current!=sub->work_load_loop_count){ 
 		ktime_get();
@@ -29,7 +29,7 @@ static int subtask_fn(subtask * sub) {
 
 /*timer expiration*/
 static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart ) {
-	subtask sub;
+	Subtask sub;
 	sub = subtask_lookup_fn(timer_for_restart);
 	wake_up_process(sub.sub_thread);
 	return HRTIMER_RESTART;
