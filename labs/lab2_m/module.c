@@ -75,32 +75,34 @@ static int calibrate_fn(void * data){
 }
 
 /* run function*/
-static int init_run_subtask(subtask *sub){
+static int init_run_subtask(void * data){
+	Subtask* sub = (Subtask*) data;
 	ktime_t current_time, expect_next, parent_period;
 
 	hrtimer_init(&(sub->hr_timer), CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
 	sub->hr_timer.function = &timer_callback;
 	
-	parent_period = ktime_set(sub->parent->period,0);
+	parent_period = ktime_set(sub->parent->period, 0);
 	while (!kthread_should_stop()){ 
 		set_current_state(TASK_INTERRUPTIBLE);
   		schedule();
-		sub->last_release_time=ktime_get();
+		sub->last_release_time = ktime_get();
 		subtask_fn(sub);
+
   		if(sub->prev==NULL){
   			current_time = ktime_get();
   			/*	if its subtask is the first one in its task it should then calculate (as an absolute time) one task period later
   			    than the value stored in its last release time and schedule its own timer to wake up at that time */
-  			hrtimer_forward(sub->hr_timer, current_time, ktime_sub(ktime_add(parent_period, sub->last_release_time), current_time));
+  			hrtimer_forward(&(sub->hr_timer), current_time, ktime_sub(ktime_add(parent_period, sub->last_release_time), current_time));
   		} 
   		if(sub->next!=NULL){
   			current_time = ktime_get();
   			/*	if the time it obtained is less than the sum of the task period 
   				and its successor's last release time, it should schedule its successor's 
   				timer to wake up one task period after its successor's last release time -- otherwise */
-  			expect_next = ktime_add(sub->next->last_release_time,parent_period);
-  			if (current_time<expect_next){
-  				hrtimer_forward(sub->next->hr_timer, current_time, ktime_sub(expect_next, current_time));
+  			expect_next = ktime_add(sub->next->last_release_time, parent_period);
+  			if (current_time < expect_next){
+  				hrtimer_forward(&(sub->next->hr_timer), current_time, ktime_sub(expect_next, current_time));
   			} else {
   			/*	if the time it obtained is greater than or equal to the sum of the task period 
   				and its successor's last release time it should immediately call wake_up_process() 
@@ -124,17 +126,14 @@ static int simple_init (void) {
 	if(mode == RUN){
 		printk(KERN_INFO "Current mode is run mode.");
 		for(i=0; i<num_subtask; i++){
-			subtasks[i]->sub_thread = kthread_create(init_run_subtask, NULL, name);
-			kthread_bind(subtasks[i]->sub_thread, subtasks[i]->core);
-			sched_setscheduler(subtasks[i]->sub_thread, SCHED_FIFO, subtasks[i]->schedule_param);
-			if(subtasks[i]->index==0){
-				subtask_head[subtasks[i]->parent->index]=subtasks[j]->sub_thread;
+			subtasks[i].sub_thread = kthread_create(init_run_subtask, (void *)(&subtasks[i]), get_thread_name_s(thread_name_base, i));
+			kthread_bind(subtasks[i].sub_thread, subtasks[i].core);
+			sched_setscheduler(subtasks[i].sub_thread, SCHED_FIFO, &(subtasks[i].schedule_param));
+			if(subtasks[i].index==0){
+				wake_up_process(subtask_head[i]);
 			}
 		}
-		for (i=0; i<num_task; i++) {
-			wake_up_process(subtask_head[i]);
-		}
-
+		
 	} else {
 		printk(KERN_INFO "Current mode is calibrate mode.");
 		for (kthread_index = 0; kthread_index < 4; kthread_index++) {
@@ -160,8 +159,8 @@ static int simple_init (void) {
 static void simple_exit (void) {
 	int ret, i;
 	for(i=0; i<num_subtask; i++){
-		hrtimer_cancel(subtasks[i]->hr_timer);
-		ret = kthread_stop(subtasks[i]->sub_thread);
+		hrtimer_cancel(&(subtasks[i].hr_timer));
+		ret = kthread_stop(subtasks[i].sub_thread);
  		if(!ret) {
   			printk(KERN_INFO "Thread %d stopped",i);
  		}

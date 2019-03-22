@@ -24,17 +24,17 @@ struct Subtask {
 		int index; /*index of subtask within the task struct*/
 		Task *parent; /*parent task of subtask*/
 		struct task_struct *sub_thread; /*pointer to the task_struct*/
-		struct hrtimer *hr_timer; /* timer for the subtask*/
-		struct ktime_t *last_release_time; /*initialized to 0, record the last time the subtask was released*/
+		struct hrtimer hr_timer; /* timer for the subtask*/
+		struct ktime_t last_release_time; /*initialized to 0, record the last time the subtask was released*/
 		int loop_count; /*init to 0 or Z+, */
-		struct ktime_t *cumul_exec_time;/* sum up the execution times of that subtask and all of its predecessors within the same task*/
+		struct ktime_t cumul_exec_time;/* sum up the execution times of that subtask and all of its predecessors within the same task*/
 		float utilization; /*divide its execution time by its task's period.*/
 		struct subtask *next; /* next subtask within parent task struct*/
 		struct subtask *prev; /* previous subtask within parent task struct*/
 		int core; /* on which core of your Raspberry Pi 3 each subtask should run, set core to -1 if no aviable core to run*/
 		bool flag_sched; /*if the subtask is temporarily not available, */
 		unsigned long relative_ddl; /*task period* subtask's execution time/task's execution time*/
-		struct sched_param *schedule_param; /*priority of subtask on the core*/
+		struct sched_param schedule_param; /*priority of subtask on the core*/
 		struct list_head core_list;/*list head of the core on which the subtask is assigned */
 		struct list_head task_list;
 };
@@ -46,7 +46,7 @@ struct Task{
 	int num;/* number of subtask */
 	int index; /* index of task */
 	int starting_index;/* starting index of subtask */
-	struct ktime_t *execution_time; /*execution time of all subtask*/
+	struct ktime_t execution_time; /*execution time of all subtask*/
 };
 
 struct Core{
@@ -73,4 +73,38 @@ static void parse_module_param() {
 	} 
 } 
 
+//Make Thread Name
+char thread_name_base[256] = "thread";
+static char* get_thread_name_s(char *str, int num){
+    char c;
+    int len = strlen(str);
+   	int digit;
+   	int i;
+   	int j=0;
+   	int base=10;
+   	int cop=num;
+   	int length=1;
+   	int square=1;
+   	while(cop>=base){
+   		cop/=base;
+   		length+=1;
+   	}
+   	i=length;
+   	while(i>0){
+   		j=0;
+   		square=1;
+		while(j<(i-1)){
+			square*=base;
+			j+=1;
+			
+		}
+		digit=num/(square)%base;
+   		c=digit+'0';
+   		str[len]=c;
+   		i-=1;
+   		len+=1;
+   	}
+    str[len+1] = '\0';
+	return str;
+}
 #endif /* BASIC_H */
