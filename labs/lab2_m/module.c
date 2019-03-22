@@ -40,7 +40,7 @@ static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart ) 
 
 /* calibrate function*/
 static int calibrate_fn(void * data){
-	int *core_num = (int*) data;
+	Subtask* sub;
 	int last_loop_count;
 	ktime_t before;
 	ktime_t after;
@@ -50,8 +50,7 @@ static int calibrate_fn(void * data){
 	set_current_state(TASK_INTERRUPTIBLE);
 	schedule();
 
-	struct subtask *sub;
-	list_for_each_entry(sub, &core_list, cores[*core_num].core_list) {
+	list_for_each_entry(sub, &core_list, cores[((Subtask*)data)->core].core_list) {
 		sub->schedule_param.sched_priority = sub->priority;
 		sched_setscheduler(current->pid, SCHED_FIFO, &(sub->schedule_param));
 		while (sub->loop_count > 0) {
@@ -71,6 +70,7 @@ static int calibrate_fn(void * data){
 			}
 		}
 	}
+	//TODO: record loop_count for each subtask
 	return 0;
 }
 
@@ -116,39 +116,41 @@ static int init_run_subtask(void * data){
 
 /* init function - logs that initialization happened, returns success */
 static int simple_init (void) {
-	int i = 0;
-	int j = 0;
-	int kthread_index = 0;
-
-	init_global_data();
+	int i, ret;
 	parse_module_param();
 
 	if(mode == RUN){
+		init_global_data_run();
 		printk(KERN_INFO "Current mode is run mode.");
 		for(i=0; i<num_subtask; i++){
 			subtasks[i].sub_thread = kthread_create(init_run_subtask, (void *)(&subtasks[i]), get_thread_name_s(thread_name_base, i));
 			kthread_bind(subtasks[i].sub_thread, subtasks[i].core);
-			sched_setscheduler(subtasks[i].sub_thread, SCHED_FIFO, &(subtasks[i].schedule_param));
-			if(subtasks[i].index==0){
-				wake_up_process(subtask_head[i]);
-			}
-		}
-		
-	} else {
-		printk(KERN_INFO "Current mode is calibrate mode.");
-		for (kthread_index = 0; kthread_index < 4; kthread_index++) {
-			calibrate_kthreads[kthread_index] = kthread_create(calibrate_fn, (void *)&kthread_index, sprintf("calibrate%d", kthread_index));
-			kthread_bind(calibrate_kthreads[kthread_index], kthread_index);
-			ret = sched_setscheduler(calibrate_kthreads[kthread_index]->pid, SCHED_FIFO, &calibrate_param);
+			ret = sched_setscheduler(subtasks[i].sub_thread, SCHED_FIFO, &(subtasks[i].schedule_param));
 			if (ret < 0) {
 				printk(KERN_INFO, "sched_setscheduler failed!");
 				return -1;
 			}
-			// a timer for 100ms
-			mdelay(100);
-			for (kthread_index = 0; kthread_index < 4; kthread_index++) {
-				wake_up_process(calibrate_kthreads[kthread_index]);
+		}
+		for(i=0; i<num_subtask; i++){
+			if(subtasks[i].index==0){
+				wake_up_process(subtasks[i].sub_thread);
 			}
+		}
+
+	} else {
+		init_global_data_calibrate();
+		printk(KERN_INFO "Current mode is calibrate mode.");
+		for (i = 0; i < num_core; i++) {
+			calibrate_kthreads[i] = kthread_create(calibrate_fn, (void *)(&subtasks[i]), sprintf("calibrate%d", i));
+			kthread_bind(calibrate_kthreads[i], i);
+			ret = sched_setscheduler(calibrate_kthreads[i]->pid, SCHED_FIFO, &calibrate_param);
+			if (ret < 0) {
+				printk(KERN_INFO, "sched_setscheduler failed!");
+				return -1;
+			}
+		}
+		for (i = 0; i < num_core; i++) {
+			wake_up_process(calibrate_kthreads[i]);
 		}
 	}
     printk(KERN_ALERT "simple module initialized\n");

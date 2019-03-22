@@ -19,9 +19,9 @@ Subtask subtasks[num_subtask];
 
 struct task_struct * subtask_kthreads[num_subtask];
 struct task_struct * calibrate_kthreads[num_core];
-struct task_struct * subtask_head[num_task];
 
-void init_global_data() {
+void init_global_data_run() {
+	//TODO
 	int i;
 	for (i=0; i<num_core; i++) {
 		cores[i].core_index = i;
@@ -45,4 +45,8 @@ void init_global_data() {
    	later, their priority will be modified in 
    	calibrate function according to subtask */
 	calibrate_param.sched_priority = 1;
+}
+
+void init_global_data_calibrate() {
+	//TODO
 }
