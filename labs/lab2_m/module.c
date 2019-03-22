@@ -87,7 +87,7 @@ static int init_run_subtask_fn(void * data){
   			current_time = ktime_get();
   			/*	if its subtask is the first one in its task it should then calculate (as an absolute time) one task period later
   			    than the value stored in its last release time and schedule its own timer to wake up at that time */
-  			hrtimer_forward(&(sub->hr_timer), current_time, ktime_sub(ktime_add(sub->parent->period, sub->last_release_time), current_time));
+  			hrtimer_forward(&(sub->hr_timer), current_time, ktime_sub(ktime_add(ktime_set(0, sub->parent->period*1000000), sub->last_release_time), current_time));
   		} 
   		if((sub->idx_in_task)<(sub->parent->num)){
   			current_time = ktime_get();

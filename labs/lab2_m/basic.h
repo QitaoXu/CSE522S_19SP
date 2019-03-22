@@ -25,12 +25,12 @@ char* get_thread_name_s(char *str, int num);
 
 //customized structures
 struct Task{
-	ktime_t period; /*period of task second*/
+	int period; /*period of task msecond*/
 	// struct subtask *subtasks; /* subtasks within the task struct */
 	int num;/* number of subtask */
 	int index; /* index of task */
 	int starting_index;/* starting index of subtask */
-	ktime_t execution_time; /*execution time of all subtask*/
+	int execution_time; /*execution time of all subtask*/
 	struct Subtask* subtask_list;
 };
 
@@ -42,16 +42,16 @@ struct Subtask {
 	int work_load_loop_count; /*init to 0 or Z+, */
 
 	ktime_t last_release_time; /*initialized to 0, record the last time the subtask was released*/
-	ktime_t cumul_exec_time;/* sum up the execution times of that subtask and all of its predecessors within the same task*/
+	int cumul_exec_time;/* sum up the execution times of that subtask and all of its predecessors within the same task*/
 
 	float utilization; /*divide its execution time by its task's period.*/
-	ktime_t execution_time;/*execution time of subtask millisecond*/
+	int execution_time;/*execution time of subtask millisecond*/
 
 	struct task_struct *sub_thread; /*pointer to the task_struct*/
 	struct hrtimer hr_timer; /* timer for the subtask*/
 
 	bool flag_sched; /*if the subtask is temporarily not available, */
-	ktime_t relative_ddl; /*task period* subtask's execution time/task's execution time*/
+	int relative_ddl; /*task period* subtask's execution time/task's execution time*/
 	struct sched_param* schedule_param; /*priority of subtask on the core*/
 };
 
