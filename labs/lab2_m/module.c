@@ -75,7 +75,7 @@ static int calibrate_fn(void * data){
 }
 
 /* run function*/
-static int init_run_subtask(void * data){
+static int init_run_subtask_fn(void * data){
 	Subtask* sub = (Subtask*) data;
 	ktime_t current_time, expect_next, parent_period;
 
@@ -123,14 +123,15 @@ static int simple_init (void) {
 		init_global_data_run();
 		printk(KERN_INFO "Current mode is run mode.");
 		for(i=0; i<num_subtask; i++){
-			subtasks[i].sub_thread = kthread_create(init_run_subtask, (void *)(&subtasks[i]), get_thread_name_s(thread_name_base, i));
+			subtasks[i].sub_thread = kthread_create(init_run_subtask_fn, (void *)(&subtasks[i]), get_thread_name_s(thread_name_base, i));
 			kthread_bind(subtasks[i].sub_thread, subtasks[i].core);
-			ret = sched_setscheduler(subtasks[i].sub_thread, SCHED_FIFO, &(subtasks[i].schedule_param));
+			ret = sched_setscheduler(subtasks[i].sub_thread->pid, SCHED_FIFO, &(subtasks[i].schedule_param));
 			if (ret < 0) {
 				printk(KERN_INFO, "sched_setscheduler failed!");
 				return -1;
 			}
 		}
+		mdelay(100);
 		for(i=0; i<num_subtask; i++){
 			if(subtasks[i].index==0){
 				wake_up_process(subtasks[i].sub_thread);
@@ -149,6 +150,7 @@ static int simple_init (void) {
 				return -1;
 			}
 		}
+		mdelay(100);
 		for (i = 0; i < num_core; i++) {
 			wake_up_process(calibrate_kthreads[i]);
 		}
