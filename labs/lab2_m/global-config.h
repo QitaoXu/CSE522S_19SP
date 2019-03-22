@@ -83,7 +83,7 @@ void init_global_data_run() {
 /* 	for initilaization of 4 calibrate kthreads,
    	later, their priority will be modified in 
    	calibrate function according to subtask */
-	calibrate_param->sched_priority = 1;
+	calibrate_param = { . sched_priority=1}
 }
 
 void init_global_data_calibrate() {
