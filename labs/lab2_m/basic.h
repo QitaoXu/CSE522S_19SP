@@ -15,6 +15,9 @@
 #include <linux/ktime.h>
 #include <linux/list.h>
 
+//calibrate
+struct sched_param* calibrate_param;
+
 //customized structures
 struct Task{
 	ktime_t period; /*period of task second*/
@@ -45,7 +48,7 @@ struct Subtask {
 
 	bool flag_sched; /*if the subtask is temporarily not available, */
 	ktime_t relative_ddl; /*task period* subtask's execution time/task's execution time*/
-	struct sched_param schedule_param; /*priority of subtask on the core*/
+	struct sched_param* schedule_param; /*priority of subtask on the core*/
 	struct list_head core_subtask_list;/*list head of the core on which the subtask is assigned */
 	struct list_head task_subtask_list;
 };
