@@ -14,7 +14,7 @@
 #include <linux/hrtimer.h>
 #include <linux/ktime.h>
 #include <linux/list.h>
-
+#include <linux/sort.h>
 enum Mode { RUN = 1, CALIBRATE };
 enum Mode mode = CALIBRATE;
 char * mode_input = "calibrate";
@@ -44,7 +44,7 @@ struct Subtask {
 	ktime_t last_release_time; /*initialized to 0, record the last time the subtask was released*/
 	int cumul_exec_time;/* sum up the execution times of that subtask and all of its predecessors within the same task*/
 
-	float utilization; /*divide its execution time by its task's period.*/
+	int utilization; /*divide its execution time by its task's period.*/
 	int execution_time;/*execution time of subtask millisecond*/
 
 	struct task_struct *sub_thread; /*pointer to the task_struct*/

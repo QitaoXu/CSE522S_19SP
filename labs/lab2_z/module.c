@@ -186,6 +186,7 @@ static int init_run_subtask_fn(void * data){
 static int simple_init (void) {
 	int i, j, ret;
 	Core c;
+	init_global_data_calibrate();
 	initALL();
 	parse_module_param();
 	if(mode == RUN){

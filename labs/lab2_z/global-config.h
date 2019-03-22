@@ -9,7 +9,7 @@
 
 #include "basic.h"
 
-#define num_subtask 8
+#define num_subtask 11
 #define num_core 4
 #define num_task 4
 
@@ -28,10 +28,10 @@
 #define subtask_count2 2
 #define subtask_count3 2
 
+#define task_period0 2000
 #define task_period1 2000
 #define task_period2 2000
 #define task_period3 2000
-#define task_period4 2000
 
 #define loop_count 5000
 #define exec_time_0_0 10
@@ -85,12 +85,98 @@ void init_global_data_run() {
    	later, their priority will be modified in 
    	calibrate function according to subtask */
 }
-
 void init_global_data_calibrate() {
-	int i;
-	for (i=0; i<num_core; i++) {
-		cores[i].core_index = i;
-		//LIST_HEAD_INIT(cores[i].core_subtask_list);
-	}
+ int i,j;
+ for (i = 0; i < num_core; i++) {
+  cores[i].core_index = i;
+  //LIST_HEAD_INIT(cores[i].core_subtask_list);
+ }
+
+ for (i = 0; i < num_task; i++) {
+  
+  if ( i == 0 ) {
+   tasks[i].period = task_period0; 
+   tasks[i].index = task_index0;
+   tasks[i].num = subtask_count0;
+   tasks[i].starting_index = 0;
+   tasks[i].subtask_list = (Subtask **)kmalloc(GFP_KERNEL, sizeof(Subtask **) * tasks[i].num);
+   
+   for (j = 0; j < subtask_count0; j ++) {
+    tasks[i].subtask_list[j] = (Subtask *)kmalloc(GFP_KERNEL, sizeof(Subtask *));
+   }
+
+   for (j = 0; j < subtask_count0; j ++) {
+    tasks[i].subtask_list[j]->idx_in_task = j;
+    tasks[i].subtask_list[j]->parent = &tasks[i];
+    tasks[i].subtask_list[j]->work_load_loop_count = loop_count;
+    tasks[i].subtask_list[j]->last_release_time = ktime_set(0, 0);
+    tasks[i].subtask_list[j]->cumul_exec_time = 0;
+    tasks[i].subtask_list[j]->utilization = 0.0;
+    tasks[i].subtask_list[j]->execution_time = exec_time_0_0;
+   }
+  }
+
+  if ( i == 1) {
+
+   tasks[i].period = task_period1;
+   tasks[i].index = task_index1;
+   tasks[i].num = subtask_count1;
+   tasks[i].starting_index = tasks[i - 1].starting_index + tasks[i - 1].num;
+   tasks[i].subtask_list = (Subtask **)kmalloc(GFP_KERNEL, sizeof(Subtask **) * tasks[i].num);
+
+   for (j = 0; j < subtask_count1; j ++) {
+    tasks[i].subtask_list[j]->idx_in_task = j;
+    tasks[i].subtask_list[j]->parent = &tasks[i];
+    tasks[i].subtask_list[j]->work_load_loop_count = loop_count;
+    tasks[i].subtask_list[j]->last_release_time = ktime_set(0, 0);
+    tasks[i].subtask_list[j]->cumul_exec_time = 0;
+    tasks[i].subtask_list[j]->utilization = 0.0;
+    tasks[i].subtask_list[j]->execution_time = exec_time_1_0;
+   }
+
+  }
+
+  if ( i == 2) {
+
+   tasks[i].period = task_period2;
+   tasks[i].index = task_index2;
+   tasks[i].num = subtask_count2;
+   tasks[i].starting_index = tasks[i - 1].starting_index + tasks[i - 1].num;
+   tasks[i].subtask_list = (Subtask **)kmalloc(GFP_KERNEL, sizeof(Subtask **) * tasks[i].num);
+
+   for (j = 2; j < subtask_count0; j ++) {
+    tasks[i].subtask_list[j]->idx_in_task = j;
+    tasks[i].subtask_list[j]->parent = &tasks[i];
+    tasks[i].subtask_list[j]->work_load_loop_count = loop_count;
+    tasks[i].subtask_list[j]->last_release_time = ktime_set(0, 0);
+    tasks[i].subtask_list[j]->cumul_exec_time = 0;
+    tasks[i].subtask_list[j]->utilization = 0.0;
+    tasks[i].subtask_list[j]->execution_time = exec_time_2_0;
+   }
+
+  }
+
+  if ( i == 3) {
+
+   tasks[i].period = task_period3;
+   tasks[i].index = task_index3;
+   tasks[i].num = subtask_count3;
+   tasks[i].starting_index = tasks[i - 1].starting_index + tasks[i - 1].num;
+   tasks[i].subtask_list = (Subtask **)kmalloc(GFP_KERNEL, sizeof(Subtask **) * tasks[i].num);
+
+   for (j = 0; j < subtask_count3; j ++) {
+    tasks[i].subtask_list[j]->idx_in_task = j;
+    tasks[i].subtask_list[j]->parent = &tasks[i];
+    tasks[i].subtask_list[j]->work_load_loop_count = loop_count;
+    tasks[i].subtask_list[j]->last_release_time = ktime_set(0, 0);
+    tasks[i].subtask_list[j]->cumul_exec_time = 0;
+    tasks[i].subtask_list[j]->utilization = 0.0;
+    tasks[i].subtask_list[j]->execution_time = exec_time_3_0;
+   }
+
+  }
+ }
+  
+ 
 
 }
