@@ -29,7 +29,7 @@ struct Subtask {
 	struct ktime_t cumul_exec_time;/* sum up the execution times of that subtask and all of its predecessors within the same task*/
 
 	float utilization; /*divide its execution time by its task's period.*/
-	unsigned long execution_time;/*execution time of subtask millisecond*/
+	struct ktime_t execution_time;/*execution time of subtask millisecond*/
 
 	struct task_struct *sub_thread; /*pointer to the task_struct*/
 	struct hrtimer hr_timer; /* timer for the subtask*/
@@ -37,14 +37,14 @@ struct Subtask {
 	struct subtask *prev; /* previous subtask within parent task struct*/
 
 	bool flag_sched; /*if the subtask is temporarily not available, */
-	unsigned long relative_ddl; /*task period* subtask's execution time/task's execution time*/
+	struct ktime_t relative_ddl; /*task period* subtask's execution time/task's execution time*/
 	struct sched_param schedule_param; /*priority of subtask on the core*/
 	struct list_head core_list;/*list head of the core on which the subtask is assigned */
 	struct list_head task_list;
 };
 
 struct Task{
-	unsigned long period; /*period of task second*/
+	struct ktime_t period; /*period of task second*/
 	// struct subtask *subtasks; /* subtasks within the task struct */
 	struct list_head task_list;
 	int num;/* number of subtask */

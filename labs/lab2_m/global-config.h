@@ -48,5 +48,10 @@ void init_global_data_run() {
 }
 
 void init_global_data_calibrate() {
-	//TODO
+	int i;
+	for (i=0; i<num_core; i++) {
+		cores[i].core_index = i;
+		LIST_HEAD_INIT(cores[i].core_list);
+	}
+	
 }

@@ -42,10 +42,7 @@ static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart ) 
 static int calibrate_fn(void * data){
 	Subtask* sub;
 	int last_loop_count;
-	ktime_t before;
-	ktime_t after;
-	ktime_t diff;
-	ktime_t exe_time;
+	ktime_t before, after, diff, exe_time;
 	
 	set_current_state(TASK_INTERRUPTIBLE);
 	schedule();
@@ -61,8 +58,7 @@ static int calibrate_fn(void * data){
 			// time stamp after subtask_fn
 			after = ktime_get();
 			diff = ktime(after, before);
-			exe_time = ktime_set(0, sub->execution_time * 1000000 );
-			if (ktime_compare(diff, exe_time) == 1) {
+			if (ktime_compare(diff, sub->execution_time) == 1) {
 				sub->loop_count = sub->loop_count - 1;
 			}
 			if (last_loop_count == sub->loop_count) {
@@ -77,12 +73,11 @@ static int calibrate_fn(void * data){
 /* run function*/
 static int init_run_subtask_fn(void * data){
 	Subtask* sub = (Subtask*) data;
-	ktime_t current_time, expect_next, parent_period;
+	ktime_t current_time, expect_next;
 
 	hrtimer_init(&(sub->hr_timer), CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
 	sub->hr_timer.function = &timer_callback;
 	
-	parent_period = ktime_set(sub->parent->period, 0);
 	while (!kthread_should_stop()){ 
 		set_current_state(TASK_INTERRUPTIBLE);
   		schedule();
@@ -93,14 +88,14 @@ static int init_run_subtask_fn(void * data){
   			current_time = ktime_get();
   			/*	if its subtask is the first one in its task it should then calculate (as an absolute time) one task period later
   			    than the value stored in its last release time and schedule its own timer to wake up at that time */
-  			hrtimer_forward(&(sub->hr_timer), current_time, ktime_sub(ktime_add(parent_period, sub->last_release_time), current_time));
+  			hrtimer_forward(&(sub->hr_timer), current_time, ktime_sub(ktime_add(sub->parent->period, sub->last_release_time), current_time));
   		} 
   		if(sub->next!=NULL){
   			current_time = ktime_get();
   			/*	if the time it obtained is less than the sum of the task period 
   				and its successor's last release time, it should schedule its successor's 
   				timer to wake up one task period after its successor's last release time -- otherwise */
-  			expect_next = ktime_add(sub->next->last_release_time, parent_period);
+  			expect_next = ktime_add(sub->next->last_release_time, sub->parent->period);
   			if (current_time < expect_next){
   				hrtimer_forward(&(sub->next->hr_timer), current_time, ktime_sub(expect_next, current_time));
   			} else {
