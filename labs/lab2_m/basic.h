@@ -15,9 +15,6 @@
 #include <linux/ktime.h>
 #include <linux/list.h>
 
-//calibrate
-struct sched_param calibrate_param = { . sched_priority=1};
-
 //customized structures
 struct Task{
 	ktime_t period; /*period of task second*/

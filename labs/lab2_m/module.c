@@ -152,6 +152,7 @@ static int init_run_subtask_fn(void * data){
 /* init function - logs that initialization happened, returns success */
 static int simple_init (void) {
 	int i, ret;
+	struct sched_param calibrate_param = { . sched_priority=1};
 	parse_module_param();
 
 	if(mode == RUN){
