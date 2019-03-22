@@ -38,7 +38,7 @@ static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart ) 
 /* calibrate function*/
 static int calibrate_fn(void * data){
 	int last_loop_count, i;
-	ktime_t before, after, diff, exe_time;
+	ktime_t before, after, diff;
 	Core c = cores[((Subtask*)data)->core];
 
 	set_current_state(TASK_INTERRUPTIBLE);
@@ -52,7 +52,7 @@ static int calibrate_fn(void * data){
 			subtask_fn(c.subtask_list[i]);
 			// time stamp after subtask_fn
 			after = ktime_get();
-			diff = ktime(after, before);
+			diff = ktime_sub(after, before);
 			if (ktime_compare(diff, c.subtask_list[i]->execution_time) == 1) {
 				c.subtask_list[i]->work_load_loop_count = c.subtask_list[i]->work_load_loop_count - 1;
 			}
@@ -101,15 +101,15 @@ static int init_run_subtask_fn(void * data){
   			}
   		}
 	}
-	return 
+	return 0;
 }
 
 /* init function - logs that initialization happened, returns success */
 static int simple_init (void) {
 	int i, j, ret;
 	Core c;
-	struct sched_param schedule_param = { .sched_priority=1 };
-	struct sched_param calibrate_param = { .sched_priority=1 };
+	struct sched_param schedule_param;
+	struct sched_param calibrate_param;
 	parse_module_param();
 
 	if(mode == RUN){
@@ -140,6 +140,7 @@ static int simple_init (void) {
 			c = cores[j];
 			calibrate_kthreads[i] = kthread_create(calibrate_fn, (void *)(&subtasks[i]), sprintf("calibrate%d", i));
 			kthread_bind(calibrate_kthreads[i], i);
+			calibrate_param = { .sched_priority=1 }
 			ret = sched_setscheduler(calibrate_kthreads[i]->pid, SCHED_FIFO, &calibrate_param);
 			if (ret < 0) {
 				printk(KERN_INFO, "sched_setscheduler failed!");
