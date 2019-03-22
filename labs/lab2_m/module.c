@@ -45,7 +45,7 @@ static int calibrate_fn(void * data){
 	schedule();
 
 	for (i=0; i<c.num; i++) {
-		while (c.subtask_list[i]->work_load_loop_count > 0) {
+		while ((c.subtask_list[i])->work_load_loop_count > 0) {
 			// time stamp before subtask_fn
 			last_loop_count = c.subtask_list[i]->work_load_loop_count;
 			before = ktime_get();
