@@ -31,7 +31,7 @@ struct Task{
 	int index; /* index of task */
 	int starting_index;/* starting index of subtask */
 	int execution_time; /*execution time of all subtask*/
-	struct Subtask* subtask_list;
+	struct Subtask** subtask_list;
 };
 
 struct Subtask {
@@ -59,7 +59,7 @@ struct Core{
 	int core_index; /*cpu core index */
 	int num;/* number of subtask */
 	// struct subtask *subtask; /*subtask that is put on the specific cpu core*/
-	struct Subtask* subtask_list;
+	struct Subtask** subtask_list;
 };
 
 //Forward Declaration
