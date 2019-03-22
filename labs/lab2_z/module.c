@@ -39,6 +39,7 @@ void initALL(void){
 		taskNow=tasks[i];
 		total_exec_time=0;
 		for (j=0;j<taskNow.num;j++){
+			  	printk(KERN_INFO "initALL subtask i");
 			subtaskNow= *(taskNow.subtask_list[j]);
 			total_exec_time=total_exec_time+subtaskNow.execution_time;
 			subtaskNow.cumul_exec_time=total_exec_time;
@@ -48,6 +49,8 @@ void initALL(void){
 		}
 		tasks[i].execution_time=total_exec_time;
 		for (j=0;j<tasks[i].num;j++){
+			printk(KERN_INFO "initALL subtask i");
+
 			taskNow.subtask_list[j]->relative_ddl=(taskNow.period)*(taskNow.subtask_list[j]->cumul_exec_time)/tasks[i].execution_time;
 		}
 	}
@@ -190,7 +193,6 @@ static int simple_init (void) {
 	initALL();
 	parse_module_param();
 	if(mode_input == RUN){
-		init_global_data_run();
 		printk(KERN_INFO "Current mode is run mode.");
 		for(i=0; i<num_subtask; i++){
 			subtasks[i].sub_thread = kthread_create(init_run_subtask_fn, (void *)(&subtasks[i]), get_thread_name_s(thread_name_base, i));
@@ -210,7 +212,6 @@ static int simple_init (void) {
 		}
 
 	} else {
-		init_global_data_calibrate();
 		printk(KERN_INFO "Current mode is calibrate mode.");
 
 		for (i = 0; i < num_core; i++) {

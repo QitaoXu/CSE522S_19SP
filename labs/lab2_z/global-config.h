@@ -91,22 +91,26 @@ void init_global_data_calibrate() {
   cores[i].core_index = i;
   //LIST_HEAD_INIT(cores[i].core_subtask_list);
  }
-
+ printk(KERN_INFO "init tasks");
  for (i = 0; i < num_task; i++) {
   
   if ( i == 0 ) {
+  	printk(KERN_INFO "init task i");
    tasks[i].period = task_period0; 
    tasks[i].index = task_index0;
    tasks[i].num = subtask_count0;
    tasks[i].starting_index = 0;
-   tasks[i].subtask_list = (Subtask **)kmalloc(GFP_KERNEL, sizeof(Subtask **) * tasks[i].num);
+   tasks[i].subtask_list = (Subtask **)kmalloc(GFP_KERNEL, sizeof(Subtask *) * tasks[i].num);
    
-   for (j = 0; j < subtask_count0; j ++) {
-    tasks[i].subtask_list[j] = (Subtask *)kmalloc(GFP_KERNEL, sizeof(Subtask *));
-   }
+   // for (j = 0; j < subtask_count0; j ++) {
+   //  tasks[i].subtask_list[j] = (Subtask *)kmalloc(GFP_KERNEL, sizeof(Subtask *));
+   // }
 
    for (j = 0; j < subtask_count0; j ++) {
+   	  	printk(KERN_INFO "init subtask i");
+
     tasks[i].subtask_list[j]->idx_in_task = j;
+    printk(KERN_INFO "init subtask ijjjj");
     tasks[i].subtask_list[j]->parent = &tasks[i];
     tasks[i].subtask_list[j]->work_load_loop_count = loop_count;
     tasks[i].subtask_list[j]->last_release_time = ktime_set(0, 0);
@@ -117,12 +121,13 @@ void init_global_data_calibrate() {
   }
 
   if ( i == 1) {
+  	   	  	printk(KERN_INFO "init subtask i");
 
    tasks[i].period = task_period1;
    tasks[i].index = task_index1;
    tasks[i].num = subtask_count1;
    tasks[i].starting_index = tasks[i - 1].starting_index + tasks[i - 1].num;
-   tasks[i].subtask_list = (Subtask **)kmalloc(GFP_KERNEL, sizeof(Subtask **) * tasks[i].num);
+   tasks[i].subtask_list = (Subtask **)kmalloc(GFP_KERNEL, sizeof(Subtask *) * tasks[i].num);
 
    for (j = 0; j < subtask_count1; j ++) {
     tasks[i].subtask_list[j]->idx_in_task = j;
@@ -142,7 +147,7 @@ void init_global_data_calibrate() {
    tasks[i].index = task_index2;
    tasks[i].num = subtask_count2;
    tasks[i].starting_index = tasks[i - 1].starting_index + tasks[i - 1].num;
-   tasks[i].subtask_list = (Subtask **)kmalloc(GFP_KERNEL, sizeof(Subtask **) * tasks[i].num);
+   tasks[i].subtask_list = (Subtask **)kmalloc(GFP_KERNEL, sizeof(Subtask *) * tasks[i].num);
 
    for (j = 2; j < subtask_count0; j ++) {
     tasks[i].subtask_list[j]->idx_in_task = j;
@@ -162,7 +167,7 @@ void init_global_data_calibrate() {
    tasks[i].index = task_index3;
    tasks[i].num = subtask_count3;
    tasks[i].starting_index = tasks[i - 1].starting_index + tasks[i - 1].num;
-   tasks[i].subtask_list = (Subtask **)kmalloc(GFP_KERNEL, sizeof(Subtask **) * tasks[i].num);
+   tasks[i].subtask_list = (Subtask **)kmalloc(GFP_KERNEL, sizeof(Subtask *) * tasks[i].num);
 
    for (j = 0; j < subtask_count3; j ++) {
     tasks[i].subtask_list[j]->idx_in_task = j;
