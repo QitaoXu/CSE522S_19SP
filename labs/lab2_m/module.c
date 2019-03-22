@@ -39,7 +39,7 @@ static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart ) 
 static int calibrate_fn(void * data){
 	int last_loop_count, i;
 	ktime_t before, after, diff, exe_time;
-	struct sched_param schedule_param;
+	struct sched_param schedule_param = { . sched_priority=1};
 	Core c = cores[((Subtask*)data)->core];
 	
 	set_current_state(TASK_INTERRUPTIBLE);
