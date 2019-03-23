@@ -13,10 +13,16 @@
 #define num_core 4
 #define num_task 4
 
+
 #define task_index0 0
 #define task_index1 1
 #define task_index2 2
 #define task_index3 3
+
+#define core_index0 0
+#define core_index1 1
+#define core_index2 2
+#define core_index3 3
 
 #define subtask_index0 0
 #define subtask_index1 1

@@ -10,6 +10,7 @@
 #ifndef BASIC_H
 #define BASIC_H
 
+
 #include <linux/sched.h> 
 #include <linux/hrtimer.h>
 #include <linux/ktime.h>
@@ -29,7 +30,6 @@ struct Task{
 	// struct subtask *subtasks; /* subtasks within the task struct */
 	int num;/* number of subtask */
 	int index; /* index of task */
-	int starting_index;/* starting index of subtask */
 	int execution_time; /*execution time of all subtask*/
 	struct Subtask** subtask_list;
 };

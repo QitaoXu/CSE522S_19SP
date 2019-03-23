@@ -118,33 +118,66 @@ static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart ) 
 
 /* calibrate function*/
 static int calibrate_fn(void * data){
-	int last_loop_count, i;
-	ktime_t before, after, diff;
-	Core c = cores[((Subtask*)data)->core];
 
-	set_current_state(TASK_INTERRUPTIBLE);
-	schedule();
+ int core_number = *((int *)data);
+ int num_of_suntasks;
+ int i;
+ int last_loop_count;
+ int max_loop_count = 16357;
+ ktime_t before, after, diff, exe;
+ Subtask * core_subtasks;
 
-	for (i=0; i<c.num; i++) {
-		while ((c.subtask_list[i])->work_load_loop_count > 0) {
-			// time stamp before subtask_fn
-			last_loop_count = c.subtask_list[i]->work_load_loop_count;
-			before = ktime_get();
-			subtask_fn(c.subtask_list[i]);
-			// time stamp after subtask_fn
-			after = ktime_get();
-			diff = ktime_sub(after, before);
-			if (ktime_compare(diff, c.subtask_list[i]->execution_time) == 1) {
-				c.subtask_list[i]->work_load_loop_count = c.subtask_list[i]->work_load_loop_count - 1;
-			}
-			if (last_loop_count == c.subtask_list[i]->work_load_loop_count) {
-				break;
-			}
-		}
-	}
-	//TODO: record work_load_loop_count for each subtask
-	//TODO
-	return 0;
+ printk(KERN_DEBUG "Core number is %d\n", core_number);
+
+ if (core_number < 0 || core_number > num_core) {
+  return - 1;
+ }
+
+ printk(KERN_DEBUG "Core number is with possible range.\n");
+
+ core_subtasks = cores[core_number].subtask_list;
+
+ num_of_suntasks = cores[core_number].num;
+
+ printk(KERN_DEBUG "Number of subtasks is %d\n", num_of_suntasks);
+
+ for (i = 0; i < num_of_suntasks; i++) {
+
+  param.sched_priority = core_subtasks[i].sched_priori;
+  sched_setscheduler(current, SCHED_FIFO, &param);
+
+  // Calibrate 
+  while (max_loop_count > 0) {
+
+   last_loop_count = max_loop_count;
+
+   before = ktime_get();
+   subtask_fn(subtasks[i]);
+   after = ktime_get();
+   diff = ktime_sub(after, before);
+   exe = ktime_set(0, (core_subtasks[i]->execution_time) * 1000000);
+   if (ktime_compare(diff, exe) == 1) {
+    max_loop_count -= 1;
+   }
+   if (last_loop_count == max_loop_count) {
+    core_subtasks[i]->work_load_loop_count = max_loop_count;
+    break;
+   }
+
+  }
+
+  printk(KERN_DEBUG "\n");
+        printk(KERN_DEBUG "Core number is %d \n", core_number);
+        printk(KERN_DEBUG "Task number is %d, subtask number is %d\n", subtasks[i].parent.index, subtasks[i].idx_in_task);
+        printk(KERN_DEBUG "subtask execution time is %d \n", subtasks[i].execution_time);
+  printk(KERN_DEBUG "subtask utilization is %d \n", subtasks[i].utilization);
+  printk(KERN_DEBUG "Loop iterations count is %d\n", subtasks[i].work_load_loop_count);
+  printk(KERN_DEBUG "\n");
+ }
+
+ //TODO: record work_load_loop_count for each subtask
+ //TODO
+ return 0;
 }
 
 /* run function*/
