@@ -37,6 +37,12 @@ static int ddl_sort(const void* l, const void* r){
 	else return 0;
 }
 
+/* subtask lookup function */
+static Subtask * subtask_lookup_fn(struct hrtimer * timer) {
+ 	Subtask * sub = container_of(&timer, Subtask, hr_timer); //TODO, maybe wrong
+ 	return sub; 
+}
+
 /*timer expiration*/
 static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart ) {
 	Subtask * sub;
@@ -114,12 +120,6 @@ void inin_all(void){
 			cores[i].subtask_list[j]->sched_priori=HIGHEST_PRIORITY-(j*2+10);
 		}
 	}
-}
-
-/* subtask lookup function */
-static Subtask * subtask_lookup_fn(struct hrtimer * timer) {
- 	Subtask * sub = container_of(&timer, Subtask, hr_timer); //TODO, maybe wrong
- 	return sub; 
 }
 
 /* subtask function */
