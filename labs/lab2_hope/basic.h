@@ -22,15 +22,6 @@ struct sched_param param;
 void parse_module_param(void);
 char* get_thread_name(char *str, int num);
 
-//customized structures
-struct Task{
-	int period; /*period of task second*/
-	int num;/* number of subtask */
-	int index; /* index of task */
-	int execution_time; /*execution time of all subtask*/
-	struct Subtask subtask_list[];
-};
-
 struct Subtask {
 	int idx_in_task; /*index of subtask within the task*/
 	int idx_in_core; /*index of subtask within the core*/
@@ -52,6 +43,15 @@ struct Subtask {
 	int relative_ddl; /*task period* subtask's execution time/task's execution time*/
 	int sched_priori;  /*priority of subtask on the core*/
 };
+//customized structures
+struct Task{
+	int period; /*period of task second*/
+	int num;/* number of subtask */
+	int index; /* index of task */
+	int execution_time; /*execution time of all subtask*/
+	struct Subtask subtask_list[];
+};
+
 
 struct Core{
 	int core_index; /*cpu core index */

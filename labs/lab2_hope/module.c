@@ -66,7 +66,7 @@ void init_auto_vars(void){
 
 	//init: relationship between cores and subtasks
 	//sort subtask based on utilization from largest to smallest
-	sort((void*)subtask_ptrs,num_subtask,sizeof(struct subtask*), &util_sort, NULL);
+	sort((void*)subtask,num_subtask,sizeof(struct subtask*), &util_sort, NULL);
 	for (i=0;i<num_subtask;i++){
 		for(j=0;j<num_core;j++){
 			if(cpu_load[j]+subtask_ptrs[i]->utilization<100){
@@ -89,7 +89,7 @@ void init_auto_vars(void){
 	}
 	for (i=0;i<num_core;i++){
 		cores[i].num = cpu_subtask_count[i];
-		cores[i].subtask_list= (Subtask **) kmalloc(sizeof(Subtask*)*cores[i].num, GFP_KERNEL);
+		cores[i].subtask_list= (Subtask **) kmalloc_array(cores[i].num, sizeof(Subtask*), GFP_KERNEL);
 	}
 	for(j=0;j<num_subtask;j++){
 			i=subtask_ptrs[j]->core;
@@ -294,18 +294,39 @@ static int simple_init (void) {
     printk(KERN_ALERT "simple module initialized\n");
     return 0;
 }
+static int freeSpace(void){
+	int i,ret;
+	for (i=0; i<num_task; i++) {
+		for (j=0; j<tasks[i].num; j++) {
+			ret = kthread_stop(tasks[i].subtask_list[j].sub_thread);
+ 			if(ret == 0) {
+  				printk(KERN_INFO "%d stopped",tasks[i].subtask_list[j].kthread_id);
+  			}
+  		}
+	}
+	for(i=0;i<num_core;i++){
+		kfree(cores[i].subtask_list);
+	}
+	if(mode_input == RUN){
+		for (i=0; i<num_task; i++) {
+			for (j=0; j<tasks[i].num; j++) {
+				hrtimer_cancel(tasks[i].subtask_list[j].hr_timer);
+				kfree(tasks[i].subtask_list[j].hr_timer);
+				
+	 		}
+		}
+	}
 
+	return 0
+}
 /* exit function - logs that the module is being removed */
 static void simple_exit (void) {
 	int ret, i;
-	for (i=0; i<num_task; i++) {
-		for (j=0; j<tasks[i].num; j++) {
-			hrtimer_cancel(&(tasks[i].subtask_list[j].hr_timer));
-			ret = kthread_stop(tasks[i].subtask_list[j].sub_thread);
- 			if(!ret) {
-  				printk(KERN_INFO "Thread %d stopped",i);
-  			}
- 		}
+	ret=freeSpace();
+	if (ret != 0){
+
+		printk(KERN_DEBUG, "freeSpace() failed partly.\n");
+
 	}
     printk(KERN_ALERT "simple module is being unloaded");
 }
