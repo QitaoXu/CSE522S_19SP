@@ -9,7 +9,7 @@
 
 #include "basic.h"
 #define million 1000000
-#define num_subtask 11
+#define num_subtask 10
 #define num_core 4
 #define num_task 4
 
@@ -28,7 +28,7 @@
 #define subtask_index2 2
 #define subtask_index3 3
 
-#define subtask_count0 4
+#define subtask_count0 3
 #define subtask_count1 3
 #define subtask_count2 2
 #define subtask_count3 2
@@ -143,23 +143,23 @@ struct Task task_0 =
       0,
       DEFAULT_PRIORITY
     },
-    {
-      subtask_index3,
-      -1,
-      -1,
-      NULL, //struct Task *parent; 
-      loop_count*exec_time_0_3,
-      (int) 0,
-      0,
-      0,
-      exec_time_0_3,
-      NULL, //struct task_struct *sub_thread;
-      NULL,
-      (struct hrtimer*) NULL, //  struct hrtimer hr_timer;
-      -1,
-      0,
-      DEFAULT_PRIORITY
-    }
+    // {
+    //   subtask_index3,
+    //   -1,
+    //   -1,
+    //   NULL, //struct Task *parent; 
+    //   loop_count*exec_time_0_3,
+    //   (int) 0,
+    //   0,
+    //   0,
+    //   exec_time_0_3,
+    //   NULL, //struct task_struct *sub_thread;
+    //   NULL,
+    //   (struct hrtimer*) NULL, //  struct hrtimer hr_timer;
+    //   -1,
+    //   0,
+    //   DEFAULT_PRIORITY
+    // }
   }
 };
 
