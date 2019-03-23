@@ -59,37 +59,45 @@ void init_all(void){
 	int cpu_load[num_core]={0,0,0,0};
 	int cpu_subtask_count[num_core]={0,0,0,0};
 	int total_exec_time;
+	Subtask cursubtask;
+	Task curtask;
 	int index=0;
 	//init: subtask.cumul_exec_time, subtask.relative_ddl, task.execution_time
 	printk(KERN_INFO "enter init_all");
 	subtask_ptrs = (Subtask**) kmalloc_array(num_subtask, sizeof(Subtask*), GFP_KERNEL);
-
 	for (i=0;i<num_task;i++){
+		printk(KERN_INFO "task %d has %d subtasks", i,tasks[i].num);
+
+	}
+	for (i=0;i<num_task;i++){
+
 		printk(KERN_INFO "begin at task%d in %d tasks of %d subtasks", i, num_task, tasks[i].num);
 		total_exec_time = 0;
-		for (j=0;j<tasks[i].num;j++){
-			printk(KERN_INFO "begin at subtask%d in %d tasks", j, tasks[i].num);
+		curtask=tasks[i];
+		for (j=0;j<curtask.num;j++){
+			cursubtask=curtask.subtask_list[j];
+			printk(KERN_INFO "begin at subtask%d in %d tasks", j, curtask.num);
 			printk(KERN_INFO "total_exec_time subtask %d", j);
-			total_exec_time = total_exec_time + tasks[i].subtask_list[j].execution_time;
+			total_exec_time = total_exec_time + cursubtask.execution_time;
 			printk(KERN_INFO "cumul_exec_time subtask i");
-			tasks[i].subtask_list[j].cumul_exec_time = total_exec_time;
+			cursubtask.cumul_exec_time = total_exec_time;
 			printk(KERN_INFO "parent subtask i");
-			tasks[i].subtask_list[j].parent=&(tasks[i]);
+			cursubtask.parent=&(curtask);
 			printk(KERN_INFO "relative_ddl subtask i");
-			tasks[i].subtask_list[j].relative_ddl = (tasks[i].period)*(tasks[i].subtask_list[j].cumul_exec_time)/(tasks[i].execution_time);
+			cursubtask.relative_ddl = (curtask.period)*(cursubtask.cumul_exec_time)/(curtask.execution_time);
 			printk(KERN_INFO "utilization subtask i");
-			tasks[i].subtask_list[j].utilization=tasks[i].subtask_list[j].execution_time*100/tasks[i].period;
+			cursubtask.utilization=cursubtask.execution_time*100/curtask.period;
 			printk(KERN_INFO "kthread_id subtask i");
-			tasks[i].subtask_list[j].kthread_id="thread";//get_thread_name(thread_name_base,index);
+			cursubtask.kthread_id="thread";//get_thread_name(thread_name_base,index);
 			printk(KERN_INFO "subtask_ptrs subtask i");
-			printk(KERN_INFO "address is %p", &(tasks[i].subtask_list[j]));
+			printk(KERN_INFO "address is %p", &(cursubtask));
 			printk(KERN_INFO "index=%d i=%d j=%d", index,i, j);
-			subtask_ptrs[index] = (Subtask*) (&(tasks[i].subtask_list[j]));
+			subtask_ptrs[index] = (Subtask*) (&(cursubtask));
 			printk(KERN_INFO "subtask_ptrs finished");
 			index+=1;
 		}
 		printk(KERN_INFO "execution_time task i");	
-		tasks[i].execution_time = total_exec_time;
+		curtask.execution_time = total_exec_time;
 		printk(KERN_INFO "execution_time finished");
 	}
 
