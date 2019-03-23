@@ -66,13 +66,19 @@ void init_all(void){
 	for (i=0;i<num_task;i++){
 		total_exec_time = 0;
 		for (j=0;j<tasks[i].num;j++){
-			printk(KERN_INFO "init_auto_vars subtask i");
+			printk(KERN_INFO "total_exec_time subtask %d", j);
 			total_exec_time = total_exec_time + tasks[i].subtask_list[j].execution_time;
+			printk(KERN_INFO "cumul_exec_time subtask i");
 			tasks[i].subtask_list[j].cumul_exec_time = total_exec_time;
+			printk(KERN_INFO "parent subtask i");
 			tasks[i].subtask_list[j].parent=&(tasks[i]);
+			printk(KERN_INFO "relative_ddl subtask i");
 			tasks[i].subtask_list[j].relative_ddl = (tasks[i].period)*(tasks[i].subtask_list[j].cumul_exec_time)/(tasks[i].execution_time);
+			printk(KERN_INFO "utilization subtask i");
 			tasks[i].subtask_list[j].utilization=tasks[i].subtask_list[j].execution_time*100/tasks[i].period;
+			printk(KERN_INFO "kthread_id subtask i");
 			tasks[i].subtask_list[j].kthread_id=get_thread_name(thread_name_base,index);
+			printk(KERN_INFO "subtask_ptrs subtask i");
 			subtask_ptrs[index] = &(tasks[i].subtask_list[j]);
 
 			index+=1;
