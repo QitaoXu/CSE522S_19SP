@@ -62,6 +62,7 @@ void init_all(void){
 	int index=0;
 	//init: subtask.cumul_exec_time, subtask.relative_ddl, task.execution_time
 	printk(KERN_INFO "enter init_all");
+	subtask_ptrs = (Subtask**) kmalloc_array(num_subtask, sizeof(Subtask*), GFP_KERNEL);
 
 	for (i=0;i<num_task;i++){
 		total_exec_time = 0;
@@ -77,9 +78,11 @@ void init_all(void){
 			printk(KERN_INFO "utilization subtask i");
 			tasks[i].subtask_list[j].utilization=tasks[i].subtask_list[j].execution_time*100/tasks[i].period;
 			printk(KERN_INFO "kthread_id subtask i");
-			tasks[i].subtask_list[j].kthread_id=get_thread_name(thread_name_base,index);
+			tasks[i].subtask_list[j].kthread_id="thread";//get_thread_name(thread_name_base,index);
 			printk(KERN_INFO "subtask_ptrs subtask i");
-			subtask_ptrs[index] = &(tasks[i].subtask_list[j]);
+			printk(KERN_INFO "address is %p", &(tasks[i].subtask_list[j]));
+			printk(KERN_INFO "index=%d i=%d j=%d", index,i, j);
+			subtask_ptrs[index] = (Subtask*) (&(tasks[i].subtask_list[j]));
 
 			index+=1;
 		}	
