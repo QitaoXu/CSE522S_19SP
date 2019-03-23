@@ -37,6 +37,14 @@ static int ddl_sort(const void* l, const void* r){
 	else return 0;
 }
 
+/*timer expiration*/
+static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart ) {
+	Subtask * sub;
+	sub = subtask_lookup_fn(timer_for_restart);
+	wake_up_process(sub->sub_thread);
+	return HRTIMER_RESTART;
+}
+
 //Zhe: this part should init vars achieved by calculation
 void inin_all(void){
 	int i,j;
@@ -122,14 +130,6 @@ static int subtask_run_workload(Subtask * sub) {
 		current_time+=1;
 	}	
 	return 0;
-}
-
-/*timer expiration*/
-static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart ) {
-	Subtask * sub;
-	sub = subtask_lookup_fn(timer_for_restart);
-	wake_up_process(sub->sub_thread);
-	return HRTIMER_RESTART;
 }
 
 /* calibrate function*/
@@ -237,8 +237,7 @@ static int run_subtask_fn(void * data){
 static int simple_init (void) {
 	int i, j, ret;
 	Core c;
-	init_spec_vars();
-	init_auto_vars();
+	init_all();
 	parse_module_param();
 	if(mode_input == RUN){
 		printk(KERN_INFO "Current mode is run mode.");
