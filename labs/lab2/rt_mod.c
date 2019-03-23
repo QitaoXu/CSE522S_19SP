@@ -65,7 +65,7 @@ void init_all(void){
 	subtask_ptrs = (Subtask**) kmalloc_array(num_subtask, sizeof(Subtask*), GFP_KERNEL);
 
 	for (i=0;i<num_task;i++){
-		printk(KERN_INFO "begin at task%d in %d tasks", i, num_task);
+		printk(KERN_INFO "begin at task%d in %d tasks of %d subtasks", i, num_task, tasks[i].num);
 		total_exec_time = 0;
 		for (j=0;j<tasks[i].num;j++){
 			printk(KERN_INFO "begin at subtask%d in %d tasks", j, tasks[i].num);
