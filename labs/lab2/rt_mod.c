@@ -83,7 +83,7 @@ void init_all(void){
 			printk(KERN_INFO "address is %p", &(tasks[i].subtask_list[j]));
 			printk(KERN_INFO "index=%d i=%d j=%d", index,i, j);
 			subtask_ptrs[index] = (Subtask*) (&(tasks[i].subtask_list[j]));
-
+			printk(KERN_INFO "subtask_ptrs finished");
 			index+=1;
 		}	
 		tasks[i].execution_time = total_exec_time;
