@@ -52,7 +52,7 @@ static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart ) 
 }
 
 //Zhe: this part should init vars achieved by calculation
-void inin_all(void){
+void init_all(void){
 	int i,j;
 	int cpu_load[num_core]={0,0,0,0};
 	int cpu_subtask_count[num_core]={0,0,0,0};
