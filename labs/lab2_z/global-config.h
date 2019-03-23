@@ -350,6 +350,7 @@ struct Core core_3 =
 void init_spec_vars(void);
 
 void init_spec_vars() {
+  printk(KERN_INFO "enter init_spec_vars");
 	cores[0] = core_0;
   cores[1] = core_1;
 	cores[2] = core_2;
