@@ -83,9 +83,7 @@ void init_all(void){
 			cursubtask.cumul_exec_time = total_exec_time;
 			printk(KERN_INFO "parent subtask i");
 			cursubtask.parent=&(curtask);
-			printk(KERN_INFO "relative_ddl subtask i");
-			cursubtask.relative_ddl = (curtask.period)*(cursubtask.cumul_exec_time)/(curtask.execution_time);
-			printk(KERN_INFO "utilization subtask i");
+				printk(KERN_INFO "utilization subtask i");
 			cursubtask.utilization=cursubtask.execution_time*100/curtask.period;
 			printk(KERN_INFO "kthread_id subtask i");
 			cursubtask.kthread_id="thread";//get_thread_name(thread_name_base,index);
@@ -96,9 +94,15 @@ void init_all(void){
 			printk(KERN_INFO "subtask_ptrs finished");
 			index+=1;
 		}
+
 		printk(KERN_INFO "execution_time task i");	
 		curtask.execution_time = total_exec_time;
 		printk(KERN_INFO "execution_time finished");
+		for (j=0;j<curtask.num;j++){
+			printk(KERN_INFO "relative_ddl subtask i");
+			cursubtask.relative_ddl = (curtask.period)*(cursubtask.cumul_exec_time)/(curtask.execution_time);
+
+		}
 	}
 
 	//init: relationship between cores and subtasks
