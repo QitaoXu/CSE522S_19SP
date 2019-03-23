@@ -105,7 +105,10 @@ void init_all(void){
 	}
 	for (i=0;i<num_core;i++){
 		cores[i].num = cpu_subtask_count[i];
-		cores[i].subtask_list= (Subtask **) kmalloc_array(cores[i].num, sizeof(Subtask*), GFP_KERNEL);
+		cores[i].subtask_list = (Subtask **) kmalloc_array(cores[i].num, sizeof(Subtask*), GFP_KERNEL);
+		if (cores[i].subtask_list==NULL) {
+			printk(KERN_DEBUG "kmalloc_array error");
+		}
 	}
 	for(j=0;j<num_subtask;j++){
 			i=subtask_ptrs[j]->core;
@@ -204,6 +207,9 @@ static int run_subtask_fn(void * data){
 	//timer init
 	sub->last_release_time = ktime_set(0, 0);
 	sub->hr_timer = (struct hrtimer*) kmalloc(sizeof(struct hrtimer), GFP_KERNEL);
+	if (sub->hr_timer==NULL) {
+		printk(KERN_DEBUG "kmalloc_array error");
+	}
 	hrtimer_init(sub->hr_timer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
 	sub->hr_timer->function = &timer_callback;
 
