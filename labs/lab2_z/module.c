@@ -105,7 +105,7 @@ void init_auto_vars(void){
 
 /* subtask lookup function */
 static Subtask * subtask_lookup_fn(struct hrtimer * timer) {
- 	Subtask * sub = container_of(timer, Subtask, hr_timer);
+ 	Subtask * sub = container_of(&timer, Subtask, hr_timer); //TODO, maybe wrong
  	return sub; 
 }
 
@@ -206,7 +206,7 @@ static int run_subtask_fn(void * data){
   			current_time = ktime_get();
   			/*	if its subtask is the first one in its task it should then calculate (as an absolute time) one task period later
   			    than the value stored in its last release time and schedule its own timer to wake up at that time */
-  			hrtimer_forward(&(sub->hr_timer), current_time, ktime_sub(ktime_add(ktime_set(sub->parent->period, 0), sub->last_release_time), current_time));
+  			hrtimer_forward(sub->hr_timer, current_time, ktime_sub(ktime_add(ktime_set(sub->parent->period, 0), sub->last_release_time), current_time));
   		} 
   		if((sub->idx_in_task)<(sub->parent->num)){
   			current_time = ktime_get();
@@ -216,7 +216,7 @@ static int run_subtask_fn(void * data){
   				timer to wake up one task period after its successor's last release time -- otherwise */
   			expect_next = ktime_add(sub->parent->subtask_list[sub->idx_in_task+1]->last_release_time, ktime_set(sub->parent->period,0));
   			if (current_time < expect_next){
-  				hrtimer_forward(&(sub->parent->subtask_list[sub->idx_in_task+1]->hr_timer), current_time, ktime_sub(expect_next, current_time));
+  				hrtimer_forward(sub->parent->subtask_list[sub->idx_in_task+1]->hr_timer, current_time, ktime_sub(expect_next, current_time));
   			} else {
   			/*	if the time it obtained is greater than or equal to the sum of the task period 
   				and its successor's last release time it should immediately call wake_up_process() 
@@ -252,9 +252,9 @@ static int simple_init (void) {
 				}
 				//init timer for subtask
 				tasks[i].subtask_list[j].last_release_time = ktime_set(0, 0);
-				tasks[i].subtask_list[j].hr_timer = *((struct hrtimer*) kmalloc(sizeof(struct hrtimer), GFP_KERNEL));
-				hrtimer_init(&(tasks[i].subtask_list[j].hr_timer), CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
-				tasks[i].subtask_list[j].hr_timer.function = &timer_callback;
+				tasks[i].subtask_list[j].hr_timer = (struct hrtimer*) kmalloc(sizeof(struct hrtimer), GFP_KERNEL);
+				hrtimer_init(tasks[i].subtask_list[j].hr_timer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
+				tasks[i].subtask_list[j].hr_timer->function = &timer_callback;
 			}
 		}
 		mdelay(100);
@@ -297,7 +297,7 @@ static void simple_exit (void) {
 	int ret, i, j;
 	for (i=0; i<num_task; i++) {
 		for (j=0; j<tasks[i].num; j++) {
-			hrtimer_cancel(&(tasks[i].subtask_list[j].hr_timer));
+			hrtimer_cancel(tasks[i].subtask_list[j].hr_timer);
 			ret = kthread_stop(tasks[i].subtask_list[j].sub_thread);
  			if(!ret) {
   				printk(KERN_INFO "Thread %d stopped",i);

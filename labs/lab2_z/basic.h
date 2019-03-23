@@ -40,7 +40,7 @@ struct Subtask {
 
 	struct task_struct *sub_thread; /*pointer to the task_struct*/
 	char* kthread_id;
-	struct hrtimer hr_timer; /* timer for the subtask*/
+	struct hrtimer* hr_timer; /* timer for the subtask*/
 
 	int flag; /*if the subtask is temporarily not available, */
 	int relative_ddl; /*task period* subtask's execution time/task's execution time*/
