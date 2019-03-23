@@ -105,7 +105,7 @@ struct Task task_0 =
       exec_time_0_0,
       NULL, //struct task_struct *sub_thread, init in runtime;
       NULL,
-      (struct hrtimer *) NULL, //struct hrtimer hr_timer, init in runtime;
+      (struct hrtimer) NULL, //struct hrtimer hr_timer, init in runtime;
       -1,
       0,
       DEFAULT_PRIORITY
@@ -122,7 +122,7 @@ struct Task task_0 =
       exec_time_0_1,
       NULL, //struct task_struct *sub_thread;
       NULL,
-      (struct hrtimer *) NULL, //struct hrtimer hr_timer;
+      (struct hrtimer) NULL, //struct hrtimer hr_timer;
       -1,
       0,
       DEFAULT_PRIORITY
@@ -139,7 +139,7 @@ struct Task task_0 =
       exec_time_0_2,
       NULL, //struct task_struct *sub_thread;
       NULL,
-      (struct hrtimer *) NULL, //  struct hrtimer hr_timer;
+      (struct hrtimer) NULL, //  struct hrtimer hr_timer;
       -1,
       0,
       DEFAULT_PRIORITY
@@ -156,7 +156,7 @@ struct Task task_0 =
       exec_time_0_3,
       NULL, //struct task_struct *sub_thread;
       NULL,
-      (struct hrtimer *) NULL, //  struct hrtimer hr_timer;
+      (struct hrtimer) NULL, //  struct hrtimer hr_timer;
       -1,
       0,
       DEFAULT_PRIORITY
@@ -184,7 +184,7 @@ struct Task task_1 =
       exec_time_1_0,
       NULL, //struct task_struct *sub_thread;
       NULL,
-      (struct hrtimer *) NULL, //  struct hrtimer hr_timer;
+      (struct hrtimer) NULL, //  struct hrtimer hr_timer;
       -1,
       0,
       DEFAULT_PRIORITY
@@ -201,7 +201,7 @@ struct Task task_1 =
       exec_time_1_1,
       NULL, //struct task_struct *sub_thread;
       NULL,
-      (struct hrtimer *) NULL, //  struct hrtimer hr_timer;
+      (struct hrtimer) NULL, //  struct hrtimer hr_timer;
       -1,
       0,
       DEFAULT_PRIORITY
@@ -218,7 +218,7 @@ struct Task task_1 =
       exec_time_1_2,
       NULL, //struct task_struct *sub_thread;
       NULL,
-      (struct hrtimer *) NULL, //  struct hrtimer hr_timer;
+      (struct hrtimer) NULL, //  struct hrtimer hr_timer;
       -1,
       0,
       DEFAULT_PRIORITY
@@ -245,7 +245,7 @@ struct Task task_2 =
       exec_time_2_0,
       NULL, //struct task_struct *sub_thread;
       NULL,
-      (struct hrtimer *) NULL, //  struct hrtimer hr_timer;
+      (struct hrtimer) NULL, //  struct hrtimer hr_timer;
       -1,
       0,
       DEFAULT_PRIORITY
@@ -262,7 +262,7 @@ struct Task task_2 =
       exec_time_2_1,
       NULL, //struct task_struct *sub_thread;
       NULL,
-      (struct hrtimer *) NULL, //  struct hrtimer hr_timer;
+      (struct hrtimer) NULL, //  struct hrtimer hr_timer;
       -1,
       0,
       DEFAULT_PRIORITY
@@ -289,7 +289,7 @@ struct Task task_3 =
       exec_time_3_0,
       NULL, //struct task_struct *sub_thread;
       NULL,
-      (struct hrtimer *) NULL, //  struct hrtimer hr_timer;
+      (struct hrtimer) NULL, //  struct hrtimer hr_timer;
       -1,
       0,
       DEFAULT_PRIORITY
@@ -306,7 +306,7 @@ struct Task task_3 =
       exec_time_3_1,
       NULL, //struct task_struct *sub_thread;
       NULL,
-      (struct hrtimer *) NULL, //  struct hrtimer hr_timer;
+      (struct hrtimer) NULL, //  struct hrtimer hr_timer;
       -1,
       0,
       DEFAULT_PRIORITY
