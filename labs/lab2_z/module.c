@@ -38,7 +38,7 @@ static int ddl_sort(const void* l, const void* r){
 }
 
 //Zhe: this part should init vars achieved by calculation
-void init_auto_vars(void){
+void inin_all(void){
 	int i,j;
 	int cpu_load[num_core]={0,0,0,0};
 	int cpu_subtask_count[num_core]={0,0,0,0};
@@ -56,6 +56,11 @@ void init_auto_vars(void){
 			tasks[i].subtask_list[j].utilization=tasks[i].subtask_list[j].execution_time*100/tasks[i].period;
 			tasks[i].subtask_list[j].kthread_id=get_thread_name(thread_name_base,index);
 			subtask_ptrs[index] = &(tasks[j].subtask_list[j]);
+			//timer init
+			tasks[i].subtask_list[j].last_release_time = ktime_set(0, 0);
+			tasks[i].subtask_list[j].hr_timer = (struct hrtimer*) kmalloc(sizeof(struct hrtimer), GFP_KERNEL);
+			hrtimer_init(tasks[i].subtask_list[j].hr_timer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
+			tasks[i].subtask_list[j].hr_timer->function = &timer_callback;
 			index+=1;
 		}	
 		tasks[i].execution_time = total_exec_time;
@@ -250,11 +255,6 @@ static int simple_init (void) {
 					printk(KERN_INFO "sched_setscheduler failed!");
 					return -1;
 				}
-				//init timer for subtask
-				tasks[i].subtask_list[j].last_release_time = ktime_set(0, 0);
-				tasks[i].subtask_list[j].hr_timer = (struct hrtimer*) kmalloc(sizeof(struct hrtimer), GFP_KERNEL);
-				hrtimer_init(tasks[i].subtask_list[j].hr_timer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
-				tasks[i].subtask_list[j].hr_timer->function = &timer_callback;
 			}
 		}
 		mdelay(100);
