@@ -270,7 +270,7 @@ static int simple_init (void) {
 		printk(KERN_INFO "Current mode is calibrate mode.");
 		for (i = 0; i < num_core; i++) {
 			c = cores[j];
-			calibrate_kthreads[i] = kthread_create(calibrate_fn, (void *)(&i), get_thread_name_s(thread_name_base, i));
+			calibrate_kthreads[i] = kthread_create(calibrate_fn, (void *)(&i), get_thread_name("calibrate_kthread", i));
 			kthread_bind(calibrate_kthreads[i], i);
 			param.sched_priority = 1;
 			ret = sched_setscheduler(calibrate_kthreads[i], SCHED_FIFO, &param);
@@ -299,11 +299,11 @@ static int freeSpace(void){
 		for (j=0; j<tasks[i].num; j++) {
 			ret = kthread_stop(tasks[i].subtask_list[j].sub_thread);
  			if(ret == 0) {
-  				printk(KERN_INFO "%d stopped",tasks[i].subtask_list[j].kthread_id);
+  				printk(KERN_INFO "%s stopped",tasks[i].subtask_list[j].kthread_id);
   			}
 
   			if (ret < 0) {
-  				printk(KERN_INFO "%d failed to stop.\n", tasks[i].subtask_list[j].kthread_id);
+  				printk(KERN_INFO "%s failed to stop.\n", tasks[i].subtask_list[j].kthread_id);
   				return -1;
   			}
   		}
