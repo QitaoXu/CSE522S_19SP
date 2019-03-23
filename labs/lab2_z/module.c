@@ -163,7 +163,7 @@ static int calibrate_fn(void * data){
    last_loop_count = max_loop_count;
 
    before = ktime_get();
-   subtask_fn(subtask_ptrs[i]);
+   subtask_run_workload(subtask_ptrs[i]);
    after = ktime_get();
    diff = ktime_sub(after, before);
    exe = ktime_set(0, (core_subtasks[i]->execution_time) * 1000000);
@@ -179,10 +179,10 @@ static int calibrate_fn(void * data){
 
   printk(KERN_DEBUG "\n");
   printk(KERN_DEBUG "Core number is %d \n", core_number);
-  printk(KERN_DEBUG "Task number is %d, subtask number is %d\n", subtasks[i].parent.index, subtasks[i].idx_in_task);
-  printk(KERN_DEBUG "subtask execution time is %d \n", subtasks[i].execution_time);
-  printk(KERN_DEBUG "subtask utilization is %d \n", subtasks[i].utilization);
-  printk(KERN_DEBUG "Loop iterations count is %d\n", subtasks[i].work_load_loop_count);
+  printk(KERN_DEBUG "Task number is %d, subtask number is %d\n", subtask_ptrs[i]->parent->index, subtask_ptrs[i]->idx_in_task);
+  printk(KERN_DEBUG "subtask execution time is %d \n", subtask_ptrs[i]->execution_time);
+  printk(KERN_DEBUG "subtask utilization is %d \n", subtask_ptrs[i]->utilization);
+  printk(KERN_DEBUG "Loop iterations count is %d\n", subtask_ptrs[i]->work_load_loop_count);
   printk(KERN_DEBUG "\n");
  }
 
@@ -206,7 +206,7 @@ static int run_subtask_fn(void * data){
   			current_time = ktime_get();
   			/*	if its subtask is the first one in its task it should then calculate (as an absolute time) one task period later
   			    than the value stored in its last release time and schedule its own timer to wake up at that time */
-  			hrtimer_forward(sub->hr_timer, current_time, ktime_sub(ktime_add(ktime_set(sub->parent->period, 0), sub->last_release_time), current_time));
+  			hrtimer_forward(sub->hr_timer, current_time, ktime_sub(ktime_add(ktime_set(0, sub->parent->period*million), sub->last_release_time), current_time));
   		} 
   		if((sub->idx_in_task)<(sub->parent->num)){
   			current_time = ktime_get();
@@ -214,7 +214,7 @@ static int run_subtask_fn(void * data){
   			/*	if the time it obtained is less than the sum of the task period 
   				and its successor's last release time, it should schedule its successor's 
   				timer to wake up one task period after its successor's last release time -- otherwise */
-  			expect_next = ktime_add(sub->parent->subtask_list[sub->idx_in_task+1]->last_release_time, ktime_set(sub->parent->period,0));
+  			expect_next = ktime_add(sub->parent->subtask_list[sub->idx_in_task+1]->last_release_time, ktime_set(0,sub->parent->period*million));
   			if (current_time < expect_next){
   				hrtimer_forward(sub->parent->subtask_list[sub->idx_in_task+1]->hr_timer, current_time, ktime_sub(expect_next, current_time));
   			} else {

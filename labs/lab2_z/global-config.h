@@ -8,7 +8,7 @@
 */ 
 
 #include "basic.h"
-
+#define million 1000000
 #define num_subtask 11
 #define num_core 4
 #define num_task 4
@@ -99,7 +99,7 @@ struct Task task_0 =
       -1,
       NULL,
       loop_count*exec_time_0_0,
-      (int) 0,
+      (ktime_t) NULL,
       0,
       0,
       exec_time_0_0,
@@ -116,7 +116,7 @@ struct Task task_0 =
       -1,
       NULL,
       loop_count*exec_time_0_1,
-      (int) 0,
+      (ktime_t) NULL,
       0,
       0,
       exec_time_0_1,
@@ -133,7 +133,7 @@ struct Task task_0 =
       -1,
       NULL, //struct Task *parent; 
       loop_count*exec_time_0_2,
-      (int) 0,
+      (ktime_t) NULL,
       0,
       0,
       exec_time_0_2,
@@ -150,7 +150,7 @@ struct Task task_0 =
       -1,
       NULL, //struct Task *parent; 
       loop_count*exec_time_0_3,
-      (int) 0,
+      (ktime_t) NULL,
       0,
       0,
       exec_time_0_3,
@@ -178,7 +178,7 @@ struct Task task_1 =
       -1,
       NULL, //struct Task *parent; 
       loop_count*exec_time_1_0,
-      (int) 0,
+      (ktime_t) NULL,
       0,
       0,
       exec_time_1_0,
@@ -195,7 +195,7 @@ struct Task task_1 =
       -1,
       NULL, //struct Task *parent; 
       loop_count*exec_time_1_1,
-      (int) 0,
+      (ktime_t) NULL,
       0,
       0,
       exec_time_1_1,
@@ -212,7 +212,7 @@ struct Task task_1 =
       -1,
       NULL, //struct Task *parent; 
       loop_count*exec_time_1_2,
-      (int) 0,
+      (ktime_t) NULL,
       0,
       0,
       exec_time_1_2,
@@ -239,7 +239,7 @@ struct Task task_2 =
       -1,
       NULL, //struct Task *parent; 
       loop_count*exec_time_2_0,
-      (int) 0,
+      (ktime_t) NULL,
       0,
       0,
       exec_time_2_0,
@@ -256,7 +256,7 @@ struct Task task_2 =
       -1,
       NULL, //struct Task *parent; 
       loop_count*exec_time_2_1,
-      (int) 0,
+      (ktime_t) NULL,
       0,
       0,
       exec_time_2_1,
@@ -283,7 +283,7 @@ struct Task task_3 =
       -1,
       NULL, //struct Task *parent; 
       loop_count*exec_time_3_0,
-      (int) 0,
+      (ktime_t) NULL,
       0,
       0,
       exec_time_3_0,
@@ -300,7 +300,7 @@ struct Task task_3 =
       -1,
       NULL, //struct Task *parent; 
       loop_count*exec_time_3_1,
-      (int) 0,
+      (ktime_t) NULL,
       0,
       0,
       exec_time_3_1,
