@@ -55,12 +55,14 @@ static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart ) 
 
 //Zhe: this part should init vars achieved by calculation
 void init_all(void){
+	printk(KERN_INFO "enter init_all");
 	int i,j;
 	int cpu_load[num_core]={0,0,0,0};
 	int cpu_subtask_count[num_core]={0,0,0,0};
 	int total_exec_time;
 	int index=0;
 	//init: subtask.cumul_exec_time, subtask.relative_ddl, task.execution_time
+	
 	for (i=0;i<num_task;i++){
 		total_exec_time = 0;
 		for (j=0;j<tasks[i].num;j++){
