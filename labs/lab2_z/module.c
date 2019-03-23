@@ -294,7 +294,7 @@ static int simple_init (void) {
 
 /* exit function - logs that the module is being removed */
 static int freeSpace(void){
-	int i,ret;
+	int i,j,ret;
 	for (i=0; i<num_task; i++) {
 		for (j=0; j<tasks[i].num; j++) {
 			ret = kthread_stop(tasks[i].subtask_list[j].sub_thread);
@@ -325,11 +325,11 @@ static int freeSpace(void){
 }
 /* exit function - logs that the module is being removed */
 static void simple_exit (void) {
-	int ret, i;
+	int ret;
 	ret=freeSpace();
 	if (ret != 0){
 
-		printk(KERN_DEBUG, "freeSpace() failed partly.\n");
+		printk(KERN_DEBUG "freeSpace() failed partly.\n");
 
 	}
     printk(KERN_ALERT "simple module is being unloaded");
