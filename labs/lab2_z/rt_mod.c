@@ -249,6 +249,7 @@ static int run_subtask_fn(void * data){
 static int simple_init (void) {
 	int i, j, ret;
 	Core c;
+	printk(KERN_INFO "enter simple_init");
 	init_spec_vars();
 	init_all();
 	parse_module_param();
