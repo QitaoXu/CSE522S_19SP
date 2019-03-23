@@ -81,7 +81,7 @@ void init_all(void){
 			tasks[i].subtask_list[j].kthread_id="thread";//get_thread_name(thread_name_base,index);
 			printk(KERN_INFO "subtask_ptrs subtask i");
 			printk(KERN_INFO "index=%d i=%d j=%d", index,i, j);
-			subtask_ptrs[index] = &(tasks[i].subtask_list[j]);
+			subtask_ptrs[index] = (Subtask*) (&(tasks[i].subtask_list[j]));
 
 			index+=1;
 		}	
