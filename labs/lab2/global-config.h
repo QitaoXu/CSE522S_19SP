@@ -56,7 +56,7 @@
 #define HIGHEST_PRIORITY 99
 #define DEFAULT_PRIORITY 1
 Core cores[num_core];
-Task tasks[num_task];
+Task* tasks;
 Subtask** subtask_ptrs;
 
 struct task_struct * calibrate_kthreads[num_core];
@@ -272,7 +272,7 @@ struct Task task_2 =
 struct Task task_3 =
 {
   task_period3,
-  2,
+  subtask_count3,
   task_index3,
   0,
   {
@@ -351,6 +351,14 @@ void init_spec_vars(void);
 
 void init_spec_vars() {
   printk(KERN_INFO "enter init_spec_vars");
+  tasks = (Task*) kmalloc_array(num_task, sizeof(Task), GFP_KERNEL);
+  if (tasks==NULL) {
+    printk(KERN_INFO "task kmalloc_array error");
+  }
+  cores = (Core*) kmalloc_array(num_core, sizeof(Core), GFP_KERNEL);
+  if (cores==NULL) {
+    printk(KERN_INFO "core kmalloc_array error");
+  }
 	cores[0] = core_0;
   cores[1] = core_1;
 	cores[2] = core_2;
