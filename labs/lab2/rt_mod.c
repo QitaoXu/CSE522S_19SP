@@ -85,8 +85,10 @@ void init_all(void){
 			subtask_ptrs[index] = (Subtask*) (&(tasks[i].subtask_list[j]));
 			printk(KERN_INFO "subtask_ptrs finished");
 			index+=1;
-		}	
+		}
+		printk(KERN_INFO "execution_time task i");	
 		tasks[i].execution_time = total_exec_time;
+		printk(KERN_INFO "execution_time finished");	
 	}
 
 	//init: relationship between cores and subtasks
