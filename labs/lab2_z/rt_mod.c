@@ -79,11 +79,7 @@ void init_all(void){
 			printk(KERN_INFO "kthread_id subtask i");
 			tasks[i].subtask_list[j].kthread_id=get_thread_name(thread_name_base,index);
 			printk(KERN_INFO "subtask_ptrs subtask i");
-			if (tasks[i].subtask_list[j]==NULL) {
-
-				printk(KERN_DEBUG "NULL pointer\n");
-			}
-			printk(KERN_DEBUG "%p\n", &(tasks[i].subtask_list[j]));
+			printk(KERN_INFO "index=%d i=%d j=%d", index);
 			subtask_ptrs[index] = &(tasks[i].subtask_list[j]);
 
 			index+=1;
