@@ -83,6 +83,7 @@ void init_all(void){
 
 				printk(KERN_DEBUG "NULL pointer\n");
 			}
+			printk(KERN_DEBUG "%p\n", &(tasks[i].subtask_list[j]));
 			subtask_ptrs[index] = &(tasks[i].subtask_list[j]);
 
 			index+=1;
