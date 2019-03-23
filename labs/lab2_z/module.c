@@ -154,7 +154,7 @@ static int calibrate_fn(void * data){
 
  for (i = 0; i < num_of_suntasks; i++) {
 
-  param.sched_priority = core_subtasks[i].sched_priori;
+  param.sched_priority = core_subtasks[i]->sched_priori;
   sched_setscheduler(current, SCHED_FIFO, &param);
 
   // Calibrate 
@@ -293,16 +293,44 @@ static int simple_init (void) {
 }
 
 /* exit function - logs that the module is being removed */
-static void simple_exit (void) {
-	int ret, i, j;
+static int freeSpace(void){
+	int i,ret;
 	for (i=0; i<num_task; i++) {
 		for (j=0; j<tasks[i].num; j++) {
-			hrtimer_cancel(tasks[i].subtask_list[j].hr_timer);
 			ret = kthread_stop(tasks[i].subtask_list[j].sub_thread);
- 			if(!ret) {
-  				printk(KERN_INFO "Thread %d stopped",i);
+ 			if(ret == 0) {
+  				printk(KERN_INFO "%d stopped",tasks[i].subtask_list[j].kthread_id);
   			}
- 		}
+
+  			if (ret < 0) {
+  				printk(KERN_INFO "%d failed to stop.\n", tasks[i].subtask_list[j].kthread_id);
+  				return -1;
+  			}
+  		}
+	}
+	for(i=0;i<num_core;i++){
+		kfree(cores[i].subtask_list);
+	}
+	if(mode_input == RUN){
+		for (i=0; i<num_task; i++) {
+			for (j=0; j<tasks[i].num; j++) {
+				hrtimer_cancel(tasks[i].subtask_list[j].hr_timer);
+				kfree(tasks[i].subtask_list[j].hr_timer);
+				
+	 		}
+		}
+	}
+
+	return 0;
+}
+/* exit function - logs that the module is being removed */
+static void simple_exit (void) {
+	int ret, i;
+	ret=freeSpace();
+	if (ret != 0){
+
+		printk(KERN_DEBUG, "freeSpace() failed partly.\n");
+
 	}
     printk(KERN_ALERT "simple module is being unloaded");
 }
