@@ -272,7 +272,7 @@ struct Task task_2 =
 struct Task task_3 =
 {
   task_period3,
-  subtask_count3,
+  2,
   task_index3,
   0,
   {
