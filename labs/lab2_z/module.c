@@ -214,14 +214,14 @@ static int run_subtask_fn(void * data){
   			/*	if the time it obtained is less than the sum of the task period 
   				and its successor's last release time, it should schedule its successor's 
   				timer to wake up one task period after its successor's last release time -- otherwise */
-  			expect_next = ktime_add(sub->parent->subtask_list[(sub->idx_in_task)+1]->last_release_time, ktime_set(0,sub->parent->period*million));
+  			expect_next = ktime_add(sub->parent->subtask_list[(sub->idx_in_task)+1].last_release_time, ktime_set(0,sub->parent->period*million));
   			if (current_time < expect_next){
-  				hrtimer_forward(sub->parent->subtask_list[(sub->idx_in_task)+1]->hr_timer, current_time, ktime_sub(expect_next, current_time));
+  				hrtimer_forward(sub->parent->subtask_list[(sub->idx_in_task)+1].hr_timer, current_time, ktime_sub(expect_next, current_time));
   			} else {
   			/*	if the time it obtained is greater than or equal to the sum of the task period 
   				and its successor's last release time it should immediately call wake_up_process() 
   				to wake up its successor subtask's kernel thread. */
-  				wake_up_process(sub->parent->subtask_list[(sub->idx_in_task)+1]->sub_thread);
+  				wake_up_process(sub->parent->subtask_list[(sub->idx_in_task)+1].sub_thread);
   			}
   		}
 	}
