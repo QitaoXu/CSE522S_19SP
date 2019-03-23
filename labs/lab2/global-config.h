@@ -55,7 +55,7 @@
 #define exec_time_3_1 10
 #define HIGHEST_PRIORITY 99
 #define DEFAULT_PRIORITY 1
-Core cores[num_core];
+Core* cores;
 Task* tasks;
 Subtask** subtask_ptrs;
 
