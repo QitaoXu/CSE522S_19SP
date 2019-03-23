@@ -62,6 +62,7 @@ void init_all(void){
 	int index=0;
 	//init: subtask.cumul_exec_time, subtask.relative_ddl, task.execution_time
 	printk(KERN_INFO "enter init_all");
+	subtask_ptrs = (Subtask**) kmalloc_array(num_subtask, sizeof(Subtask*), GFP_KERNEL);
 
 	for (i=0;i<num_task;i++){
 		total_exec_time = 0;
