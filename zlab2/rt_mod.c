@@ -66,7 +66,7 @@ void init_all(void){
 
 	for (i=0;i<num_task;i++){
 		printk(KERN_INFO "begin at task%d in %d tasks of %d subtasks", i, num_task, tasks[i].num);
-		printk(KERN_INFO "task%d basic info: period $d; num %d; index %d; execution_time %d", i, tasks[i].period, tasks[i].num, tasks[i].index, tasks[i].execution_time);
+		printk(KERN_INFO "task basic info: period $d; num %d; index %d; execution_time %d", tasks[i].period, tasks[i].num, tasks[i].index, tasks[i].execution_time);
 		total_exec_time = 0;
 		for (j=0;j<tasks[i].num;j++){
 			printk(KERN_INFO "begin at subtask%d in %d tasks", j, tasks[i].num);
