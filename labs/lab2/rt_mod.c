@@ -65,8 +65,10 @@ void init_all(void){
 	subtask_ptrs = (Subtask**) kmalloc_array(num_subtask, sizeof(Subtask*), GFP_KERNEL);
 
 	for (i=0;i<num_task;i++){
+		printk(KERN_INFO "begin at task%d in %d tasks", i, num_task);
 		total_exec_time = 0;
 		for (j=0;j<tasks[i].num;j++){
+			printk(KERN_INFO "begin at subtask%d in %d tasks", j, tasks[i].num);
 			printk(KERN_INFO "total_exec_time subtask %d", j);
 			total_exec_time = total_exec_time + tasks[i].subtask_list[j].execution_time;
 			printk(KERN_INFO "cumul_exec_time subtask i");
@@ -88,7 +90,7 @@ void init_all(void){
 		}
 		printk(KERN_INFO "execution_time task i");	
 		tasks[i].execution_time = total_exec_time;
-		printk(KERN_INFO "execution_time finished");	
+		printk(KERN_INFO "execution_time finished");
 	}
 
 	//init: relationship between cores and subtasks
