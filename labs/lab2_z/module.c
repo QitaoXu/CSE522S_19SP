@@ -70,11 +70,7 @@ void init_all(void){
 			tasks[i].subtask_list[j].utilization=tasks[i].subtask_list[j].execution_time*100/tasks[i].period;
 			tasks[i].subtask_list[j].kthread_id=get_thread_name(thread_name_base,index);
 			subtask_ptrs[index] = &(tasks[j].subtask_list[j]);
-			//timer init
-			tasks[i].subtask_list[j].last_release_time = ktime_set(0, 0);
-			tasks[i].subtask_list[j].hr_timer = (struct hrtimer*) kmalloc(sizeof(struct hrtimer), GFP_KERNEL);
-			hrtimer_init(tasks[i].subtask_list[j].hr_timer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
-			tasks[i].subtask_list[j].hr_timer->function = &timer_callback;
+
 			index+=1;
 		}	
 		tasks[i].execution_time = total_exec_time;
@@ -200,6 +196,12 @@ static int calibrate_fn(void * data){
 static int run_subtask_fn(void * data){
 	Subtask* sub = (Subtask*) data;
 	ktime_t current_time, expect_next;
+
+	//timer init
+	sub->last_release_time = ktime_set(0, 0);
+	sub->hr_timer = (struct hrtimer*) kmalloc(sizeof(struct hrtimer), GFP_KERNEL);
+	hrtimer_init(sub->hr_timer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
+	sub->hr_timer->function = &timer_callback;
 
 	while (!kthread_should_stop()){ 
 		set_current_state(TASK_INTERRUPTIBLE);
