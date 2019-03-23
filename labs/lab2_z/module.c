@@ -47,7 +47,9 @@ static Subtask * subtask_lookup_fn(struct hrtimer * timer) {
 static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart ) {
 	Subtask * sub;
 	sub = subtask_lookup_fn(timer_for_restart);
-	wake_up_process(sub->sub_thread);
+	if (sub->sub_thread!=NULL) {
+		wake_up_process(sub->sub_thread);
+	}
 	return HRTIMER_RESTART;
 }
 
