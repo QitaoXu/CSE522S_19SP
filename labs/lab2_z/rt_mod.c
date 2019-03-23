@@ -77,9 +77,9 @@ void init_all(void){
 			printk(KERN_INFO "utilization subtask i");
 			tasks[i].subtask_list[j].utilization=tasks[i].subtask_list[j].execution_time*100/tasks[i].period;
 			printk(KERN_INFO "kthread_id subtask i");
-			tasks[i].subtask_list[j].kthread_id=get_thread_name(thread_name_base,index);
+			tasks[i].subtask_list[j].kthread_id="thread";//get_thread_name(thread_name_base,index);
 			printk(KERN_INFO "subtask_ptrs subtask i");
-			printk(KERN_INFO "index=%d i=%d j=%d", index, i, j);
+			printk(KERN_INFO "index=%d i=%d j=%d", index, i,);
 			subtask_ptrs[index] = &(tasks[i].subtask_list[j]);
 
 			index+=1;
