@@ -46,6 +46,7 @@ void init_auto_vars(void){
 	int cpu_load[num_core]={0,0,0,0};
 	int cpu_subtask_count[num_core]={0,0,0,0};
 	int total_exec_time;
+	int index=0;
 	//init: subtask.cumul_exec_time, subtask.relative_ddl, task.execution_time
 	for (i=0;i<num_task;i++){
 		total_exec_time = 0;
@@ -53,23 +54,27 @@ void init_auto_vars(void){
 			printk(KERN_INFO "init_auto_vars subtask i");
 			total_exec_time = total_exec_time + tasks[i].subtask_list[j].execution_time;
 			tasks[i].subtask_list[j].cumul_exec_time = total_exec_time;
+			tasks[i].subtask_list[j].parent=&(tasks[i]);
 			tasks[i].subtask_list[j].relative_ddl = (tasks[i].period)*(tasks[i].subtask_list[j].cumul_exec_time)/(tasks[i].execution_time);
-		}
+			tasks[i].subtask_list[j].utilization=tasks[i].subtask_list[j].execution_time*100/tasks[i].period;
+			tasks[i].subtask_list[j].kthread_id=get_thread_name(thread_name_base,index);
+			subtask_ptrs[index] = &(tasks[j].subtask_list[j]);
+			index+=1;
+		}	
 		tasks[i].execution_time = total_exec_time;
 	}
 
 	//init: relationship between cores and subtasks
-	//TODO: sort subtask based on utilization from largest to smallest
-	//TODO, Zhe: should init array cores[j].subtask_list[cpu_num_sub_task] first
-	sort((void*)subtasks,num_subtask,sizeof(struct subtask*), &util_sort, NULL);
+	//sort subtask based on utilization from largest to smallest
+	sort((void*)subtask_ptrs,num_subtask,sizeof(struct subtask*), &util_sort, NULL);
 	for (i=0;i<num_subtask;i++){
 		for(j=0;j<num_core;j++){
-			if(cpu_load[j]+subtasks[i]->utilization<100){
-				cpu_load[j]+=subtasks[i]->utilization;
-				subtasks[i]->core = j;
-				cores[j].subtask_list[cpu_subtask_count[j]] = subtasks[i];
+			if(cpu_load[j]+subtask_ptrs[i]->utilization<100){
+				cpu_load[j]+=subtask_ptrs[i]->utilization;
+				subtask_ptrs[i]->core = j;
+				subtask_ptrs[i]->idx_in_core=cpu_subtask_count[j];
 				cpu_subtask_count[j]+=1;
-				subtasks[i]->flag=1;
+				subtask_ptrs[i]->flag=1;
 				break;
 			}
 		}
@@ -77,15 +82,25 @@ void init_auto_vars(void){
 		if(subtasks[i].core<0){
 			cpu_load[3]+=subtasks[i]->utilization;
 			subtasks[i]->core=3;
+			subtask_ptrs[i]->idx_in_core=cpu_subtask_count[3];
 			cpu_subtask_count[3]+=1;
 			subtasks[i]->flag=0;
 		}
 	}
 	for (i=0;i<num_core;i++){
 		cores[i].num = cpu_subtask_count[i];
+		cores[i].subtask_list= (Subtask **) kmalloc(sizeof(Subtask*)*cores[i].num, GFP_KERNEL);
+	}
+	for(j=0;j<num_subtask;j++){
+			i=subtask_ptrs[j]->core;
+			cores[i].subtask_list[subtask_ptrs[j]->idx_in_core] = subtask_ptrs[j];
+	}
+	for (i=0;i<num_core;i++){
+		
 		//todo: sort subtask based on relative ddl from earliest to latest
 		sort((void*)(cores[i].subtask_list),cpu_subtask_count[i],sizeof(struct subtask*),&ddl_sort,NULL);
 		for(j=0;j<cpu_subtask_count[i];j++){
+			cores[i].subtask_list[j]->idx_in_core=j;
 			cores[i].subtask_list[j]->sched_priori=HIGHEST_PRIORITY-(j*2+10);
 		}
 	}
@@ -117,33 +132,66 @@ static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart ) 
 
 /* calibrate function*/
 static int calibrate_fn(void * data){
-	int last_loop_count, i;
-	ktime_t before, after, diff;
-	Core c = cores[((Subtask*)data)->core];
 
-	set_current_state(TASK_INTERRUPTIBLE);
-	schedule();
+ int core_number = *((int *)data);
+ int num_of_suntasks;
+ int i;
+ int last_loop_count;
+ int max_loop_count = 16357;
+ ktime_t before, after, diff, exe;
+ Subtask * core_subtasks;
 
-	for (i=0; i<c.num; i++) {
-		while ((c.subtask_list[i])->work_load_loop_count > 0) {
-			// time stamp before subtask_run_workload
-			last_loop_count = c.subtask_list[i]->work_load_loop_count;
-			before = ktime_get();
-			subtask_run_workload(c.subtask_list[i]);
-			// time stamp after subtask_run_workload
-			after = ktime_get();
-			diff = ktime_sub(after, before);
-			if (ktime_compare(diff, c.subtask_list[i]->execution_time) == 1) {
-				c.subtask_list[i]->work_load_loop_count = c.subtask_list[i]->work_load_loop_count - 1;
-			}
-			if (last_loop_count == c.subtask_list[i]->work_load_loop_count) {
-				break;
-			}
-		}
-	}
-	//TODO: record work_load_loop_count for each subtask
-	//TODO
-	return 0;
+ printk(KERN_DEBUG "Core number is %d\n", core_number);
+
+ if (core_number < 0 || core_number > num_core) {
+  return - 1;
+ }
+
+ printk(KERN_DEBUG "Core number is with possible range.\n");
+
+ core_subtasks = cores[core_number].subtask_list;
+
+ num_of_suntasks = cores[core_number].num;
+
+ printk(KERN_DEBUG "Number of subtasks is %d\n", num_of_suntasks);
+
+ for (i = 0; i < num_of_suntasks; i++) {
+
+  param.sched_priority = core_subtasks[i].sched_priori;
+  sched_setscheduler(current, SCHED_FIFO, &param);
+
+  // Calibrate 
+  while (max_loop_count > 0) {
+
+   last_loop_count = max_loop_count;
+
+   before = ktime_get();
+   subtask_fn(subtasks[i]);
+   after = ktime_get();
+   diff = ktime_sub(after, before);
+   exe = ktime_set(0, (core_subtasks[i]->execution_time) * 1000000);
+   if (ktime_compare(diff, exe) == 1) {
+    max_loop_count -= 1;
+   }
+   if (last_loop_count == max_loop_count) {
+    core_subtasks[i]->work_load_loop_count = max_loop_count;
+    break;
+   }
+
+  }
+
+  printk(KERN_DEBUG "\n");
+  printk(KERN_DEBUG "Core number is %d \n", core_number);
+  printk(KERN_DEBUG "Task number is %d, subtask number is %d\n", subtasks[i].parent.index, subtasks[i].idx_in_task);
+  printk(KERN_DEBUG "subtask execution time is %d \n", subtasks[i].execution_time);
+  printk(KERN_DEBUG "subtask utilization is %d \n", subtasks[i].utilization);
+  printk(KERN_DEBUG "Loop iterations count is %d\n", subtasks[i].work_load_loop_count);
+  printk(KERN_DEBUG "\n");
+ }
+
+ //TODO: record work_load_loop_count for each subtask
+ //TODO
+ return 0;
 }
 
 /* run function*/
@@ -197,8 +245,7 @@ static int simple_init (void) {
 				//init thread for subtask
 				tasks[i].subtask_list[j].sub_thread = kthread_create(run_subtask_fn, 
 										(void *)(&tasks[i].subtask_list[j]), 
-										get_thread_name_s(thread_name_base, 
-										tasks[i].subtask_list[j].kthread_id));
+										tasks[i].subtask_list[j].kthread_id);
 				kthread_bind(tasks[i].subtask_list[j].sub_thread, tasks[i].subtask_list[j].core);
 				param.sched_priority = tasks[i].subtask_list[j].sched_priori;
 				ret = sched_setscheduler(tasks[i].subtask_list[j].sub_thread, SCHED_FIFO, &param);

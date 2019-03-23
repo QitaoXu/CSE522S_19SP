@@ -38,7 +38,7 @@
 #define task_period2 2000
 #define task_period3 2000
 
-#define loop_count 5000
+#define loop_count 9804
 #define exec_time_0_0 10
 #define exec_time_0_1 10
 #define exec_time_0_2 10
@@ -351,7 +351,6 @@ struct Core core_3 =
 void init_spec_vars(void);
 
 void init_spec_vars() {
-  int i, j;
 	cores[0] = core_0;
   cores[1] = core_1;
 	cores[2] = core_2;
@@ -360,65 +359,4 @@ void init_spec_vars() {
   tasks[1] = task_1;
   tasks[2] = task_2;
   tasks[3] = task_3;
-  subtask_ptrs[0] = &(tasks[0].subtask_list[0]);
-  subtask_ptrs[1] = &(tasks[0].subtask_list[1]);
-  subtask_ptrs[2] = &(tasks[0].subtask_list[2]);
-  subtask_ptrs[3] = &(tasks[0].subtask_list[3]);
-  subtask_ptrs[4] = &(tasks[1].subtask_list[0]);
-  subtask_ptrs[5] = &(tasks[1].subtask_list[1]);
-  subtask_ptrs[6] = &(tasks[1].subtask_list[2]);
-  subtask_ptrs[7] = &(tasks[2].subtask_list[0]);
-  subtask_ptrs[8] = &(tasks[2].subtask_list[1]);
-  subtask_ptrs[9] = &(tasks[3].subtask_list[0]);
-  subtask_ptrs[10] = &(tasks[3].subtask_list[1]);
-
-  //setup relations
-  //for functional test
-  tasks[0].subtask_list[0].idx_in_core = 0;
-  tasks[0].subtask_list[1].idx_in_core = 1;
-  tasks[0].subtask_list[2].idx_in_core = 2;
-  tasks[0].subtask_list[3].idx_in_core = 3;
-  tasks[1].subtask_list[0].idx_in_core = 0;
-  tasks[1].subtask_list[1].idx_in_core = 1;
-  tasks[1].subtask_list[2].idx_in_core = 2;
-  tasks[2].subtask_list[0].idx_in_core = 0;
-  tasks[2].subtask_list[1].idx_in_core = 1;
-  tasks[3].subtask_list[0].idx_in_core = 0;
-  tasks[3].subtask_list[1].idx_in_core = 1;
-  //for functional test
-  tasks[0].subtask_list[0].core = 0;
-  tasks[0].subtask_list[1].core = 0; 
-  tasks[0].subtask_list[2].core = 0; 
-  tasks[0].subtask_list[3].core = 0; 
-  tasks[1].subtask_list[0].core = 1; 
-  tasks[1].subtask_list[1].core = 1;  
-  tasks[1].subtask_list[2].core = 1;  
-  tasks[2].subtask_list[0].core = 2; 
-  tasks[2].subtask_list[1].core = 2;  
-  tasks[3].subtask_list[0].core = 3;  
-  tasks[3].subtask_list[1].core = 3; 
-  //for functional test 
-  tasks[0].subtask_list[0].kthread_id = 0;
-  tasks[0].subtask_list[1].kthread_id = 0; 
-  tasks[0].subtask_list[2].kthread_id = 0; 
-  tasks[0].subtask_list[3].kthread_id = 0; 
-  tasks[1].subtask_list[0].kthread_id = 1; 
-  tasks[1].subtask_list[1].kthread_id = 1;  
-  tasks[1].subtask_list[2].kthread_id = 1;  
-  tasks[2].subtask_list[0].kthread_id = 2; 
-  tasks[2].subtask_list[1].kthread_id = 2;  
-  tasks[3].subtask_list[0].kthread_id = 3;  
-  tasks[3].subtask_list[1].kthread_id = 3;  
-  //for task<->subtask
-  tasks[0].subtask_list[0].parent = &(tasks[0]);
-  tasks[0].subtask_list[1].parent = &(tasks[0]);
-  tasks[0].subtask_list[2].parent = &(tasks[0]); 
-  tasks[0].subtask_list[3].parent = &(tasks[0]); 
-  tasks[1].subtask_list[0].parent = &(tasks[1]); 
-  tasks[1].subtask_list[1].parent = &(tasks[1]); 
-  tasks[1].subtask_list[2].parent = &(tasks[1]); 
-  tasks[2].subtask_list[0].parent = &(tasks[2]); 
-  tasks[2].subtask_list[1].parent = &(tasks[2]); 
-  tasks[3].subtask_list[0].parent = &(tasks[3]); 
-  tasks[3].subtask_list[1].parent = &(tasks[3]); 
 }

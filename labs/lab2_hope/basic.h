@@ -20,7 +20,7 @@ enum Mode mode_input = CALIBRATE;
 struct sched_param param;
 
 void parse_module_param(void);
-char* get_thread_name_s(char *str, int num);
+char* get_thread_name(char *str, int num);
 
 //customized structures
 struct Task{
@@ -80,7 +80,7 @@ void parse_module_param() {
 
 //Make Thread Name
 char thread_name_base[256] = "thread";
-char* get_thread_name_s(char *str, int num){
+char* get_thread_name(char *str, int num){
     char c;
     int len = strlen(str);
    	int digit;
