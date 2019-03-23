@@ -61,7 +61,7 @@ void init_all(void){
 	int total_exec_time;
 	int index=0;
 	//init: subtask.cumul_exec_time, subtask.relative_ddl, task.execution_time
-		printk(KERN_INFO "enter init_all");
+	printk(KERN_INFO "enter init_all");
 
 	for (i=0;i<num_task;i++){
 		total_exec_time = 0;
@@ -243,6 +243,7 @@ static int run_subtask_fn(void * data){
 static int simple_init (void) {
 	int i, j, ret;
 	Core c;
+	init_spec_vars();
 	init_all();
 	parse_module_param();
 	if(mode_input == RUN){

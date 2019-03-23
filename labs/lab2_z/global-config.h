@@ -59,7 +59,6 @@ Core cores[num_core];
 Task tasks[num_task];
 Subtask* subtask_ptrs[num_subtask];
 
-struct task_struct * subtask_kthreads[num_subtask];
 struct task_struct * calibrate_kthreads[num_core];
 
 //task
