@@ -10,7 +10,6 @@
 #ifndef BASIC_H
 #define BASIC_H
 
-
 #include <linux/sched.h> 
 #include <linux/hrtimer.h>
 #include <linux/ktime.h>
@@ -18,22 +17,14 @@
 #include <linux/sort.h>
 enum Mode { RUN = 1, CALIBRATE };
 enum Mode mode_input = CALIBRATE;
+struct sched_param param;
 char * mode = "calibrate";
 module_param(mode, charp, 0);
 
 void parse_module_param(void);
-char* get_thread_name_s(char *str, int num);
+char* get_thread_name(char *str, int num);
 
 //customized structures
-struct Task{
-	int period; /*period of task second*/
-	// struct subtask *subtasks; /* subtasks within the task struct */
-	int num;/* number of subtask */
-	int index; /* index of task */
-	int execution_time; /*execution time of all subtask*/
-	struct Subtask** subtask_list;
-};
-
 struct Subtask {
 	int idx_in_task; /*index of subtask within the task*/
 	int idx_in_core; /*index of subtask within the core*/
@@ -48,6 +39,7 @@ struct Subtask {
 	int execution_time;/*execution time of subtask millisecond*/
 
 	struct task_struct *sub_thread; /*pointer to the task_struct*/
+	char* kthread_id;
 	struct hrtimer hr_timer; /* timer for the subtask*/
 
 	int flag; /*if the subtask is temporarily not available, */
@@ -55,11 +47,18 @@ struct Subtask {
 	int sched_priori;  /*priority of subtask on the core*/
 };
 
+struct Task{
+	int period; /*period of task second*/
+	int num;/* number of subtask */
+	int index; /* index of task */
+	int execution_time; /*execution time of all subtask*/
+	struct Subtask subtask_list[];
+};
+
 struct Core{
 	int core_index; /*cpu core index */
 	int num;/* number of subtask */
-	// struct subtask *subtask; /*subtask that is put on the specific cpu core*/
-	struct Subtask** subtask_list;
+	struct Subtask* subtask_list[];
 };
 
 struct sched_param{
@@ -83,7 +82,7 @@ void parse_module_param() {
 
 //Make Thread Name
 char thread_name_base[256] = "thread";
-char* get_thread_name_s(char *str, int num){
+char* get_thread_name(char *str, int num){
     char c;
     int len = strlen(str);
    	int digit;

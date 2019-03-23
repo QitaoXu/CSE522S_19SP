@@ -13,7 +13,6 @@
 #define num_core 4
 #define num_task 4
 
-
 #define task_index0 0
 #define task_index1 1
 #define task_index2 2
@@ -39,7 +38,7 @@
 #define task_period2 2000
 #define task_period3 2000
 
-#define loop_count 5000
+#define loop_count 9804
 #define exec_time_0_0 10
 #define exec_time_0_1 10
 #define exec_time_0_2 10
@@ -58,136 +57,306 @@
 #define DEFAULT_PRIORITY 1
 Core cores[num_core];
 Task tasks[num_task];
-Subtask subtasks[num_subtask];
+Subtask* subtask_ptrs[num_subtask];
 
 struct task_struct * subtask_kthreads[num_subtask];
 struct task_struct * calibrate_kthreads[num_core];
 
-void init_global_data_run(void);
-void init_global_data_calibrate(void);
+//task
+//  int period; /*period of task second*/
+//  int num;/* number of subtask */
+//  int index; /* index of task */
+//  int execution_time; /*execution time of all subtask*/
+//  struct Subtask subtask_list[];
 
-void init_global_data_run() {
-	//TODO
-	int i;
-	for (i=0; i<num_core; i++) {
-		cores[i].core_index = i;
-		//LIST_HEAD_INIT(cores[i].core_subtask_list);
-	}
-	for (i=0; i<num_task; i++) {
-		tasks[i].period = 1;
-		//LIST_HEAD_INIT(tasks[i].task_subtask_list),
-		tasks[i].num = 2;
-		tasks[i].index = i;
-		tasks[i].starting_index = 2*i;
-		tasks[i].execution_time = ktime_set(0, 0);
-	}
-	for (i=0; i<num_subtask; i++) {
-		subtasks[i].idx_in_task = i%num_task;
-		subtasks[i].parent = &(tasks[i/num_task]);
-		subtasks[i].core = i/num_task;
-		subtasks[i].work_load_loop_count = loop_count;
-	}
-/* 	for initilaization of 4 calibrate kthreads,
-   	later, their priority will be modified in 
-   	calibrate function according to subtask */
-}
-void init_global_data_calibrate() {
- int i,j;
- for (i = 0; i < num_core; i++) {
-  cores[i].core_index = i;
-  //LIST_HEAD_INIT(cores[i].core_subtask_list);
- }
- printk(KERN_INFO "init tasks");
- for (i = 0; i < num_task; i++) {
-  
-  if ( i == 0 ) {
-  	printk(KERN_INFO "init task i");
-   tasks[i].period = task_period0; 
-   tasks[i].index = task_index0;
-   tasks[i].num = subtask_count0;
-   tasks[i].starting_index = 0;
-   tasks[i].subtask_list = (Subtask **)kmalloc(GFP_KERNEL, sizeof(Subtask *) * tasks[i].num);
-   
-   for (j = 0; j < subtask_count0; j ++) {
-    	tasks[i].subtask_list[j] = (Subtask *)kmalloc(GFP_KERNEL, sizeof(Subtask));
-   }
+//subtask
+//  int idx_in_task; /*index of subtask within the task*/
+//  int idx_in_core; /*index of subtask within the core*/
+//  int core; /* on which core of your Raspberry Pi 3 each subtask should run, set core to -1 if no aviable core to run*/
+//  struct Task *parent; /*parent task of subtask*/
+//  int work_load_loop_count; /*init to 0 or Z+, */
+//  ktime_t last_release_time; /*initialized to 0, record the last time the subtask was released*/
+//  int cumul_exec_time;/* sum up the execution times of that subtask and all of its predecessors within the same task*/
+//  int utilization; /*divide its execution time by its task's period.*/
+//  int execution_time;/*execution time of subtask millisecond*/
+//  struct task_struct *sub_thread; /*pointer to the task_struct*/
+//  char* kthread_id;
+//  struct hrtimer hr_timer; /* timer for the subtask*/
+//  int flag; /*if the subtask is temporarily not available, */
+//  int relative_ddl; /*task period* subtask's execution time/task's execution time*/
+//  int sched_priori;  /*priority of subtask on the core*/
 
-   for (j = 0; j < subtask_count0; j ++) {
-   	  	printk(KERN_INFO "init subtask i");
-
-    tasks[i].subtask_list[j]->idx_in_task = j;
-    printk(KERN_INFO "init subtask ijjjj");
-    tasks[i].subtask_list[j]->parent = &tasks[i];
-    tasks[i].subtask_list[j]->work_load_loop_count = loop_count;
-    tasks[i].subtask_list[j]->last_release_time = ktime_set(0, 0);
-    tasks[i].subtask_list[j]->cumul_exec_time = 0;
-    tasks[i].subtask_list[j]->utilization = 0.0;
-    tasks[i].subtask_list[j]->execution_time = exec_time_0_0;
-   }
+struct Task task_0 =
+{
+  task_period0,
+  subtask_count0,
+  task_index0,
+  0,
+  {
+    {
+      subtask_index0,
+      -1,
+      -1,
+      NULL,
+      loop_count*exec_time_0_0,
+      NULL,
+      0,
+      0,
+      exec_time_0_0,
+      NULL, //struct task_struct *sub_thread, init in runtime;
+      NULL,
+      NULL, //struct hrtimer hr_timer, init in runtime;
+      -1,
+      0,
+      DEFAULT_PRIORITY
+    },
+    {
+      subtask_index1,
+      -1,
+      -1,
+      NULL,
+      loop_count*exec_time_0_1,
+      NULL,
+      0,
+      0,
+      exec_time_0_1,
+      NULL, //struct task_struct *sub_thread;
+      NULL,
+      NULL, //struct hrtimer hr_timer;
+      -1,
+      0,
+      DEFAULT_PRIORITY
+    },
+    {
+      subtask_index2,
+      -1,
+      -1,
+      NULL, //struct Task *parent; 
+      loop_count*exec_time_0_2,
+      NULL,
+      0,
+      0,
+      exec_time_0_2,
+      NULL, //struct task_struct *sub_thread;
+      NULL,
+      NULL, //  struct hrtimer hr_timer;
+      -1,
+      0,
+      DEFAULT_PRIORITY
+    },
+    {
+      subtask_index3,
+      -1,
+      -1,
+      NULL, //struct Task *parent; 
+      loop_count*exec_time_0_3,
+      NULL,
+      0,
+      0,
+      exec_time_0_3,
+      NULL, //struct task_struct *sub_thread;
+      NULL,
+      NULL, //  struct hrtimer hr_timer;
+      -1,
+      0,
+      DEFAULT_PRIORITY
+    }
   }
+};
 
-  if ( i == 1) {
-  	   	  	printk(KERN_INFO "init subtask i");
 
-   tasks[i].period = task_period1;
-   tasks[i].index = task_index1;
-   tasks[i].num = subtask_count1;
-   tasks[i].starting_index = tasks[i - 1].starting_index + tasks[i - 1].num;
-   tasks[i].subtask_list = (Subtask **)kmalloc(GFP_KERNEL, sizeof(Subtask *) * tasks[i].num);
-
-   for (j = 0; j < subtask_count1; j ++) {
-    tasks[i].subtask_list[j]->idx_in_task = j;
-    tasks[i].subtask_list[j]->parent = &tasks[i];
-    tasks[i].subtask_list[j]->work_load_loop_count = loop_count;
-    tasks[i].subtask_list[j]->last_release_time = ktime_set(0, 0);
-    tasks[i].subtask_list[j]->cumul_exec_time = 0;
-    tasks[i].subtask_list[j]->utilization = 0.0;
-    tasks[i].subtask_list[j]->execution_time = exec_time_1_0;
-   }
-
+struct Task task_1 =
+{
+  task_period1,
+  subtask_count1,
+  task_index1,
+  0,
+  {
+    {
+      subtask_index0,
+      -1,
+      -1,
+      NULL, //struct Task *parent; 
+      loop_count*exec_time_1_0,
+      NULL,
+      0,
+      0,
+      exec_time_1_0,
+      NULL, //struct task_struct *sub_thread;
+      NULL,
+      NULL, //  struct hrtimer hr_timer;
+      -1,
+      0,
+      DEFAULT_PRIORITY
+    },
+    {
+      subtask_index1,
+      -1,
+      -1,
+      NULL, //struct Task *parent; 
+      loop_count*exec_time_1_1,
+      NULL,
+      0,
+      0,
+      exec_time_1_1,
+      NULL, //struct task_struct *sub_thread;
+      NULL,
+      NULL, //  struct hrtimer hr_timer;
+      -1,
+      0,
+      DEFAULT_PRIORITY
+    },
+    {
+      subtask_index2,
+      -1,
+      -1,
+      NULL, //struct Task *parent; 
+      loop_count*exec_time_1_2,
+      NULL,
+      0,
+      0,
+      exec_time_1_2,
+      NULL, //struct task_struct *sub_thread;
+      NULL,
+      NULL, //  struct hrtimer hr_timer;
+      -1,
+      0,
+      DEFAULT_PRIORITY
+    }
   }
+};
 
-  if ( i == 2) {
-
-   tasks[i].period = task_period2;
-   tasks[i].index = task_index2;
-   tasks[i].num = subtask_count2;
-   tasks[i].starting_index = tasks[i - 1].starting_index + tasks[i - 1].num;
-   tasks[i].subtask_list = (Subtask **)kmalloc(GFP_KERNEL, sizeof(Subtask *) * tasks[i].num);
-
-   for (j = 2; j < subtask_count0; j ++) {
-    tasks[i].subtask_list[j]->idx_in_task = j;
-    tasks[i].subtask_list[j]->parent = &tasks[i];
-    tasks[i].subtask_list[j]->work_load_loop_count = loop_count;
-    tasks[i].subtask_list[j]->last_release_time = ktime_set(0, 0);
-    tasks[i].subtask_list[j]->cumul_exec_time = 0;
-    tasks[i].subtask_list[j]->utilization = 0.0;
-    tasks[i].subtask_list[j]->execution_time = exec_time_2_0;
-   }
-
+struct Task task_2 =
+{
+  task_period2,
+  subtask_count2,
+  task_index2,
+  0,
+  {
+    {
+      subtask_index0,
+      -1,
+      -1,
+      NULL, //struct Task *parent; 
+      loop_count*exec_time_2_0,
+      NULL,
+      0,
+      0,
+      exec_time_2_0,
+      NULL, //struct task_struct *sub_thread;
+      NULL,
+      NULL, //  struct hrtimer hr_timer;
+      -1,
+      0,
+      DEFAULT_PRIORITY
+    },
+    {
+      subtask_index1,
+      -1,
+      -1,
+      NULL, //struct Task *parent; 
+      loop_count*exec_time_2_1,
+      NULL,
+      0,
+      0,
+      exec_time_2_1,
+      NULL, //struct task_struct *sub_thread;
+      NULL,
+      NULL, //  struct hrtimer hr_timer;
+      -1,
+      0,
+      DEFAULT_PRIORITY
+    }
   }
+};
 
-  if ( i == 3) {
-
-   tasks[i].period = task_period3;
-   tasks[i].index = task_index3;
-   tasks[i].num = subtask_count3;
-   tasks[i].starting_index = tasks[i - 1].starting_index + tasks[i - 1].num;
-   tasks[i].subtask_list = (Subtask **)kmalloc(GFP_KERNEL, sizeof(Subtask *) * tasks[i].num);
-
-   for (j = 0; j < subtask_count3; j ++) {
-    tasks[i].subtask_list[j]->idx_in_task = j;
-    tasks[i].subtask_list[j]->parent = &tasks[i];
-    tasks[i].subtask_list[j]->work_load_loop_count = loop_count;
-    tasks[i].subtask_list[j]->last_release_time = ktime_set(0, 0);
-    tasks[i].subtask_list[j]->cumul_exec_time = 0;
-    tasks[i].subtask_list[j]->utilization = 0.0;
-    tasks[i].subtask_list[j]->execution_time = exec_time_3_0;
-   }
-
+struct Task task_3 =
+{
+  task_period3,
+  subtask_count3,
+  task_index3,
+  0,
+  {
+    {
+      subtask_index0,
+      -1,
+      -1,
+      NULL, //struct Task *parent; 
+      loop_count*exec_time_3_0,
+      NULL,
+      0,
+      0,
+      exec_time_3_0,
+      NULL, //struct task_struct *sub_thread;
+      NULL,
+      NULL, //  struct hrtimer hr_timer;
+      -1,
+      0,
+      DEFAULT_PRIORITY
+    },
+    {
+      subtask_index1,
+      -1,
+      -1,
+      NULL, //struct Task *parent; 
+      loop_count*exec_time_3_1,
+      NULL,
+      0,
+      0,
+      exec_time_3_1,
+      NULL, //struct task_struct *sub_thread;
+      NULL,
+      NULL, //  struct hrtimer hr_timer;
+      -1,
+      0,
+      DEFAULT_PRIORITY
+    }
   }
- }
-  
- 
+};
 
+//core
+//  int core_index; /*cpu core index */
+//  int num;/* number of subtask */
+//  struct Subtask* subtask_list[];
+
+struct Core core_0 =
+{
+  core_index0,
+  0,
+  NULL //subtask_list[]
+};
+
+struct Core core_1 =
+{
+  core_index1,
+  0,
+  NULL //subtask_list[]
+};
+
+struct Core core_2 =
+{
+  core_index2,
+  0,
+  NULL //subtask_list[]
+};
+
+struct Core core_3 =
+{
+  core_index3,
+  0,
+  NULL //subtask_list[]
+};
+
+
+void init_spec_vars(void);
+
+void init_spec_vars() {
+	cores[0] = core_0;
+  cores[1] = core_1;
+	cores[2] = core_2;
+  cores[3] = core_3;
+  tasks[0] = task_0;
+  tasks[1] = task_1;
+  tasks[2] = task_2;
+  tasks[3] = task_3;
 }
