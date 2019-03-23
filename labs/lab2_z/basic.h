@@ -58,7 +58,7 @@ struct Task{
 struct Core{
 	int core_index; /*cpu core index */
 	int num;/* number of subtask */
-	struct Subtask* subtask_list[];
+	struct Subtask* subtask_list;
 };
 
 struct sched_param{

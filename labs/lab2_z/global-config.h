@@ -323,28 +323,28 @@ struct Core core_0 =
 {
   core_index0,
   0,
-  NULL //subtask_list[]
+  (struct Subtask**) NULL //subtask_list[]
 };
 
 struct Core core_1 =
 {
   core_index1,
   0,
-  NULL //subtask_list[]
+  (struct Subtask**) NULL //subtask_list[]
 };
 
 struct Core core_2 =
 {
   core_index2,
   0,
-  NULL //subtask_list[]
+  (struct Subtask**) NULL //subtask_list[]
 };
 
 struct Core core_3 =
 {
   core_index3,
   0,
-  NULL //subtask_list[]
+  (struct Subtask**) NULL //subtask_list[]
 };
 
 
