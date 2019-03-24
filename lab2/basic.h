@@ -18,11 +18,14 @@
 #include <linux/ktime.h>
 #include <linux/list.h>
 #include <linux/sort.h>
-enum Mode { RUN = 1, CALIBRATE };
-enum Mode mode_input = CALIBRATE;
-struct sched_param param;
+
 char * mode = "calibrate";
 module_param(mode, charp, 0);
+
+enum Mode { RUN = 1, CALIBRATE };
+enum Mode mode_input = CALIBRATE;
+
+struct sched_param param;
 
 void parse_module_param(void);
 char* get_thread_name(char *str, int num);
@@ -35,7 +38,7 @@ struct Subtask {
 	struct Task *parent; /*parent task of subtask*/
 	int work_load_loop_count; /*init to 0 or Z+, */
 
-	ktime_t last_release_time; /*initialized to 0, record the last time the subtask was released*/
+	u64 last_release_time;  //NS!! /*initialized to 0, record the last time the subtask was released*/ //NS
 	int cumul_exec_time;/* sum up the execution times of that subtask and all of its predecessors within the same task*/
 
 	int utilization; /*divide its execution time by its task's period.*/
@@ -45,13 +48,12 @@ struct Subtask {
 	char* kthread_id;
 	struct hrtimer* hr_timer; /* timer for the subtask*/
 
-	int flag; /*if the subtask is temporarily not available, */
 	int relative_ddl; /*task period* subtask's execution time/task's execution time*/
 	int sched_priori;  /*priority of subtask on the core*/
 };
 
 struct Task{
-	int period; /*period of task second*/
+	int period; /*period of task millisecond*/
 	int num;/* number of subtask */
 	int index; /* index of task */
 	int execution_time; /*execution time of all subtask*/
@@ -81,40 +83,5 @@ void parse_module_param() {
 	} else {
 		mode_input = CALIBRATE;
 	} 
-} 
-
-//Make Thread Name
-char thread_name_base[256] = "thread";
-char* get_thread_name(char *str, int num){
-    char c;
-    int len = strlen(str);
-   	int digit;
-   	int i;
-   	int j=0;
-   	int base=10;
-   	int cop=num;
-   	int length=1;
-   	int square=1;
-   	while(cop>=base){
-   		cop/=base;
-   		length+=1;
-   	}
-   	i=length;
-   	while(i>0){
-   		j=0;
-   		square=1;
-		while(j<(i-1)){
-			square*=base;
-			j+=1;
-			
-		}
-		digit=num/(square)%base;
-   		c=digit+'0';
-   		str[len]=c;
-   		i-=1;
-   		len+=1;
-   	}
-    str[len+1] = '\0';
-	return str;
 }
 #endif /* BASIC_H */
