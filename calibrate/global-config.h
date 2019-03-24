@@ -8,7 +8,7 @@
 */ 
 
 #include "basic.h"
-#define million 1000000
+
 #define num_subtask 10
 #define num_core 4
 #define num_task 4
@@ -59,7 +59,7 @@ Core* cores;
 Task* tasks;
 Subtask** subtask_ptrs;
 
-struct task_struct * calibrate_kthreads[num_core];
+struct task_struct* calibrate_kthreads[num_core];
 
 //task
 //  int period; /*period of task second*/
@@ -103,7 +103,7 @@ struct Task task_0 =
       0,
       exec_time_0_0,
       NULL, //struct task_struct *sub_thread, init in runtime;
-      NULL,
+      "thread_0_0",
       (struct hrtimer*) NULL, //struct hrtimer hr_timer, init in runtime;
       -1,
       0,
@@ -120,7 +120,7 @@ struct Task task_0 =
       0,
       exec_time_0_1,
       NULL, //struct task_struct *sub_thread;
-      NULL,
+      "thread_0_1",
       (struct hrtimer*) NULL, //struct hrtimer hr_timer;
       -1,
       0,
@@ -137,29 +137,29 @@ struct Task task_0 =
       0,
       exec_time_0_2,
       NULL, //struct task_struct *sub_thread;
-      NULL,
+      "thread_0_2",
       (struct hrtimer*) NULL, //  struct hrtimer hr_timer;
       -1,
       0,
       DEFAULT_PRIORITY
     },
-    // {
-    //   subtask_index3,
-    //   -1,
-    //   -1,
-    //   NULL, //struct Task *parent; 
-    //   loop_count*exec_time_0_3,
-    //   (int) 0,
-    //   0,
-    //   0,
-    //   exec_time_0_3,
-    //   NULL, //struct task_struct *sub_thread;
-    //   NULL,
-    //   (struct hrtimer*) NULL, //  struct hrtimer hr_timer;
-    //   -1,
-    //   0,
-    //   DEFAULT_PRIORITY
-    // }
+    {
+       subtask_index3,
+       -1,
+       -1,
+       NULL, //struct Task *parent; 
+       loop_count*exec_time_0_3,
+       (int) 0,
+       0,
+       0,
+       exec_time_0_3,
+       NULL, //struct task_struct *sub_thread;
+       "thread_0_3",
+       (struct hrtimer*) NULL, //  struct hrtimer hr_timer;
+       -1,
+       0,
+       DEFAULT_PRIORITY
+     }
   }
 };
 
@@ -182,7 +182,7 @@ struct Task task_1 =
       0,
       exec_time_1_0,
       NULL, //struct task_struct *sub_thread;
-      NULL,
+      "thread_1_0",
       (struct hrtimer*) NULL, //  struct hrtimer hr_timer;
       -1,
       0,
@@ -199,7 +199,7 @@ struct Task task_1 =
       0,
       exec_time_1_1,
       NULL, //struct task_struct *sub_thread;
-      NULL,
+      "thread_1_1",
       (struct hrtimer*) NULL, //  struct hrtimer hr_timer;
       -1,
       0,
@@ -216,7 +216,7 @@ struct Task task_1 =
       0,
       exec_time_1_2,
       NULL, //struct task_struct *sub_thread;
-      NULL,
+      "thread_1_2",
       (struct hrtimer*) NULL, //  struct hrtimer hr_timer;
       -1,
       0,
@@ -243,7 +243,7 @@ struct Task task_2 =
       0,
       exec_time_2_0,
       NULL, //struct task_struct *sub_thread;
-      NULL,
+      "thread_2_0",
       (struct hrtimer*) NULL, //  struct hrtimer hr_timer;
       -1,
       0,
@@ -260,7 +260,7 @@ struct Task task_2 =
       0,
       exec_time_2_1,
       NULL, //struct task_struct *sub_thread;
-      NULL,
+      "thread_2_1",
       (struct hrtimer*) NULL, //  struct hrtimer hr_timer;
       -1,
       0,
@@ -287,7 +287,7 @@ struct Task task_3 =
       0,
       exec_time_3_0,
       NULL, //struct task_struct *sub_thread;
-      NULL,
+      "thread_3_0",
       (struct hrtimer*) NULL, //  struct hrtimer hr_timer;
       -1,
       0,
@@ -304,7 +304,7 @@ struct Task task_3 =
       0,
       exec_time_3_1,
       NULL, //struct task_struct *sub_thread;
-      NULL,
+      "thread_3_1",
       (struct hrtimer*) NULL, //  struct hrtimer hr_timer;
       -1,
       0,
@@ -322,28 +322,28 @@ struct Core core_0 =
 {
   core_index0,
   0,
-  (struct Subtask**) NULL //subtask_list[]
+  {NULL} //subtask_list[]
 };
 
 struct Core core_1 =
 {
   core_index1,
   0,
-  (struct Subtask**) NULL //subtask_list[]
+  {NULL} //subtask_list[]
 };
 
 struct Core core_2 =
 {
   core_index2,
   0,
-  (struct Subtask**) NULL //subtask_list[]
+  {NULL} //subtask_list[]
 };
 
 struct Core core_3 =
 {
   core_index3,
   0,
-  (struct Subtask**) NULL //subtask_list[]
+  {NULL} //subtask_list[]
 };
 
 
@@ -363,8 +363,10 @@ void init_spec_vars() {
   cores[1] = core_1;
 	cores[2] = core_2;
   cores[3] = core_3;
+
   tasks[0] = task_0;
   tasks[1] = task_1;
   tasks[2] = task_2;
   tasks[3] = task_3;
+  printk(KERN_INFO "tasks[3].num=%d", tasks[3].num);
 }

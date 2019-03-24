@@ -10,6 +10,9 @@
 #ifndef BASIC_H
 #define BASIC_H
 
+#define MILLION 1000000
+#define MAX_SUBTASK_PER_TASK 20
+
 #include <linux/sched.h> 
 #include <linux/hrtimer.h>
 #include <linux/ktime.h>
@@ -52,13 +55,13 @@ struct Task{
 	int num;/* number of subtask */
 	int index; /* index of task */
 	int execution_time; /*execution time of all subtask*/
-	struct Subtask subtask_list[];
+	struct Subtask subtask_list[MAX_SUBTASK_PER_TASK];
 };
 
 struct Core{
 	int core_index; /*cpu core index */
 	int num;/* number of subtask */
-	struct Subtask** subtask_list;
+	struct Subtask* subtask_list[MAX_SUBTASK_PER_TASK];
 };
 
 struct sched_param{

@@ -1,1 +1,0 @@
-cmd_/tmp/compile/zhe.wang/CSE522S_19SP/labs/lab2_z/module.ko := arm-linux-gnueabihf-ld -EL -r  -T ./scripts/module-common.lds --build-id  -o /tmp/compile/zhe.wang/CSE522S_19SP/labs/lab2_z/module.ko /tmp/compile/zhe.wang/CSE522S_19SP/labs/lab2_z/module.o /tmp/compile/zhe.wang/CSE522S_19SP/labs/lab2_z/module.mod.o ;  true
