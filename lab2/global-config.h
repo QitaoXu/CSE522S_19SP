@@ -33,13 +33,13 @@
 #define subtask_count2 2
 #define subtask_count3 2
 
-#define task_period0 100//2000 //2000, Zhe: is too large I think
-#define task_period1 100
-#define task_period2 100
-#define task_period3 100//50*MILLION = 50000000 NS = 0.05 S.
+#define task_period0 50//2000 //2000, Zhe: is too large I think
+#define task_period1 50
+#define task_period2 50
+#define task_period3 50//50*MILLION = 50000000 NS = 0.05 S.
 
 #define loop_count 9500//9804
-#define exec_time_0_0 10
+#define exec_time_0_0 10//10
 #define exec_time_0_1 10
 #define exec_time_0_2 10
 #define exec_time_0_3 10
