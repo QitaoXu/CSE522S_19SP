@@ -53,14 +53,12 @@ enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart ) {
 	return HRTIMER_NORESTART;
 }
 
-void remove_element(Subtask *array, int index, int array_length)
-{
+void remove_element(Subtask *array, int index, int array_length){
    int i;
    for(i = index; i < array_length - 1; i++) {
    	array[i] = array[i + 1];
    	array[i+1].idx_in_task=i;
    }
-
 
 }
 /* init */
@@ -156,7 +154,7 @@ void init_all(void){
 			if (subtask_ptrs[i]->core==-1) {
 				//new schedulable test
 				schedulable=0;
-				remove_element(subtask_ptrs[i]->parent->subtask_list,subtask_ptrs[i]->idx_in_task,remosubtask_ptrs[i]->parent->num);
+				remove_element(subtask_ptrs[i]->parent->subtask_list,subtask_ptrs[i]->idx_in_task,subtask_ptrs[i]->parent->num);
 				subtask_ptrs[i]->parent->num-=1;
 				printk(KERN_INFO "assign core failed, drop subtask %d", i);
 			} else {
