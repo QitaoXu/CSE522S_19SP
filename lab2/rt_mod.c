@@ -52,14 +52,24 @@ enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart ) {
 	}
 	return HRTIMER_NORESTART;
 }
+void remove_element(Subtask *array, int index, int array_length)
+{
+   int i;
+   array[i] = NULL;
+   for(i = index; i < array_length - 1; i++) {
+   	array[i] = array[i + 1];
+   	array[i+1].idx_in_task=i;
+   }
 
+
+}
 /* init */
 void init_all(void){
 	int i,j;
 	int cpu_load[num_core]={0,0,0,0};
 	int total_exec_time;
 	int index=0;
-
+	int schedulable=1;
 	printk(KERN_INFO "task kmalloc_array");
   	tasks = (Task*) kmalloc_array(num_task, sizeof(Task), GFP_KERNEL);
   	if (tasks==NULL) {
@@ -144,13 +154,69 @@ void init_all(void){
 				}
 			}
 			if (subtask_ptrs[i]->core==-1) {
+				//new schedulable test
+				schedulable=0;
+				remove_element(subtask_ptrs[i]->parent->subtask_list,subtask_ptrs[i]->idx_in_task,subtask_ptrs[i]->parent->num);
+				subtask_ptrs[i]->parent->num-=1;
 				printk(KERN_INFO "assign core failed, drop subtask %d", i);
 			} else {
 				printk(KERN_INFO "link core.subtask_list to subtask_ptrs");
 				cores[subtask_ptrs[i]->core].subtask_list[subtask_ptrs[i]->idx_in_core] = subtask_ptrs[i];
 			}
 		}
+		if(schedulable==0){
+				for (i=0;i<num_task;i++){
+					printk(KERN_INFO "begin at task%d in %d tasks of %d subtasks", i, num_task, tasks[i].num);
+					total_exec_time = 0;
+					//
+					for (j=0;j<tasks[i].num&&tasks[i].subtask_list[j].core!=-1;j++){
+						//
+						printk(KERN_INFO "1. //////%d %d %d %d %p", tasks[i].period, tasks[i].num, tasks[i].index, tasks[i].execution_time, tasks[i].subtask_list);
+						total_exec_time = total_exec_time + tasks[i].subtask_list[j].execution_time;
+						printk(KERN_INFO "2. //////%d %d %d %d %p", tasks[i].period, tasks[i].num, tasks[i].index, tasks[i].execution_time, tasks[i].subtask_list);
+						tasks[i].subtask_list[j].cumul_exec_time = total_exec_time;
+						printk(KERN_INFO "3. //////%d %d %d %d %p", tasks[i].period, tasks[i].num, tasks[i].index, tasks[i].execution_time, tasks[i].subtask_list);
+						tasks[i].subtask_list[j].parent=&(tasks[i]);
+						printk(KERN_INFO "4. //////%d %d %d %d %p", tasks[i].period, tasks[i].num, tasks[i].index, tasks[i].execution_time, tasks[i].subtask_list);
+						tasks[i].subtask_list[j].utilization = tasks[i].subtask_list[j].execution_time*100/tasks[i].period;
+						printk(KERN_INFO "5. //////%d %d %d %d %p", tasks[i].period, tasks[i].num, tasks[i].index, tasks[i].execution_time, tasks[i].subtask_list);
+						subtask_ptrs[index] = &(tasks[i].subtask_list[j]);
+						printk(KERN_INFO "6. //////%d %d %d %d %p", tasks[i].period, tasks[i].num, tasks[i].index, tasks[i].execution_time, tasks[i].subtask_list);
+						index+=1;
+					}
+					printk(KERN_INFO "execution_time task i");	
+					tasks[i].execution_time = total_exec_time;
+					printk(KERN_INFO "execution_time finished");
+				}
 
+				printk(KERN_INFO "calculate relative_ddl");
+				for (i=0;i<num_task;i++){
+					for (j=0;j<tasks[i].num;j++){
+			   			tasks[i].subtask_list[j].relative_ddl = (tasks[i].period)*(tasks[i].subtask_list[j].cumul_exec_time)/(tasks[i].execution_time);
+			   			printk(KERN_INFO "calculate relative_ddl %d", tasks[i].subtask_list[j].relative_ddl);
+			   		}
+			  	}
+			  	sort((void*)subtask_ptrs, num_subtask, sizeof(struct subtask*), &util_sort, NULL);
+				for (i=0; i<num_subtask; i++) {
+						printk(KERN_INFO "//////after sort, idx_in_task:%d idx_in_core:%d core:%d utilization:%d", subtask_ptrs[i]->idx_in_task, subtask_ptrs[i]->idx_in_core, subtask_ptrs[i]->core, subtask_ptrs[i]->utilization);
+					}
+				for (i=0; i<num_subtask; i++){
+					for (j=0; j<num_core; j++){
+						printk(KERN_INFO "subtask_ptrs[%d]->utilization %d", i, subtask_ptrs[i]->utilization);
+						if ((cpu_load[j]+(subtask_ptrs[i]->utilization))<100) {		
+							printk(KERN_INFO "assign subtask %d to core %d", i, j);
+							subtask_ptrs[i]->core = j;
+							cpu_load[j]+=subtask_ptrs[i]->utilization;
+							subtask_ptrs[i]->idx_in_core = cores[j].num;
+							cores[j].num = cores[j].num + 1;
+							break;
+						} else {
+							continue;
+						}
+					}
+
+				}
+	}
 		for (i=0; i<num_core; i++){
 			printk(KERN_INFO "cores[%d].num=%d", i, cores[i].num);
 		}
@@ -208,6 +274,8 @@ void init_all(void){
 		}
 	}
 }
+
+
 
 /* subtask function */
 static void subtask_run_workload(Subtask * sub) {
