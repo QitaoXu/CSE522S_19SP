@@ -33,12 +33,12 @@
 #define subtask_count2 2
 #define subtask_count3 2
 
-#define task_period0 50//2000 //2000, Zhe: is too large I think
-#define task_period1 50
-#define task_period2 50
-#define task_period3 50//50*MILLION = 50000000 NS = 0.05 S.
+#define task_period0 80
+#define task_period1 80
+#define task_period2 80
+#define task_period3 80//2S.
 
-#define loop_count 9500//9804
+#define loop_count 9300//9804
 #define exec_time_0_0 10//10
 #define exec_time_0_1 10
 #define exec_time_0_2 10
@@ -59,6 +59,7 @@ Core* cores;
 Task* tasks;
 Subtask** subtask_ptrs;
 
+struct hrtimer timers[num_subtask];
 struct task_struct* calibrate_kthreads[num_core];
 
 //task
@@ -81,6 +82,7 @@ struct task_struct* calibrate_kthreads[num_core];
 //  struct task_struct *sub_thread; /*pointer to the task_struct*/
 //  char* kthread_id;
 //  struct hrtimer hr_timer; /* timer for the subtask*/
+//  int if_timer_start; /* timer for the subtask is started*/
 //  int relative_ddl; /*task period* subtask's execution time/task's execution time*/
 //  int sched_priori;  /*priority of subtask on the core*/
 
@@ -97,13 +99,14 @@ struct Task task_0 =
       -1,
       NULL,
       loop_count*exec_time_0_0,
-      0,
+      (s64) 0,
       0,
       0,
       exec_time_0_0,
       NULL, //struct task_struct *sub_thread, init in runtime;
       "thread_0_0",
       (struct hrtimer*) NULL, //struct hrtimer hr_timer, init in runtime;
+      0,
       0,
       DEFAULT_PRIORITY
     },
@@ -113,13 +116,14 @@ struct Task task_0 =
       -1,
       NULL,
       loop_count*exec_time_0_1,
-      0,
+      (s64) 0,
       0,
       0,
       exec_time_0_1,
       NULL, //struct task_struct *sub_thread;
       "thread_0_1",
       (struct hrtimer*) NULL, //struct hrtimer hr_timer;
+      0,
       0,
       DEFAULT_PRIORITY
     },
@@ -129,13 +133,14 @@ struct Task task_0 =
       -1,
       NULL, //struct Task *parent; 
       loop_count*exec_time_0_2,
-      0,
+      (s64) 0,
       0,
       0,
       exec_time_0_2,
       NULL, //struct task_struct *sub_thread;
       "thread_0_2",
       (struct hrtimer*) NULL, //  struct hrtimer hr_timer;
+      0,
       0,
       DEFAULT_PRIORITY
     },
@@ -145,13 +150,14 @@ struct Task task_0 =
        -1,
        NULL, //struct Task *parent; 
        loop_count*exec_time_0_3,
-       0,
+       (s64) 0,
        0,
        0,
        exec_time_0_3,
        NULL, //struct task_struct *sub_thread;
        "thread_0_3",
        (struct hrtimer*) NULL, //  struct hrtimer hr_timer;
+       0,
        0,
        DEFAULT_PRIORITY
      }
@@ -172,13 +178,14 @@ struct Task task_1 =
       -1,
       NULL, //struct Task *parent; 
       loop_count*exec_time_1_0,
-      0,
+      (s64) 0,
       0,
       0,
       exec_time_1_0,
       NULL, //struct task_struct *sub_thread;
       "thread_1_0",
       (struct hrtimer*) NULL, //  struct hrtimer hr_timer;
+      0,
       0,
       DEFAULT_PRIORITY
     },
@@ -188,13 +195,14 @@ struct Task task_1 =
       -1,
       NULL, //struct Task *parent; 
       loop_count*exec_time_1_1,
-      0,
+      (s64) 0,
       0,
       0,
       exec_time_1_1,
       NULL, //struct task_struct *sub_thread;
       "thread_1_1",
       (struct hrtimer*) NULL, //  struct hrtimer hr_timer;
+      0,
       0,
       DEFAULT_PRIORITY
     },
@@ -204,13 +212,14 @@ struct Task task_1 =
       -1,
       NULL, //struct Task *parent; 
       loop_count*exec_time_1_2,
-      0,
+      (s64) 0,
       0,
       0,
       exec_time_1_2,
       NULL, //struct task_struct *sub_thread;
       "thread_1_2",
       (struct hrtimer*) NULL, //  struct hrtimer hr_timer;
+      0,
       0,
       DEFAULT_PRIORITY
     }
@@ -230,13 +239,14 @@ struct Task task_2 =
       -1,
       NULL, //struct Task *parent; 
       loop_count*exec_time_2_0,
-      0,
+      (s64) 0,
       0,
       0,
       exec_time_2_0,
       NULL, //struct task_struct *sub_thread;
       "thread_2_0",
       (struct hrtimer*) NULL, //  struct hrtimer hr_timer;
+      0,
       0,
       DEFAULT_PRIORITY
     },
@@ -246,13 +256,14 @@ struct Task task_2 =
       -1,
       NULL, //struct Task *parent; 
       loop_count*exec_time_2_1,
-      0,
+      (s64) 0,
       0,
       0,
       exec_time_2_1,
       NULL, //struct task_struct *sub_thread;
       "thread_2_1",
       (struct hrtimer*) NULL, //  struct hrtimer hr_timer;
+      0,
       0,
       DEFAULT_PRIORITY
     }
@@ -272,13 +283,14 @@ struct Task task_3 =
       -1,
       NULL, //struct Task *parent; 
       loop_count*exec_time_3_0,
-      0,
+      (s64) 0,
       0,
       0,
       exec_time_3_0,
       NULL, //struct task_struct *sub_thread;
       "thread_3_0",
       (struct hrtimer*) NULL, //  struct hrtimer hr_timer;
+      0,
       0,
       DEFAULT_PRIORITY
     },
@@ -288,13 +300,14 @@ struct Task task_3 =
       -1,
       NULL, //struct Task *parent; 
       loop_count*exec_time_3_1,
-      0,
+      (s64) 0,
       0,
       0,
       exec_time_3_1,
       NULL, //struct task_struct *sub_thread;
       "thread_3_1",
       (struct hrtimer*) NULL, //  struct hrtimer hr_timer;
+      0,
       0,
       DEFAULT_PRIORITY
     }

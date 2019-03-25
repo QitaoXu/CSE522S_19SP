@@ -38,7 +38,7 @@ struct Subtask {
 	struct Task *parent; /*parent task of subtask*/
 	int work_load_loop_count; /*init to 0 or Z+, */
 
-	u64 last_release_time;  //NS!! /*initialized to 0, record the last time the subtask was released*/ //NS
+	ktime_t last_release_time;  //NS!! /*initialized to 0, record the last time the subtask was released*/ //NS
 	int cumul_exec_time;/* sum up the execution times of that subtask and all of its predecessors within the same task*/
 
 	int utilization; /*divide its execution time by its task's period.*/
@@ -47,6 +47,7 @@ struct Subtask {
 	struct task_struct *sub_thread; /*pointer to the task_struct*/
 	char* kthread_id;
 	struct hrtimer* hr_timer; /* timer for the subtask*/
+	int if_timer_start; /* timer for the subtask is started*/
 
 	int relative_ddl; /*task period* subtask's execution time/task's execution time*/
 	int sched_priori;  /*priority of subtask on the core*/

@@ -38,23 +38,19 @@ static int ddl_sort(const void* l, const void* r){
 }
 
 /* timer expiration */
-static enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart ) {
-	int i;
+enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart ) {
+	int ret, i;
 	for (i=0; i<num_subtask; i++) {
-		if (subtask_ptrs[i]->core==-1) {
-			continue;
-		}
-		if (subtask_ptrs[i]->hr_timer!=NULL) {
-			if (subtask_ptrs[i]->hr_timer==timer_for_restart) {
-				if (subtask_ptrs[i]->sub_thread!=NULL) {
-					printk(KERN_INFO "WAKEUP subtask %d %d on core%d idx_in_core%d", subtask_ptrs[i]->parent->index, subtask_ptrs[i]->idx_in_task, subtask_ptrs[i]->core, subtask_ptrs[i]->idx_in_core);
-					wake_up_process(subtask_ptrs[i]->sub_thread);
-					break;
-				}
+		if (subtask_ptrs[i]->hr_timer==timer_for_restart) {
+			printk(KERN_INFO "TRY TO WAKEUP subtask %d %d", subtask_ptrs[i]->parent->index, subtask_ptrs[i]->idx_in_task);
+			ret = wake_up_process(subtask_ptrs[i]->sub_thread);
+			if (ret==0) {
+				printk(KERN_INFO "already running");
 			}
+			break;
 		}
 	}
-	return HRTIMER_RESTART;
+	return HRTIMER_NORESTART;
 }
 
 /* init */
@@ -117,6 +113,7 @@ void init_all(void){
 	for (i=0;i<num_task;i++){
 		for (j=0;j<tasks[i].num;j++){
    			tasks[i].subtask_list[j].relative_ddl = (tasks[i].period)*(tasks[i].subtask_list[j].cumul_exec_time)/(tasks[i].execution_time);
+   			printk(KERN_INFO "calculate relative_ddl %d", tasks[i].subtask_list[j].relative_ddl);
    		}
   	}
 
@@ -187,15 +184,12 @@ void init_all(void){
 				printk(KERN_INFO "Subtask %d has no core, no timer for it", i);
 				continue;
 			}
-			printk(KERN_INFO "hr_timer kmalloc_array for subtask %d", i);
-			subtask_ptrs[i]->hr_timer = (struct hrtimer*) kmalloc(sizeof(struct hrtimer), GFP_KERNEL);
-			if (subtask_ptrs[i]->hr_timer==NULL) {
-				printk(KERN_INFO "hr_timer kmalloc_array error");
-			}
+			subtask_ptrs[i]->last_release_time = ktime_set(0, 0);
 			printk(KERN_INFO "hrtimer_init for subtask %d", i);
-			hrtimer_init(subtask_ptrs[i]->hr_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+			hrtimer_init(&(timers[i]), CLOCK_MONOTONIC, HRTIMER_MODE_REL);
 			printk(KERN_INFO "setup hr_timer function for subtask %d", i);
-			subtask_ptrs[i]->hr_timer->function = &timer_callback;
+			timers[i].function = &timer_callback;
+			subtask_ptrs[i]->hr_timer = &(timers[i]);
 		}
 
 	} else {
@@ -216,13 +210,16 @@ void init_all(void){
 }
 
 /* subtask function */
-static int subtask_run_workload(Subtask * sub) {
-	int current_time = 0;
-	while (current_time!=sub->work_load_loop_count){ 
+static void subtask_run_workload(Subtask * sub) {
+	int i = 0;
+	for (i=0; i<sub->work_load_loop_count; i++) { 
 		ktime_get();
-		current_time+=1;
-	}	
-	return 0;
+		if (i%loop_count==0) {
+			printk(KERN_INFO "RUNNING in %d loops", sub->work_load_loop_count);
+		}
+	}
+	printk(KERN_INFO "END RUNNING");
+	return;
 }
 
 /* calibrate function*/
@@ -232,16 +229,16 @@ static int calibrate_fn(void * data){
  	ktime_t before, after, diff, exe;
  	Subtask ** core_subtasks;
 
- 	printk(KERN_DEBUG "Core number is %d\n", core_id);
+ 	printk(KERN_INFO "Core number is %d\n", core_id);
 
  	if (core_id < 0 || core_id > num_core) {
   		return - 1;
  	}
- 	printk(KERN_DEBUG "Core number is with possible range.\n");
+ 	printk(KERN_INFO "Core number is with possible range.\n");
  	core_subtasks = cores[core_id].subtask_list;
  	num_of_subtasks = cores[core_id].num;
 
- 	printk(KERN_DEBUG "Number of subtasks is %d\n", num_of_subtasks);
+ 	printk(KERN_INFO "Number of subtasks is %d\n", num_of_subtasks);
 
  	for (i = 0; i < num_of_subtasks; i++) {
   		param.sched_priority = core_subtasks[i]->sched_priori;
@@ -275,39 +272,54 @@ static int calibrate_fn(void * data){
 static int run_fn(void * data){
 	Subtask* sub = (Subtask*) data;
 	ktime_t current_time, expect_next;
-
 	while (!kthread_should_stop()){ 
 		set_current_state(TASK_INTERRUPTIBLE);
+		printk(KERN_INFO "1. YEILD %d %d on core%d idx_in_core%d", sub->parent->index, sub->idx_in_task, sub->core, sub->idx_in_core);
 		schedule();
-		sub->last_release_time = ktime_to_ns(ktime_get());
-		printk(KERN_INFO "RUN subtask %d %d on core%d idx_in_core%d", sub->parent->index, sub->idx_in_task, sub->core, sub->idx_in_core);
+		printk(KERN_INFO "2. BACK RUN_FN %d %d", sub->parent->index, sub->idx_in_task);
+		sub->last_release_time = ktime_get();
+		printk(KERN_INFO "3. RUN subtask %d %d on core%d idx_in_core%d", sub->parent->index, sub->idx_in_task, sub->core, sub->idx_in_core);
 		subtask_run_workload(sub);
-		printk(KERN_INFO "FINISH %d %d to run on core%d idx_in_core%d", sub->parent->index, sub->idx_in_task, sub->core, sub->idx_in_core);
-  		if(sub->idx_in_task==0 || ((sub->idx_in_task>0)&&(sub->parent->subtask_list[sub->idx_in_task-1].core==-1))){
-  			/*	if its subtask is the first one in its task it should then calculate (as an absolute time) one task period later
-  			    than the value stored in its last release time and schedule its own timer to wake up at that time */
-  			expect_next = ktime_add(ktime_set(0, sub->last_release_time), ktime_set(0, sub->parent->period*MILLION));
-  			//printk(KERN_INFO " to setup timer for first task");
-  			current_time = ktime_get();
-  			hrtimer_forward(sub->hr_timer, ktime_get(), ktime_sub(expect_next, current_time));
-  		} 
+		printk(KERN_INFO "4. FINISH %d %d to run on core%d idx_in_core%d", sub->parent->index, sub->idx_in_task, sub->core, sub->idx_in_core);
 
-  		//TODO: WRONG if some subtasks are dropped!
-  		if((sub->idx_in_task)<((sub->parent->num)-1)){ //before the last one
-  			/*	if the time it obtained is less than the sum of the task period 
-  				and its successor's last release time, it should schedule its successor's 
-  				timer to wake up one task period after its successor's last release time -- otherwise */
-  			expect_next = ktime_add(ktime_set(0,(sub->parent->subtask_list[(sub->idx_in_task)+1].last_release_time)), ktime_set(0,sub->parent->period*MILLION));
+		//TODO: WRONG if some subtasks are dropped
+  		if(sub->idx_in_task==0) { //the first one
+  			expect_next = ktime_add(sub->last_release_time, ktime_set(0, sub->parent->period*MILLION));
   			current_time = ktime_get();
-  			if (current_time < expect_next){
-  				//printk(KERN_INFO "to setup timer for the following task");
-  				hrtimer_forward(sub->parent->subtask_list[(sub->idx_in_task)+1].hr_timer, current_time, ktime_sub(expect_next, current_time));
+  			if (ktime_compare(current_time, expect_next)<0) { //current_time<expect_next
+  				//hrtimer_forward(sub->hr_timer, current_time, ktime_sub(expect_next, current_time));
+  				hrtimer_start(sub->hr_timer, ktime_sub(expect_next, current_time), HRTIMER_MODE_REL);
+  				printk(KERN_INFO "5. FIRST TASK expect_next %lld ns; current_time %lld ns", ktime_to_ns(expect_next), ktime_to_ns(current_time));
   			} else {
-  			/*	if the time it obtained is greater than or equal to the sum of the task period 
-  				and its successor's last release time it should immediately call wake_up_process() 
-  				to wake up its successor subtask's kernel thread. */
-  				printk(KERN_INFO "Immediately wake up task");
-  				wake_up_process(sub->parent->subtask_list[(sub->idx_in_task)+1].sub_thread);
+  				printk(KERN_INFO "5. ERROR TASK PERIOD %d %d to run on core%d idx_in_core%d", sub->parent->index, sub->idx_in_task, sub->core, sub->idx_in_core);
+  			}
+  		}
+
+  		if ((sub->idx_in_task)<((sub->parent->num)-1)) { //before the last one
+  			if (sub->parent->subtask_list[(sub->idx_in_task)+1].if_timer_start==0){ 
+  				sub->parent->subtask_list[(sub->idx_in_task)+1].if_timer_start = 1;
+  				expect_next = ktime_add(sub->parent->subtask_list[0].last_release_time, ktime_set(0, sub->relative_ddl*MILLION));
+	  			current_time = ktime_get();
+	  			printk(KERN_INFO "6. expect_next %lld ns, current_time %lld ns", ktime_to_ns(expect_next), ktime_to_ns(current_time));
+	  			if (ktime_compare(current_time, expect_next)<0){ //current_time<expect_next
+	  				printk(KERN_INFO "7. SETUP TIMER task %d %d to run on core%d idx_in_core%d", sub->parent->index, sub->parent->subtask_list[(sub->idx_in_task)+1].idx_in_task, sub->parent->subtask_list[(sub->idx_in_task)+1].core, sub->parent->subtask_list[(sub->idx_in_task)+1].idx_in_core);
+	  				hrtimer_start(sub->parent->subtask_list[(sub->idx_in_task)+1].hr_timer, ktime_sub(expect_next, current_time), HRTIMER_MODE_REL);
+	  			} else {
+	  				printk(KERN_INFO "7. IMMEDIATELY1 WAKE UP task %d %d to run on core%d idx_in_core%d", sub->parent->index, sub->parent->subtask_list[(sub->idx_in_task)+1].idx_in_task, sub->parent->subtask_list[(sub->idx_in_task)+1].core, sub->parent->subtask_list[(sub->idx_in_task)+1].idx_in_core);			
+	  				wake_up_process(sub->parent->subtask_list[(sub->idx_in_task)+1].sub_thread);
+	  			}
+
+  			} else {
+  				expect_next = ktime_add(sub->parent->subtask_list[(sub->idx_in_task)+1].last_release_time, ktime_set(0, sub->parent->period*MILLION));
+	  			current_time = ktime_get();
+	  			printk(KERN_INFO "6. expect_next %lld ns, current_time %lld ns", ktime_to_ns(expect_next), ktime_to_ns(current_time));
+	  			if (ktime_compare(current_time, expect_next)<0){ //current_time<expect_next
+	  				printk(KERN_INFO "7. SETUP TIMER task %d %d to run on core%d idx_in_core%d", sub->parent->index, sub->parent->subtask_list[(sub->idx_in_task)+1].idx_in_task, sub->parent->subtask_list[(sub->idx_in_task)+1].core, sub->parent->subtask_list[(sub->idx_in_task)+1].idx_in_core);
+	  				hrtimer_start(sub->parent->subtask_list[(sub->idx_in_task)+1].hr_timer, ktime_sub(expect_next, current_time), HRTIMER_MODE_REL);
+	  			} else {
+	  				printk(KERN_INFO "7. IMMEDIATELY2 WAKE UP task %d %d to run on core%d idx_in_core%d", sub->parent->index, sub->parent->subtask_list[(sub->idx_in_task)+1].idx_in_task, sub->parent->subtask_list[(sub->idx_in_task)+1].core, sub->parent->subtask_list[(sub->idx_in_task)+1].idx_in_core);
+	  				wake_up_process(sub->parent->subtask_list[(sub->idx_in_task)+1].sub_thread);
+	  			}
   			}
   		}
 	}
@@ -349,17 +361,11 @@ static int simple_init (void) {
 		mdelay(100);
 		for (i=0; i<num_task; i++) {
 			for (j=0; j<tasks[i].num; j++) {
+				//TODO: WRONG if some subtasks are dropped
 				if(tasks[i].subtask_list[j].idx_in_task==0) {
-					while (1) {
-						//wake up the first subtask has core in a task
-						if (tasks[i].subtask_list[j].core!=-1) {
-							wake_up_process(tasks[i].subtask_list[j].sub_thread);
-							hrtimer_start(tasks[i].subtask_list[j].hr_timer, ktime_set(0, MILLION), HRTIMER_MODE_REL); //later 1 ms to wake up thread
-							break;
-						} else {
-							j++;
-						}
-					}
+					printk(KERN_INFO "wake up and set timer for subtask %d, %d", i, j);
+					wake_up_process(tasks[i].subtask_list[j].sub_thread);
+					hrtimer_start(tasks[i].subtask_list[j].hr_timer, ktime_set(10, 0), HRTIMER_MODE_REL);
 				}
 			}
 		}
@@ -395,17 +401,8 @@ static int free_all(void){
 
 	//stop kthread & free timer for each subtask if it has
 	if (mode_input==RUN) {
-		for (i=0; i<num_task; i++) {
-			for (j=0; j<tasks[i].num; j++) {
-				if (tasks[i].subtask_list[j].core==-1) {
-					printk(KERN_INFO "Task %d subtask %d has no core, do not free its timer", i, j);
-				} else {
-					printk(KERN_INFO "to hrtimer_cancel task%d/%d subtask%d/%d", i, num_task, j, tasks[i].num);
-					hrtimer_cancel(tasks[i].subtask_list[j].hr_timer);
-					printk(KERN_INFO "to kfree hr_timer task%d subtask%d", i, j);
-					kfree(tasks[i].subtask_list[j].hr_timer);	
-				}			
-			 }
+		for (i=0; i<num_subtask; i++) {
+			hrtimer_cancel(&(timers[i]));
 		}
 		for (i=0; i<num_task; i++) {
 			printk(KERN_INFO "task %d subtask num %d", i, tasks[i].num);
