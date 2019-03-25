@@ -33,9 +33,9 @@ __attribute__((section("__versions"))) = {
 	{ 0xe188bdc6, __VMLINUX_SYMBOL_STR(kmalloc_caches) },
 	{ 0xce58dc69, __VMLINUX_SYMBOL_STR(hrtimer_init) },
 	{ 0x310917fe, __VMLINUX_SYMBOL_STR(sort) },
-	{ 0x9d669763, __VMLINUX_SYMBOL_STR(memcpy) },
 	{ 0x12e807b4, __VMLINUX_SYMBOL_STR(kmem_cache_alloc_trace) },
 	{ 0x2196324, __VMLINUX_SYMBOL_STR(__aeabi_idiv) },
+	{ 0x9d669763, __VMLINUX_SYMBOL_STR(memcpy) },
 	{ 0x222e7ce2, __VMLINUX_SYMBOL_STR(sysfs_streq) },
 	{ 0xe6932195, __VMLINUX_SYMBOL_STR(hrtimer_start_range_ns) },
 	{ 0x1000e51, __VMLINUX_SYMBOL_STR(schedule) },
@@ -55,4 +55,4 @@ __attribute__((section(".modinfo"))) =
 "depends=";
 
 
-MODULE_INFO(srcversion, "29781EB2D5A24262FEF2138");
+MODULE_INFO(srcversion, "C39BBE1BD66CB1545819BC3");
