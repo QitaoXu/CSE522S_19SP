@@ -26,32 +26,31 @@
 #define subtask_index0 0
 #define subtask_index1 1
 #define subtask_index2 2
-#define subtask_index3 3
 
 #define subtask_count0 3
 #define subtask_count1 3
 #define subtask_count2 2
 #define subtask_count3 2
 
-#define task_period0 20
-#define task_period1 20
-#define task_period2 20
-#define task_period3 20
+#define task_period0 80
+#define task_period1 80
+#define task_period2 80
+#define task_period3 80
 
-#define loop_count 9300//9300
+#define loop_count 8500//9300
 #define exec_time_0_0 10
-#define exec_time_0_1 8
-#define exec_time_0_2 5
+#define exec_time_0_1 10
+#define exec_time_0_2 10
 
 #define exec_time_1_0 10
-#define exec_time_1_1 8
-#define exec_time_1_2 5
+#define exec_time_1_1 10
+#define exec_time_1_2 10
 
 #define exec_time_2_0 10
-#define exec_time_2_1 5
+#define exec_time_2_1 10
 
 #define exec_time_3_0 10
-#define exec_time_3_1 5
+#define exec_time_3_1 10
 #define HIGHEST_PRIORITY 99
 #define DEFAULT_PRIORITY 1
 Core* cores;

@@ -415,7 +415,7 @@ static int simple_init (void) {
 }
 
 /* exit function */
-static int free_all(void){
+static void free_all(void){
 	int i, j, ret;
 
 	//stop kthread & free timer for each subtask if it has
@@ -424,22 +424,15 @@ static int free_all(void){
 			hrtimer_cancel(&(timers[i]));
 		}
 		for (i=0; i<num_task; i++) {
-			printk(KERN_INFO "task %d subtask num %d", i, tasks[i].num);
-		}
-		for (i=0; i<num_task; i++) {
 			for (j=0; j<tasks[i].num; j++) {
-				if (tasks[i].subtask_list[j].core==-1) {
-					printk(KERN_INFO "Task %d subtask %d has no core, do not stop its thread", i, j);
-				} else {
-					printk(KERN_INFO "%d %d to stop", i, j);
-					ret = kthread_stop(tasks[i].subtask_list[j].sub_thread);
-			 		if(ret == 0) {
-			  			printk(KERN_INFO "%s stopped",tasks[i].subtask_list[j].kthread_id);
-			  		} else if (ret < 0) {
-			  			printk(KERN_INFO "%s failed to stop", tasks[i].subtask_list[j].kthread_id);
-			  			return -1;
-			  		}
-		  		}
+				printk(KERN_INFO "%d %d to stop", i, j);
+				ret = kthread_stop(tasks[i].subtask_list[j].sub_thread);
+			 	if(ret == 0) {
+			  		printk(KERN_INFO "%s stopped",tasks[i].subtask_list[j].kthread_id);
+			  	} else if (ret < 0) {
+			  		printk(KERN_INFO "%s failed to stop", tasks[i].subtask_list[j].kthread_id);
+			  		return;
+			  	}
 	  		}
 		}
 	}
@@ -451,22 +444,18 @@ static int free_all(void){
 	kfree(tasks);
 	printk(KERN_INFO "to kfree cores");
 	kfree(cores);
-	return 0;
+	return;
 }
 
 /* exit function - logs that the module is being removed */
 static void simple_exit (void) {
-	int ret;
-	ret = free_all();
-	if (ret != 0){
-		printk(KERN_DEBUG "free_all() failed partly.\n");
-	}
-    printk(KERN_ALERT "simple module is being unloaded");
+	free_all();
+    printk(KERN_INFO "simple module is being unloaded");
 }
 
 module_init (simple_init);
 module_exit (simple_exit);
 
 MODULE_LICENSE ("GPL");
-MODULE_AUTHOR ("Jiangnan Liu, Qitao Xu, Zhe Wang");
+MODULE_AUTHOR ("Zhe Wang, Jiangnan Liu, Qitao Xu");
 MODULE_DESCRIPTION ("Enforcing Real Time Behavior");
