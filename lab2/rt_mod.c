@@ -18,7 +18,7 @@
 #include <linux/sort.h>
 #include <linux/slab.h>
 #include "basic.h"
-#include "global-config.h"
+#include "global-config_c.h"
 
 /*sort utilization from highest to lowest*/
 static int util_sort(const void* l, const void* r){
