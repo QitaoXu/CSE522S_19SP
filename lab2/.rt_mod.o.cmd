@@ -581,7 +581,7 @@ deps_/tmp/compile/liu433/linux_source/new_mod/CSE522S_19SP/lab2/rt_mod.o := \
   include/linux/vmalloc.h \
   include/linux/kasan.h \
   /tmp/compile/liu433/linux_source/new_mod/CSE522S_19SP/lab2/basic.h \
-  /tmp/compile/liu433/linux_source/new_mod/CSE522S_19SP/lab2/global-config.h \
+  /tmp/compile/liu433/linux_source/new_mod/CSE522S_19SP/lab2/global-config_c.h \
 
 /tmp/compile/liu433/linux_source/new_mod/CSE522S_19SP/lab2/rt_mod.o: $(deps_/tmp/compile/liu433/linux_source/new_mod/CSE522S_19SP/lab2/rt_mod.o)
 
