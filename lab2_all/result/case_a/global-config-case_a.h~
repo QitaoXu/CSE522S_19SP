@@ -16,6 +16,7 @@
 #define task_index0 0
 #define task_index1 1
 #define task_index2 2
+#define task_index3 3
 
 #define core_index0 0
 #define core_index1 1
@@ -31,10 +32,10 @@
 #define subtask_count2 2
 #define subtask_count3 2
 
-#define task_period0 25
-#define task_period1 25
-#define task_period2 25
-#define task_period3 25
+#define task_period0 80
+#define task_period1 80
+#define task_period2 80
+#define task_period3 80
 
 #define loop_count 9300//9300
 #define exec_time_0_0 5

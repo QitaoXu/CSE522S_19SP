@@ -26,7 +26,6 @@
 #define subtask_index0 0
 #define subtask_index1 1
 #define subtask_index2 2
-#define subtask_index3 3
 
 #define subtask_count0 3
 #define subtask_count1 3
@@ -36,13 +35,12 @@
 #define task_period0 80
 #define task_period1 80
 #define task_period2 80
-#define task_period3 80//2S.
+#define task_period3 80
 
-#define loop_count 7500//9300
-#define exec_time_0_0 10//10
+#define loop_count 8500//9300
+#define exec_time_0_0 10
 #define exec_time_0_1 10
 #define exec_time_0_2 10
-#define exec_time_0_3 10
 
 #define exec_time_1_0 10
 #define exec_time_1_1 10
@@ -143,24 +141,7 @@ struct Task task_0 =
       0,
       0,
       DEFAULT_PRIORITY
-    },
-    {
-       subtask_index3,
-       -1,
-       -1,
-       NULL, //struct Task *parent; 
-       loop_count*exec_time_0_3,
-       (s64) 0,
-       0,
-       0,
-       exec_time_0_3,
-       NULL, //struct task_struct *sub_thread;
-       "thread_0_3",
-       (struct hrtimer*) NULL, //  struct hrtimer hr_timer;
-       0,
-       0,
-       DEFAULT_PRIORITY
-     }
+    }
   }
 };
 
