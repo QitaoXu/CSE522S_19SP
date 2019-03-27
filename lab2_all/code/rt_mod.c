@@ -19,22 +19,39 @@
 #include "basic.h"
 #include "global-config.h"
 
-/*sort utilization from highest to lowest*/
-static int util_sort(const void* l, const void* r){
-	Subtask* sub1=(Subtask*)(l);
-	Subtask* sub2=(Subtask*)(r);
-	if(sub1->utilization>sub2->utilization) return -1;
-	else if(sub1->utilization<sub2->utilization) return 1;
-	else return 0;
+// sort utilization from highest to lowest
+static void util_sort(Subtask *arr[], int n) { 
+    int i, j, max_idx;
+    Subtask *temp; 
+    for (i = 0; i < n-1; i++) { 
+        max_idx = i; 
+        for (j = i+1; j < n; j++) {
+          if (arr[j]->utilization > arr[max_idx]->utilization) 
+           { max_idx = j; }
+           
+      }
+      temp=arr[max_idx];
+      arr[max_idx]=arr[i];
+      arr[i]=temp;
+    } 
 }
-/*sort relative ddl from earliest to latest, so get priority from highest to lowest*/
-static int ddl_sort(const void* l, const void* r){
-	Subtask* sub1=(Subtask*)(l);
-	Subtask* sub2=(Subtask*)(r);
-	if(sub1->relative_ddl<sub2->relative_ddl) return -1;
-	else if(sub1->relative_ddl>sub2->relative_ddl) return 1;
-	else return 0;
-}
+
+// sort relative ddl from earliest to latest, so get priority from highest to lowest
+static void ddl_sort(Subtask *arr[], int n) { 
+    int i, j, min_idx; 
+    Subtask *temp;
+    for (i = 0; i < n-1; i++){ 
+        min_idx = i; 
+        for (j = i+1; j < n; j++) {
+          if (arr[j]->relative_ddl < arr[min_idx]->relative_ddl) 
+            {min_idx = j; }
+          
+      }
+      temp=arr[min_idx];
+      arr[min_idx]=arr[i];
+      arr[i]=temp;
+    } 
+}  
 
 /* timer expiration */
 enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart ) {
@@ -124,7 +141,7 @@ void init_all(void){
 		for (i=0; i<num_subtask; i++) {
 			printk(KERN_INFO "//////before sort, idx_in_task:%d idx_in_core:%d core:%d utilization:%d", subtask_ptrs[i]->idx_in_task, subtask_ptrs[i]->idx_in_core, subtask_ptrs[i]->core, subtask_ptrs[i]->utilization);
 		}
-		sort((void*)subtask_ptrs, num_subtask, sizeof(struct subtask*), &util_sort, NULL);
+		util_sort(subtask_ptrs,num_subtask);
 		for (i=0; i<num_subtask; i++) {
 			printk(KERN_INFO "//////after sort, idx_in_task:%d idx_in_core:%d core:%d utilization:%d", subtask_ptrs[i]->idx_in_task, subtask_ptrs[i]->idx_in_core, subtask_ptrs[i]->core, subtask_ptrs[i]->utilization);
 		}
@@ -169,7 +186,7 @@ void init_all(void){
 			//sort subtask based on relative ddl from earliest to latest
 			printk(KERN_INFO "sort subtask based on relative ddl from earliest to latest");
 			printk(KERN_INFO "after sort, cores[%d].num: %d", i, cores[i].num);
-			sort((void*)(cores[i].subtask_list), cores[i].num, sizeof(struct subtask*), &ddl_sort, NULL);
+			ddl_sort(cores[i].subtask_list,cores[i].num);
 			for(j=0; j<cores[i].num; j++){
 				printk(KERN_INFO "adjust idx_in_core");
 				cores[i].subtask_list[j]->idx_in_core = j;

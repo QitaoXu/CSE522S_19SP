@@ -40,18 +40,18 @@
 
 #define loop_count 9300//9300
 #define exec_time_0_0 10
-#define exec_time_0_1 10
-#define exec_time_0_2 10
+#define exec_time_0_1 8
+#define exec_time_0_2 5
 
 #define exec_time_1_0 10
-#define exec_time_1_1 10
-#define exec_time_1_2 10
+#define exec_time_1_1 8
+#define exec_time_1_2 5
 
 #define exec_time_2_0 10
-#define exec_time_2_1 10
+#define exec_time_2_1 5
 
 #define exec_time_3_0 10
-#define exec_time_3_1 10
+#define exec_time_3_1 5
 #define HIGHEST_PRIORITY 99
 #define DEFAULT_PRIORITY 1
 Core* cores;
