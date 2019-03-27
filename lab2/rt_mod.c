@@ -24,8 +24,8 @@
 static int util_sort(const void* l, const void* r){
 	Subtask* sub1=(Subtask*)(l);
 	Subtask* sub2=(Subtask*)(r);
-	if(sub1->utilization > sub2->utilization) return 1;
-	else if(sub1->utilization < sub2->utilization) return -1;
+	if(sub1->utilization > sub2->utilization) return -1;
+	else if(sub1->utilization < sub2->utilization) return 1;
 	else return 0;
 }
 /*sort relative ddl from earliest to latest, so get priority from highest to lowest*/

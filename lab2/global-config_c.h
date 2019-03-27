@@ -39,20 +39,20 @@
 #define task_period3 40//2S.
 
 #define loop_count 9300//9804
-#define exec_time_0_0 40//10
-#define exec_time_0_1 15
-#define exec_time_0_2 15
-#define exec_time_0_3 15 // 
+#define exec_time_0_0 10//10
+#define exec_time_0_1 10
+#define exec_time_0_2 10
+#define exec_time_0_3 10 // 
 
 #define exec_time_1_0 18
 #define exec_time_1_1 18
 #define exec_time_1_2 18
 
-#define exec_time_2_0 15
-#define exec_time_2_1 15
+#define exec_time_2_0 10
+#define exec_time_2_1 10
 
-#define exec_time_3_0 15
-#define exec_time_3_1 15
+#define exec_time_3_0 10
+#define exec_time_3_1 10
 #define HIGHEST_PRIORITY 99
 #define DEFAULT_PRIORITY 1
 Core* cores;
