@@ -18,7 +18,7 @@
 #include <linux/sort.h>
 #include <linux/slab.h>
 #include "basic.h"
-#include "global-config.h"
+#include "global-config_c.h"
 
 /*sort utilization from highest to lowest*/
 static int util_sort(const void* l, const void* r){
@@ -55,7 +55,6 @@ enum hrtimer_restart timer_callback( struct hrtimer *timer_for_restart ) {
 void remove_element(Subtask *array, int index, int array_length)
 {
    int i;
-   array[i] = NULL;
    for(i = index; i < array_length - 1; i++) {
    	array[i] = array[i + 1];
    	array[i+1].idx_in_task=i;
