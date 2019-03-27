@@ -399,6 +399,7 @@ static int simple_init (void) {
 	parse_module_param();
 	printk(KERN_INFO "enter simple_init");
 	init_all();
+	mdelay(10000);
 	if(mode_input == RUN){
 		printk(KERN_INFO "Current mode is run mode.");
 		for (i=0; i<num_task; i++) {
