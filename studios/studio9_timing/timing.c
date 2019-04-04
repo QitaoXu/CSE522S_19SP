@@ -10,16 +10,31 @@
 #define KTIME_ARR_SIZE 8
 ktime_t ktime_arr[KTIME_ARR_SIZE];
 
+
+static int kthread_fn(void *data) {
+
+    printk(KERN_INFO "This is kthread: %s function!\n", current->comm);
+
+    return 0;
+}
+
 static int timing_init (void) {
 
     int i = 0; 
+    struct task_struct * kthread;
+
+    printk(KERN_ALERT "timing module is being loaded!\n");
 
     for (i = 0; i < KTIME_ARR_SIZE; i++) {
 
         ktime_arr[i] = ktime_set(0, 0);
     }
 
-    printk(KERN_ALERT "timing module is being loaded!\n");
+    ktime_arr[0] = ktime_get();
+
+    kthread = kthread_create(kthread_fn, NULL, "kthread_timing");
+    
+    ktime_arr[1] = ktime_get();
 
     return 0;
 
