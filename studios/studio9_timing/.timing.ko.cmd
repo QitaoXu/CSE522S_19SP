@@ -1,0 +1,1 @@
+cmd_/tmp/compile/qitao/522S/studios/studio9_timing/timing.ko := arm-linux-gnueabihf-ld -EL -r  -T ./scripts/module-common.lds --build-id  -o /tmp/compile/qitao/522S/studios/studio9_timing/timing.ko /tmp/compile/qitao/522S/studios/studio9_timing/timing.o /tmp/compile/qitao/522S/studios/studio9_timing/timing.mod.o ;  true
