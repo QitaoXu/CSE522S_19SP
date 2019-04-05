@@ -45,7 +45,7 @@ int main (int argc, char* argv[]){
         exit(-1);
     }
 
-    printf("pid: %d ", get_pid());
+    printf("pid: %d ", getpid());
 
     for (i = 0; i < argc; i++) {
 
