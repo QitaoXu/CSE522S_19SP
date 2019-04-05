@@ -1,0 +1,76 @@
+pi@hululiu:~/Documents/CSE522S_19SP/CSE522S_19SP/studios/studio6_shared_mem $ ./ipc 3 FIFO
+Here is parent process. num_comm_times = 3, IPC_mechanism is FIFO
+Here is child process. num_comm_times = 3, IPC_mechanism is FIFO
+Here is parent process:
+Times of parent process communicating with child process: 3.
+Time before communication: 3381.68017147. 
+Time after communication: 3381.68676991
+pi@hululiu:~/Documents/CSE522S_19SP/CSE522S_19SP/studios/studio6_shared_mem $ rm my_ao_fifo 
+pi@hululiu:~/Documents/CSE522S_19SP/CSE522S_19SP/studios/studio6_shared_mem $ ./ipc 4 FIFO
+Here is parent process. num_comm_times = 4, IPC_mechanism is FIFO
+Here is child process. num_comm_times = 4, IPC_mechanism is FIFO
+Here is parent process:
+Times of parent process communicating with child process: 4.
+Time before communication: 3402.387396306. 
+Time after communication: 3402.388768650
+pi@hululiu:~/Documents/CSE522S_19SP/CSE522S_19SP/studios/studio6_shared_mem $ rm my_ao_fifo | ./ipc 5 FIFO
+Here is parent process. num_comm_times = 5, IPC_mechanism is FIFO
+ERROR: mkfifo failed! Reason: File exists
+pi@hululiu:~/Documents/CSE522S_19SP/CSE522S_19SP/studios/studio6_shared_mem $ rm my_ao_fifo rm: cannot remove 'my_ao_fifo': No such file or directory
+pi@hululiu:~/Documents/CSE522S_19SP/CSE522S_19SP/studios/studio6_shared_mem $ ./ipc 5 FIFO
+Here is parent process. num_comm_times = 5, IPC_mechanism is FIFO
+Here is child process. num_comm_times = 5, IPC_mechanism is FIFO
+Here is parent process:
+Times of parent process communicating with child process: 9.
+Time before communication: 3439.427583427. 
+Time after communication: 3439.429184833
+pi@hululiu:~/Documents/CSE522S_19SP/CSE522S_19SP/studios/studio6_shared_mem $ rm my_ao_fifo 
+pi@hululiu:~/Documents/CSE522S_19SP/CSE522S_19SP/studios/studio6_shared_mem $ ./ipc 6 FIFO
+Here is parent process. num_comm_times = 6, IPC_mechanism is FIFO
+Here is child process. num_comm_times = 6, IPC_mechanism is FIFO
+^C
+pi@hululiu:~/Documents/CSE522S_19SP/CSE522S_19SP/studios/studio6_shared_mem $ rm my_ao_fifo 
+pi@hululiu:~/Documents/CSE522S_19SP/CSE522S_19SP/studios/studio6_shared_mem $ ./ipc 6 FIFO
+Here is parent process. num_comm_times = 6, IPC_mechanism is FIFO
+Here is child process. num_comm_times = 6, IPC_mechanism is FIFO
+Here is parent process:
+Times of parent process communicating with child process: 6.
+Time before communication: 3494.91600073. 
+Time after communication: 3494.93228042
+pi@hululiu:~/Documents/CSE522S_19SP/CSE522S_19SP/studios/studio6_shared_mem $ rm my_ao_fifo 
+pi@hululiu:~/Documents/CSE522S_19SP/CSE522S_19SP/studios/studio6_shared_mem $ ./ipc 7 FIFO
+Here is parent process. num_comm_times = 7, IPC_mechanism is FIFO
+Here is child process. num_comm_times = 7, IPC_mechanism is FIFO
+^C
+pi@hululiu:~/Documents/CSE522S_19SP/CSE522S_19SP/studios/studio6_shared_mem $ rm my_ao_fifo 
+pi@hululiu:~/Documents/CSE522S_19SP/CSE522S_19SP/studios/studio6_shared_mem $ ./ipc 7 FIFO
+Here is parent process. num_comm_times = 7, IPC_mechanism is FIFO
+Here is child process. num_comm_times = 7, IPC_mechanism is FIFO
+Here is parent process:
+Times of parent process communicating with child process: 14.
+Time before communication: 3513.84031785. 
+Time after communication: 3513.89334441
+pi@hululiu:~/Documents/CSE522S_19SP/CSE522S_19SP/studios/studio6_shared_mem $ rm my_ao_fifo 
+pi@hululiu:~/Documents/CSE522S_19SP/CSE522S_19SP/studios/studio6_shared_mem $ ./ipc 8 FIFO
+Here is parent process. num_comm_times = 8, IPC_mechanism is FIFO
+Here is child process. num_comm_times = 8, IPC_mechanism is FIFO
+Here is parent process:
+Times of parent process communicating with child process: 8.
+Time before communication: 3519.995547719. 
+Time after communication: 3519.997163032
+pi@hululiu:~/Documents/CSE522S_19SP/CSE522S_19SP/studios/studio6_shared_mem $ rm my_ao_fifo 
+pi@hululiu:~/Documents/CSE522S_19SP/CSE522S_19SP/studios/studio6_shared_mem $ ./ipc 9 FIFO
+Here is parent process. num_comm_times = 9, IPC_mechanism is FIFO
+Here is child process. num_comm_times = 9, IPC_mechanism is FIFO
+Here is parent process:
+Times of parent process communicating with child process: 9.
+Time before communication: 3525.59291624. 
+Time after communication: 3525.60930478
+pi@hululiu:~/Documents/CSE522S_19SP/CSE522S_19SP/studios/studio6_shared_mem $ rm my_ao_fifo 
+pi@hululiu:~/Documents/CSE522S_19SP/CSE522S_19SP/studios/studio6_shared_mem $ ./ipc 10 FIFO
+Here is parent process. num_comm_times = 10, IPC_mechanism is FIFO
+Here is child process. num_comm_times = 10, IPC_mechanism is FIFO
+Here is parent process:
+Times of parent process communicating with child process: 10.
+Time before communication: 3529.851201778. 
+Time after communication: 3529.857979382
