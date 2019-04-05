@@ -14,7 +14,7 @@ int main (int argc, char* argv[]){
     int core_nums;
     int ret;
     int i;
-    cpu_set_t = set;
+    cpu_set_t set;
     unsigned long cores_index[argc];
     
 
@@ -32,7 +32,7 @@ int main (int argc, char* argv[]){
 
     }
 
-    for (i = 1; j < argc; i++) {
+    for (i = 1; i < argc; i++) {
 
         CPU_SET(cores_index[i], &set);
     }
