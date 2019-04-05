@@ -21,6 +21,12 @@ int main (int argc, char* argv[]){
     int i;
     cpu_set_t set;
     unsigned long cores_index[argc];
+
+    unsigned index, row, col; //loop indicies
+	unsigned matrix_size, squared_size;
+	double *A, *B, *C;
+
+    matrix_size = 1000;
     
 
     if( argc == 1 ){
@@ -58,9 +64,32 @@ int main (int argc, char* argv[]){
 
     printf("\n\n");
 
-    for(i = 0; i < size; i++){
-        called[i] = 888;
+
+    squared_size = matrix_size * matrix_size;
+
+	printf("Generating matrices...\n");
+
+	A = (double*) malloc( sizeof(double) * squared_size );
+	B = (double*) malloc( sizeof(double) * squared_size );
+	C = (double*) malloc( sizeof(double) * squared_size );
+
+	for( index = 0; index < squared_size; index++ ){
+		A[index] = (double) rand();
+		B[index] = (double) rand();
+		C[index] = 0.0;
 	}
+
+	printf("Multiplying matrices...\n");
+
+	for( row = 0; row < matrix_size; row++ ){
+		for( col = 0; col < matrix_size; col++ ){
+			for( index = 0; index < matrix_size; index++){
+			C[row*matrix_size + col] += A[row*matrix_size + index] *B[index*matrix_size + col];
+			}	
+		}
+	}
+
+	printf("Multiplication done!\n");
 
     return 0;
 }
