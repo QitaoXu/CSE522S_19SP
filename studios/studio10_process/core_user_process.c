@@ -10,6 +10,10 @@
 #include <stdlib.h>
 #include <sys/types.h>
 
+#define size 50000
+
+int called [size];
+
 int main (int argc, char* argv[]){
 
     int core_nums;
@@ -51,6 +55,12 @@ int main (int argc, char* argv[]){
 
         printf("argv[%d] = %s ", i, argv[i]);
     }
+
+    printf("\n\n");
+
+    for(i = 0; i < size; i++){
+        called[i] = 888;
+	}
 
     return 0;
 }
