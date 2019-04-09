@@ -14,10 +14,10 @@ static int core_index = 0;
 static int period = 1000;
 static iter_num = 3;
 
-MODULE_PARM(policy, "s");
-MODULE_PARM(core_index, "i");
-MODULE_PARM(period, "i");
-MODURE_PARM(iter_num, "i");
+MODULE_PARM(policy, "%s");
+MODULE_PARM(core_index, "%i");
+MODULE_PARM(period, "%i");
+MODURE_PARM(iter_num, "%i");
 
 static int kthread_fn(void *data) {
 
