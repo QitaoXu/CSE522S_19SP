@@ -96,6 +96,8 @@ static int external_init (void) {
 
         hrtimer_start(&timer, ktime_set(0, period * 1000000), HRTIMER_MODE_REL);
 
+        schedule();
+
     }
 
     return 0;
