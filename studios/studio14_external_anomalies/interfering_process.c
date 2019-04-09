@@ -127,6 +127,8 @@ int main (int argc, char* argv[]){
         task_fn(NULL);
 
         num_iter -= 1;
+
+        printf("\n");
     }
 
     return 0;
