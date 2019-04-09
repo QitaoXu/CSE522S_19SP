@@ -14,7 +14,7 @@ static int core_index = 0;
 static int period = 1000;
 static int iter_num = 3;
 
-module_param(policy, char *, 0764);
+module_param(policy, char[16], 0764);
 module_param(core_index, int, 0764);
 module_param(period, int, 0764);
 module_param(iter_num, int, 0764);
