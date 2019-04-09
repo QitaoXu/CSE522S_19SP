@@ -46,43 +46,9 @@ static enum hrtimer_restart hrtimer_fn(struct hrtimer * timer) {
 static int kthread_fn(void *data) {
 
     int *iter = (int *)data;
-    unsigned index, row, col; //loop indicies
-	unsigned matrix_size, squared_size;
-	int *A, *B, *C;
 
     printk(KERN_INFO "This is kthread: %s function!, iter_num = %d\n", current->comm, *iter);
 
-    matrix_size = 100;
-
-    squared_size = matrix_size * matrix_size;
-
-    printk(KERN_INFO "Generating matrices...\n");
-
-	A = (int*) kmalloc( GFP_KERNEL, sizeof(int) * squared_size );
-	B = (int*) kmalloc( GFP_KERNEL, sizeof(int) * squared_size );
-	C = (int*) kmalloc( GFP_KERNEL, sizeof(int) * squared_size );
-
-    for( index = 0; index < squared_size; index++ ){
-		A[index] = 2;
-		B[index] = 3;
-		C[index] = 0;
-	}
-
-	printk(KERN_INFO "Multiplying matrices...\n");
-
-	for( row = 0; row < matrix_size; row++ ){
-		for( col = 0; col < matrix_size; col++ ){
-			for( index = 0; index < matrix_size; index++){
-			C[row*matrix_size + col] += A[row*matrix_size + index] *B[index*matrix_size + col];
-			}	
-		}
-	}
-
-	printk(KERN_INFO "Multiplication done!\n\n");
-
-    kfree(A);
-    kfree(B);
-    kfree(C);
     ktime_arr[1] = ktime_get();
 
     set_current_state(TASK_INTERRUPTIBLE);
