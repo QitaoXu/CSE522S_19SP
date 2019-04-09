@@ -9,6 +9,16 @@
 #include <linux/hrtimer.h>
 #include <linux/types.h>
 
+static char* policy = "RR";
+static int core_index = 0;
+static int period = 1000;
+static iter_num = 3;
+
+MODULE_PARM(policy, "s");
+MODULE_PARM(core_index, "i");
+MODULE_PARM(period, "i");
+MODURE_PARM(iter_num, "i");
+
 static int kthread_fn(void *data) {
 
     int *index = (int *)data;
@@ -21,6 +31,11 @@ static int kthread_fn(void *data) {
 static int external_init (void) {
 
     printk(KERN_ALERT "multithread module is being loaded!\n");
+
+    printk(KERN_INFO "policy: %s\n", policy);
+    printk(KERN_INFO "core_index: %d\n", core_index);
+    printk(KERN_INFO "period: %dms\n", period);
+    printk(KERN_INFO "iter_num: %d\n", iter_num);
 
     return 0;
 }
