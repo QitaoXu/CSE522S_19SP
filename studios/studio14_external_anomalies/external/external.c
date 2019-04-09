@@ -51,6 +51,8 @@ static int kthread_fn(void *data) {
 
     ktime_arr[1] = ktime_get();
 
+    *iter -= 1;
+
     set_current_state(TASK_INTERRUPTIBLE);
 
     schedule();
@@ -93,8 +95,6 @@ static int external_init (void) {
     while (iter_num > 0) {
 
         hrtimer_start(&timer, ktime_set(0, period * 1000000), HRTIMER_MODE_REL);
-
-        iter_num -= 1;
 
     }
 
