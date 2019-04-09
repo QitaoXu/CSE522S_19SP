@@ -14,10 +14,10 @@ static int core_index = 0;
 static int period = 1000;
 static int iter_num = 3;
 
-MODULE_PARM(policy, char *, S_IWUSR|S_IRUSR);
-MODULE_PARM(core_index, int, S_IWUSR|S_IRUSR);
-MODULE_PARM(period, int, S_IWUSR|S_IRUSR);
-MODURE_PARM(iter_num, int, S_IWUSR|S_IRUSR);
+module_param(policy, char *, S_IWUSR|S_IRUSR);
+module_param(core_index, int, S_IWUSR|S_IRUSR);
+module_param(period, int, S_IWUSR|S_IRUSR);
+module_param(iter_num, int, S_IWUSR|S_IRUSR);
 
 static int kthread_fn(void *data) {
 
