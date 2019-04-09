@@ -69,6 +69,8 @@ int main (int argc, char* argv[]){
         printf("argv[%d] = %s ", i, argv[i]);
     }
 
+    printf("\n\n");
+
     cpu_set_t set;
     int ret;
     int policy;
