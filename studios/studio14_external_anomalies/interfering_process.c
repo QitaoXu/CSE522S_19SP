@@ -62,6 +62,13 @@ int main (int argc, char* argv[]){
 
     }
 
+    int i;
+
+    for (i = 0; i < argc; i++) {
+
+        printf("argv[%d] = %s ", i, argv[i]);
+    }
+
     cpu_set_t set;
     int ret;
     int policy;
@@ -87,13 +94,6 @@ int main (int argc, char* argv[]){
     if (ret == -1) {
         printf("ERROR: sched_setaffinity system call failed! Reason: %s\n", strerror(errno));
         exit(-1);
-    }
-
-    int i;
-
-    for (i = 0; i < argc; i++) {
-
-        printf("argv[%d] = %s ", i, argv[i]);
     }
 
     
