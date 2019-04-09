@@ -28,9 +28,9 @@ static int period = 1000;
 static int iter_num = 3;
 
 module_param(policy, charp, 0764);
-module_param(core_index, int, 0764);
+module_param(core, int, 0764);
 module_param(period, int, 0764);
-module_param(iter_num, int, 0764);
+module_param(iter, int, 0764);
 
 static enum hrtimer_restart hrtimer_fn(struct hrtimer * timer) {
 
@@ -69,9 +69,9 @@ static int external_init (void) {
     printk(KERN_ALERT "multithread module is being loaded!\n");
 
     printk(KERN_INFO "policy: %s\n", policy);
-    printk(KERN_INFO "core_index: %d\n", core_index);
+    printk(KERN_INFO "core_index: %d\n", core);
     printk(KERN_INFO "period: %dms\n", period);
-    printk(KERN_INFO "iter_num: %d\n", iter_num);
+    printk(KERN_INFO "iter_num: %d\n", iter);
 
     if (strcmp(policy, "RR") == 0) {
 
