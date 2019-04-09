@@ -120,10 +120,14 @@ int main (int argc, char* argv[]){
     /*
         set timer 
     */
+    while (num_iter > 0) {
 
-    usleep(period * 1000);
+        usleep(period * 1000);
 
-    task_fn(NULL);
+        task_fn(NULL);
+
+        num_iter -= 1;
+    }
 
     return 0;
 
