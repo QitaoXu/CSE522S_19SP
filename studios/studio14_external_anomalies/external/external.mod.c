@@ -31,8 +31,11 @@ __attribute__((section("__versions"))) = {
 	{ 0x60f07451, __VMLINUX_SYMBOL_STR(sched_setscheduler) },
 	{ 0xb2815b65, __VMLINUX_SYMBOL_STR(kthread_bind) },
 	{ 0xc7c1dbc6, __VMLINUX_SYMBOL_STR(kthread_create_on_node) },
+	{ 0xe2d5255a, __VMLINUX_SYMBOL_STR(strcmp) },
 	{ 0x1000e51, __VMLINUX_SYMBOL_STR(schedule) },
 	{ 0x7adeb8d4, __VMLINUX_SYMBOL_STR(ktime_get) },
+	{ 0x37a0cba, __VMLINUX_SYMBOL_STR(kfree) },
+	{ 0x86a4889a, __VMLINUX_SYMBOL_STR(kmalloc_order_trace) },
 	{ 0x2e5810c6, __VMLINUX_SYMBOL_STR(__aeabi_unwind_cpp_pr1) },
 	{ 0x27e1a049, __VMLINUX_SYMBOL_STR(printk) },
 	{ 0xa20d08e8, __VMLINUX_SYMBOL_STR(wake_up_process) },
@@ -45,4 +48,4 @@ __attribute__((section(".modinfo"))) =
 "depends=";
 
 
-MODULE_INFO(srcversion, "96BA34C0160C9CCE77636E6");
+MODULE_INFO(srcversion, "F946CF679DB96E2AFAA1543");

@@ -567,6 +567,16 @@ deps_/tmp/compile/qitao/522S/studios/studio14_external/external/external.o := \
     $(wildcard include/config/arch/enable/split/pmd/ptlock.h) \
   include/linux/task_io_accounting.h \
     $(wildcard include/config/task/io/accounting.h) \
+  include/linux/slab.h \
+    $(wildcard include/config/debug/slab.h) \
+    $(wildcard include/config/failslab.h) \
+    $(wildcard include/config/have/hardened/usercopy/allocator.h) \
+    $(wildcard include/config/slab.h) \
+    $(wildcard include/config/slub.h) \
+  include/linux/kmemleak.h \
+    $(wildcard include/config/debug/kmemleak.h) \
+  include/linux/vmalloc.h \
+  include/linux/kasan.h \
 
 /tmp/compile/qitao/522S/studios/studio14_external/external/external.o: $(deps_/tmp/compile/qitao/522S/studios/studio14_external/external/external.o)
 

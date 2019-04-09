@@ -9,6 +9,7 @@
 #include <linux/hrtimer.h>
 #include <linux/types.h>
 #include <linux/string.h>
+#include <linux/slab.h>
 
 #define KTIME_ARR_SIZE 2
 
@@ -19,6 +20,7 @@ struct sched_param {
 ktime_t ktime_arr[KTIME_ARR_SIZE];
 struct hrtimer timer;
 struct task_struct *kthread;
+int sched_policy;
 
 static char* policy = "RR";
 static int core_index = 0;
@@ -44,9 +46,43 @@ static enum hrtimer_restart hrtimer_fn(struct hrtimer * timer) {
 static int kthread_fn(void *data) {
 
     int *iter = (int *)data;
+    unsigned index, row, col; //loop indicies
+	unsigned matrix_size, squared_size;
+	int *A, *B, *C;
 
     printk(KERN_INFO "This is kthread: %s function!, iter_num = %d\n", current->comm, *iter);
 
+    matrix_size = 100;
+
+    squared_size = matrix_size * matrix_size;
+
+    printk(KERN_INFO "Generating matrices...\n");
+
+	A = (int*) kmalloc( GFP_KERNEL, sizeof(int) * squared_size );
+	B = (int*) kmalloc( GFP_KERNEL, sizeof(int) * squared_size );
+	C = (int*) kmalloc( GFP_KERNEL, sizeof(int) * squared_size );
+
+    for( index = 0; index < squared_size; index++ ){
+		A[index] = 2;
+		B[index] = 3;
+		C[index] = 0;
+	}
+
+	printk(KERN_INFO "Multiplying matrices...\n");
+
+	for( row = 0; row < matrix_size; row++ ){
+		for( col = 0; col < matrix_size; col++ ){
+			for( index = 0; index < matrix_size; index++){
+			C[row*matrix_size + col] += A[row*matrix_size + index] *B[index*matrix_size + col];
+			}	
+		}
+	}
+
+	printk(KERN_INFO "Multiplication done!\n\n");
+
+    kfree(A);
+    kfree(B);
+    kfree(C);
     ktime_arr[1] = ktime_get();
 
     set_current_state(TASK_INTERRUPTIBLE);
@@ -60,7 +96,7 @@ static int external_init (void) {
 
    
     struct sched_param param;
-    param.sched_priority = 5;
+    param.sched_priority = 10;
 
     printk(KERN_ALERT "multithread module is being loaded!\n");
 
@@ -69,9 +105,17 @@ static int external_init (void) {
     printk(KERN_INFO "period: %dms\n", period);
     printk(KERN_INFO "iter_num: %d\n", iter_num);
 
+    if (strcmp(policy, "RR") == 0) {
+
+        sched_policy = SCHED_RR;
+    } else {
+
+        sched_policy = SCHED_FIFO;
+    }
+
     kthread = kthread_create(kthread_fn, &iter_num, "kthread");
     kthread_bind(kthread, core_index);
-    sched_setscheduler(kthread, SCHED_RR, &param);
+    sched_setscheduler(kthread, sched_policy, &param);
 
     /* hrtimer init and start
     */
