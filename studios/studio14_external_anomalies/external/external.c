@@ -47,7 +47,7 @@ static int kthread_fn(void *data) {
 
     printk(KERN_INFO "This is kthread: %s function!, iter_num = %d\n", current->comm, *iter);
 
-    ktime_arr[1] = get_ktime();
+    ktime_arr[1] = ktime_get();
 
     set_current_state(TASK_INTERRUPTIBLE);
 
@@ -78,7 +78,7 @@ static int external_init (void) {
     hrtimer_init(&timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
     timer.function = &hrtimer_fn;
 
-    ktime_arr[0] = get_ktime();
+    ktime_arr[0] = ktime_get();
 
     while (iter_num > 0) {
 
