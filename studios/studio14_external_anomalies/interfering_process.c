@@ -11,9 +11,9 @@
 #include <sched.h>
 #include <time.h>
 
-struct sched_param {
-    int sched_priority;
-};
+// struct sched_param {
+//     int sched_priority;
+// };
 
 #define EXPECTED_NUM_ARGC 5
 
@@ -65,8 +65,8 @@ int main (int argc, char* argv[]){
     cpu_set_t set;
     int ret;
     int policy;
-    struct sched_param param;
-    param.sched_priority = 10;
+    const struct sched_param param {
+    param.sched_priority = 10};
 
     timer_t t_id;
 
@@ -78,7 +78,7 @@ int main (int argc, char* argv[]){
     /* set cpu affinity
     */
     CPU_ZERO(&set);
-    CPU_SET(core_index, set);
+    CPU_SET(core_index, &set);
 
     ret = sched_setaffinity(0, sizeof(cpu_set_t), &set);
 
@@ -88,7 +88,7 @@ int main (int argc, char* argv[]){
     }
 
     int i;
-    
+
     for (i = 0; i < argc; i++) {
 
         printf("argv[%d] = %s ", i, argv[i]);
@@ -119,7 +119,7 @@ int main (int argc, char* argv[]){
 
     usleep(period * 1000);
 
-    task(NULL);
+    task_fn(NULL);
 
     return 0;
 
