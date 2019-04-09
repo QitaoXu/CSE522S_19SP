@@ -65,8 +65,10 @@ int main (int argc, char* argv[]){
     cpu_set_t set;
     int ret;
     int policy;
-    const struct sched_param param {
-    param.sched_priority = 10};
+    const struct sched_param param = 
+    {
+        .sched_priority = 10
+    };
 
     timer_t t_id;
 
