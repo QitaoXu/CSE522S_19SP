@@ -12,7 +12,7 @@
 static char* policy = "RR";
 static int core_index = 0;
 static int period = 1000;
-static iter_num = 3;
+static int iter_num = 3;
 
 MODULE_PARM(policy, "%s");
 MODULE_PARM(core_index, "%i");
