@@ -1,0 +1,1 @@
+cmd_/tmp/compile/qitao/522S/studios/studio14_external/external/external.ko := arm-linux-gnueabihf-ld -EL -r  -T ./scripts/module-common.lds --build-id  -o /tmp/compile/qitao/522S/studios/studio14_external/external/external.ko /tmp/compile/qitao/522S/studios/studio14_external/external/external.o /tmp/compile/qitao/522S/studios/studio14_external/external/external.mod.o ;  true
