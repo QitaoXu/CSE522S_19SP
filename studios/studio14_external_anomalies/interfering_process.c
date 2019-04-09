@@ -87,6 +87,13 @@ int main (int argc, char* argv[]){
         exit(-1);
     }
 
+    int i;
+    
+    for (i = 0; i < argc; i++) {
+
+        printf("argv[%d] = %s ", i, argv[i]);
+    }
+
     
     /* set scheduling class and priority 
     */
