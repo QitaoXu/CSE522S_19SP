@@ -1,0 +1,15 @@
+Anomaly forks killer
+
+In this project, we aim at a kernel module to limit processes' unforeseen unsafe forks to avoid freezing of the system. Specifically, we wish to monitor processes' fork behaviors, and if unforeseen forks happen leading to a high system utilization, the kernel module will kill these processes immediately. To avoid hastily killing a building blocks of linux kernel, the kernel module only kills user processes or make report to users if any such unforeseen forks happen in any build blocks. To avoid hastily killing a process that is running for users' intention, we use a flag to mark the process. There are two marks: (1) force_run; (2) killable. If the user's process is run with the force_run flag, the kernel module can not kill it even it leads to super high utilization and make the system even freezing. If the user's process is run with the killable flag, the kernel module will not kill it until the massive forks happen. Finally, any kill will be reported to users immediately, and any crash caused by "force_run" processes are recorded.
+
+
+In the implementation part, we are going to establish a daemon. It is initialized by creating a fork tree of current processes and then check the system utilization. If no heavy forks and no high-level utilization, then it goes to sleep. It is waken up by every time any fork event happens. Once a fork happens, it checks the system utilization to see whether the utilization becomes too high meanwhile the fork child' s parent has too many children. Once it is, the daemon checks the flag of the parent process (non, force_run or killable). If it is a user process and it is force_run, the daemon only records the system behavior. If it is a user process but it is non or killable, the daemon kills the parent process and report to users.
+
+
+We are going to test the performance of the kernel module by using user space programs, written in C, to produce fork bombs. Then the kernel module should be able to kill the malicious fork() processes and their ancestry processes with killable flags. Also, the kernel module will not kill processes with force_run flags. 
+
+Schedule:
+Week 1. Apr 8th Detailed design on which part of kernel module we need to modify or extend.
+Week 2. Apr 15th Implementation of the new kernel module which is able to kill unforeseen unsafe forks. Make some initial validity test and do some basic performance evaluation. 
+Week 3. Apr 22th Project Presentation. 
+Week 4. Apr 29th Project Writeups. 

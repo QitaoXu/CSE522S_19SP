@@ -16,6 +16,13 @@ int sock_fd;
 struct msghdr msg;
  
 int main(int argc, char **argv) {
+
+    pid_t pid = getpid();
+    pid_t ppid = getppid();
+
+    printf("netlink_user_application pid: %d\n\n", pid);
+    printf("netlink_user_application ppid: %d\n\n", ppid);
+
     sock_fd = socket(PF_NETLINK, SOCK_RAW, NETLINK_USER);
     if(sock_fd<0)
         return -1;
