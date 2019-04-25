@@ -12,15 +12,17 @@
 #include <linux/netlink.h>
 #include <linux/buffer_head.h>
 #include <net/net_namespace.h>
-
+#include <linux/slab.h>
 #define NETLINK_TEST 17 
+const char d[2] = " ";
 static struct sock *socket_ptr = NULL;
-
 static unsigned long period_sec= 1;
 static unsigned long period_nsec=0;
 static struct hrtimer hr_timer;
 static ktime_t interval;
 static struct task_struct *thread1;
+long prev_idle=0;
+long prev_total=0;
 // static char *statCPU="/proc/stat";
 struct sched_param{
 	int sched_priority;
@@ -111,18 +113,29 @@ struct netlink_kernel_cfg cfg = {
 
 //https://stackoverflow.com/questions/1184274/read-write-files-within-a-linux-kernel-module
 static int thread_fn(void * data){
-	// int i=0;
+	int i;
 	struct file *f;
-    char buf[1024];
+	int ret;
+    // char buf[1024];
+    char* token;
+    char* buffer;
+    long total;
+    long total_idle;
+    long idle;
+    long split;
+    long long percentage=0;
     mm_segment_t fs;
-    // int i;
 
     socket_ptr = netlink_kernel_create(&init_net, NETLINK_TEST, &cfg);
     printk(KERN_INFO "Initializing Netlink Socket\n");
-
-
+    token=kmalloc(sizeof(char*),GFP_KERNEL);
+    if (!token)
+    	printk(KERN_ALERT "Allocation error!!.\n");
+    buffer=kmalloc_array(sizeof(char*),1024,GFP_KERNEL);
+    if (!buffer)
+    	printk(KERN_ALERT "Allocation error!!.\n");
     // Init the buffer with 0
-    memset(buf, 0, 1024);
+    // memset(buf, 0, 1024);
     // To see in /var/log/messages that the module is operating
     printk(KERN_INFO "My module is loaded\n");
     // I am using Fedora and for the test I have chosen following file
@@ -140,15 +153,45 @@ static int thread_fn(void * data){
 	        // Set segment descriptor associated to kernel space
 	        set_fs(get_ds());
 	        // Read the file
-	        f->f_op->read(f, buf, 1024, &f->f_pos);
+	        f->f_op->read(f, buffer, 1024, &f->f_pos);
 	        // Restore segment descriptor
 	        set_fs(fs);
 	        // See what we read from file
-	        printk(KERN_INFO "buf:%s\n",buf);
+	        printk(KERN_INFO "buf:%s",buffer);
 	    }
 	    filp_close(f,NULL);
-      	printk(KERN_INFO "In thread1");
+	    total=0;
+	    idle=0;
+	    i=0;
+	    percentage=0;
+	    total_idle=0;
+	    // buffer=&buf;
+	    while( (token = strsep(&buffer,d)) != NULL &&i<10){
+        	printk(KERN_INFO "%s %d \n",token,i);
+        	if(i!=0&&i!=1){
+        		ret=kstrtol(token,10,&split);
+    	 		if(ret!=0)
+    	 			printk(KERN_ALERT "Conversion error!!.\n");
+    	 		total=total+split;
+    	 	}
+    	 	
+    	 	if(i==5||i==6){
+    	 		ret=kstrtol(token,10,&idle);
+    	 		if(ret!=0)
+    	 			printk(KERN_ALERT "Conversion error!!.\n");
+    	 		total_idle+=idle;
+	    	}
+        	i+=1;
+	    }
+	   
+	    // percentage=(1.0 - (idle-prev_idle)*1.0/(total-prev_total))*100;
+	   	prev_idle=total_idle;
+	   	prev_total=total;
+
+      	printk(KERN_INFO "In thread1 %ld %ld",idle,total);
 	}
+	kfree(buffer);
+	kfree(token);
 	sock_release(socket_ptr->sk_socket);
 	//printk(KERN_INFO "In thread1");
 	// struct file *f;
