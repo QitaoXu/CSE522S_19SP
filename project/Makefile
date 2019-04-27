@@ -1,1 +1,1 @@
-obj-m := netlink_module.o
+obj-m := netlink.o
